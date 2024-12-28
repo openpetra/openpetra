@@ -141,7 +141,7 @@ class Auth {
 						window.location = window.location.pathname;
 						}, 3000);
 				} else {
-					display_message(i18next.t('login.errorPwdResetEmailSent'), "fail");
+					utils.display_message(i18next.t('login.errorPwdResetEmailSent'), "fail");
 				}
 			})
 			.catch(function(error) {

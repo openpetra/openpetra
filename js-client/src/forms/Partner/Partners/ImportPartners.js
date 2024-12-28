@@ -46,15 +46,15 @@ function UploadUserCSV(self) {
 			result = JSON.parse(result.data.d);
 			hidePleaseWait();
 			if (result.result == true) {
-				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+				utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
-				display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+				utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
 			hidePleaseWait();
-			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+			utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
 		});
 
 	}
@@ -86,15 +86,15 @@ function UploadUserODS(self) {
 			result = JSON.parse(result.data.d);
 			hidePleaseWait();
 			if (result.result == true) {
-				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+				utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
-				display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+				utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
 			hidePleaseWait();
-			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+			utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
 		});
 
 	}
@@ -126,15 +126,15 @@ function UploadUserXLSX(self) {
 			result = JSON.parse(result.data.d);
 			hidePleaseWait();
 			if (result.result == true) {
-				display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+				utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
 			} else {
-				display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+				utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
 			hidePleaseWait();
-			display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+			utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
 		});
 
 	}
@@ -156,15 +156,15 @@ function DeleteAllContacts() {
 		result = JSON.parse(result.data.d);
 		hidePleaseWait();
 		if (result.result == true) {
-			display_message(i18next.t('ImportPartners.delete_all_partner_success'), "success");
+			utils.display_message(i18next.t('ImportPartners.delete_all_partner_success'), "success");
 		} else {
-			display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.delete_all_partners_fail');
+			utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.delete_all_partners_fail');
 		}
 	})
 	.catch(error => {
 		//console.log(error.response)
 		hidePleaseWait();
-		display_message(i18next.t('ImportPartners.delete_all_partners_fail'), "fail");
+		utils.display_message(i18next.t('ImportPartners.delete_all_partners_fail'), "fail");
 	});
 }
 

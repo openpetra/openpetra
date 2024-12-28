@@ -22,7 +22,7 @@
 //
 
 if (window.localStorage.getItem('mustchangepassword') === "true") {
-	display_message(i18next.t("ChangePassword.immediately"), "info");
+	utils.display_message(i18next.t("ChangePassword.immediately"), "info");
 }
 
 $("#btnSubmitPassword").click(function(e) {

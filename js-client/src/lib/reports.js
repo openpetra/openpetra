@@ -99,7 +99,7 @@ function check_for_report(AReportID) {
 					print_report(AReportID);
 				} else {
 					api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetErrorMessage', r).then(function (data) {
-						display_message(i18next.t(data.data.d), "fail");
+						utils.display_message(i18next.t(data.data.d), "fail");
 						myPleaseWaitDiv.hidePleaseWait();
 					});
 				}

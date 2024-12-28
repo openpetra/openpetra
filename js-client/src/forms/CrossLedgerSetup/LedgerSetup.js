@@ -141,7 +141,7 @@ function save_new() {
 			function (result) {
 				parsed = JSON.parse(result.data.d);
 				if (parsed.result == true) {
-					display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
+					utils.display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
 					se.modal('hide');
 					// reload permissions so that the current user has access to the new ledger
 					api.post("serverMSysMan.asmx/TUserManagerWebConnector_ReloadUserInfo", request);
@@ -149,7 +149,7 @@ function save_new() {
 					LoadAvailableLedgerDropDown();
 					display_list();
 				} else {
-					display_error(parsed.AVerificationResult, 'LedgerSetup', 'fail');
+					utils.display_error(parsed.AVerificationResult, 'LedgerSetup', 'fail');
 				}
 			}
 		)
@@ -167,7 +167,7 @@ function save_entry(update) {
 			parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				CloseModal(raw);
-				display_message(i18next.t('LedgerSetup.confirm_edit'), 'success');
+				utils.display_message(i18next.t('LedgerSetup.confirm_edit'), 'success');
 				display_list();
 			}
 		}
@@ -188,7 +188,7 @@ function delete_entry(d) {
 			parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				CloseModal(raw);
-				display_message(i18next.t('LedgerSetup.confirm_delete'), 'success');
+				utils.display_message(i18next.t('LedgerSetup.confirm_delete'), 'success');
 				display_list();
 			}
 		}

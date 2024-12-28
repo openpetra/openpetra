@@ -63,10 +63,10 @@ function save_entry(obj_modal) {
 	api.post('serverMSysMan.asmx/TSettingsWebConnector_RunFirstSetup', param).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		if (!parsed.result) {
-			return display_error(parsed.AVerificationResult);
+			return utils.display_error(parsed.AVerificationResult);
 		} else {
 			CloseModal(obj);
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			setTimeout(reloadUsersPage, 5000);
 		}
 	})

@@ -137,11 +137,11 @@ function save_entry(obj_modal) {
 		parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
 			CloseModal(obj);
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			display_list();
 		}
 		else {
-			display_error( parsed.AVerificationResult );
+			utils.display_error( parsed.AVerificationResult );
 		}
 	})
 }

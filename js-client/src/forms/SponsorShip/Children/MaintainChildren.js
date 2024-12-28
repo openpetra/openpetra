@@ -239,7 +239,7 @@ var MaintainChildren = new (class {
       function (data) {
         var parsed = JSON.parse(data.data.d);
         if (!parsed.result) {
-          return display_error(parsed.AVerificationResult);
+          return utils.display_error(parsed.AVerificationResult);
         } else {
           display_message( i18next.t("forms.deleted"), "success");
           $("#detail_modal").modal("hide");
@@ -267,7 +267,7 @@ var MaintainChildren = new (class {
       function (data) {
         var parsed = JSON.parse(data.data.d);
         if (!parsed.result) {
-          return display_error(parsed.AVerificationResult);
+          return utils.display_error(parsed.AVerificationResult);
         } else {
           display_message( i18next.t("forms.saved"), "success");
           if (mode == "create") {
@@ -333,12 +333,12 @@ var MaintainChildren = new (class {
           if (parsed.result) {
             display_message( i18next.t("forms.upload_success"), "success");
           } else {
-            display_error(parsed.AVerificationResult);
+            utils.display_error(parsed.AVerificationResult);
           }
       })
       .catch(error => {
         console.log(error)
-        display_message(i18next.t('forms.uploaderror'), "fail");
+        utils.display_message(i18next.t('forms.uploaderror'), "fail");
       });
 
     }
@@ -416,7 +416,7 @@ var MaintainChildComments = new (class {
         var parsed = JSON.parse(data.data.d);
 
         if (!parsed.result) {
-          return display_error(parsed.AVerificationResult);
+          return utils.display_error(parsed.AVerificationResult);
         }
 
         $("#comment_modal").modal("hide");
@@ -515,15 +515,15 @@ var MaintainChildSponsorship = new (class {
     var req = translate_to_server(extractData($("#recurring_modal")));
 
     if (!req["ADonorKey"] || isNaN(parseInt(req["ADonorKey"]))) {
-      return display_error("MaintainChildren.ErrMissingDonor");
+      return utils.display_error("MaintainChildren.ErrMissingDonor");
     }
 
     if (!req["AGiftAmount"] || isNaN(parseFloat(req["AGiftAmount"]))) {
-      return display_error("MaintainChildren.ErrMissingAmount");
+      return utils.display_error("MaintainChildren.ErrMissingAmount");
     }
 
     if (!req["AStartDonations"]) {
-      return display_error("MaintainChildren.ErrStartDonationsDate");
+      return utils.display_error("MaintainChildren.ErrStartDonationsDate");
     }
 
     // check for endless date
@@ -536,7 +536,7 @@ var MaintainChildSponsorship = new (class {
         var parsed = JSON.parse(data.data.d);
 
         if (!parsed.result) {
-          return display_error(parsed.AVerificationResult);
+          return utils.display_error(parsed.AVerificationResult);
         }
 
         $("#recurring_modal").modal("hide");
@@ -553,7 +553,7 @@ var MaintainChildSponsorship = new (class {
         var parsed = JSON.parse(result.data.d);
 
         if (!parsed.result) {
-          return display_error(parsed.AVerificationResult);
+          return utils.display_error(parsed.AVerificationResult);
         }
 
         $("#recurring_modal").modal("hide");
@@ -653,15 +653,15 @@ var MaintainChildReminders = new (class {
     var req = translate_to_server(extractData($("#reminder_modal")));
 
     if (!req["AEventDate"]) {
-      return display_error("MaintainChildren.ErrReminderEventDate");
+      return utils.display_error("MaintainChildren.ErrReminderEventDate");
     }
 
     if (!req["AFirstReminderDate"]) {
-      return display_error("MaintainChildren.ErrFirstReminderDate");
+      return utils.display_error("MaintainChildren.ErrFirstReminderDate");
     }
 
     if (!req["AComment"]) {
-      return display_error("MaintainChildren.ErrEmptyReminderComment");
+      return utils.display_error("MaintainChildren.ErrEmptyReminderComment");
     }
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildReminders', req).then(
@@ -669,7 +669,7 @@ var MaintainChildReminders = new (class {
         var parsed = JSON.parse(data.data.d);
 
         if (!parsed.result) {
-          return display_error(parsed.AVerificationResult);
+          return utils.display_error(parsed.AVerificationResult);
         }
 
         $("#reminder_modal").modal("hide");

@@ -63,7 +63,7 @@ function SetHtmlTemplate(filename, filedata) {
 	htmldata = filedata;
 
 	if (htmldata.length == 0 && DefaultNames["DefaultFileNameHTML"] == "") {
-		display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
+		utils.display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
 		hidePleaseWait();
 		return;
 	}
@@ -116,7 +116,7 @@ function SetTemplateDefault(filename, filedata, purpose) {
 			};
 	} else {
 		if (filedata.length == 0) {
-			display_message(i18next.t('PrintAnnualReceipts.emptytemplatefile'), "fail");
+			utils.display_message(i18next.t('PrintAnnualReceipts.emptytemplatefile'), "fail");
 			return;
 		}
 		p = {'AFileContent': filedata,
@@ -129,9 +129,9 @@ function SetTemplateDefault(filename, filedata, purpose) {
 	.then(function (result) {
 		var parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 		} else {
-			display_message(i18next.t('forms.notsaved'), "fail");
+			utils.display_message(i18next.t('forms.notsaved'), "fail");
 		}
 	});
 }
@@ -273,14 +273,14 @@ function GenerateAnnualReceiptsRemote() {
 		}
 		else
 		{
-			display_error(parsed.AVerification);
+			utils.display_error(parsed.AVerification);
 		}
 		hidePleaseWait();
 	})
 	.catch(error => {
 		console.log(error);
 		hidePleaseWait();
-		display_message(i18next.t('PrintAnnualReceipts.uploaderror'), "fail");
+		utils.display_message(i18next.t('PrintAnnualReceipts.uploaderror'), "fail");
 	});
 };
 

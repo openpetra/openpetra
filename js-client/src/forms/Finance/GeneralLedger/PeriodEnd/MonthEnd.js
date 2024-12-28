@@ -34,11 +34,11 @@ function month_end() {
 		let parsed = JSON.parse(data.data.d);
 		let s = false;
 		if (parsed.result == true) {
-			display_message( i18next.t('forms.saved'), 'success' )
+			utils.display_message( i18next.t('forms.saved'), 'success' )
 			updateInfo();
 		}
 		else {
-			display_error( parsed.AVerificationResults );
+			utils.display_error( parsed.AVerificationResults );
 		}
 	});
 }

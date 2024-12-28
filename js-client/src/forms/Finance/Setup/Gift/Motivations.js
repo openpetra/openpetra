@@ -221,12 +221,12 @@ function save_edit_group(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationGroups', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
 			updateGroup(payload['AMotivationGroupCode']);
 		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				utils.display_message(i18next.t(msg.code), "fail");
 			}
 		}
 	});
@@ -243,14 +243,14 @@ function save_edit_detail(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
 			updateGroup(payload['AMotivationGroupCode']);
 		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				utils.display_message(i18next.t(msg.code), "fail");
 			}
-			display_message(i18next.t('forms.notsaved'), "fail");
+			utils.display_message(i18next.t('forms.notsaved'), "fail");
 		}
 	});
 }
@@ -267,14 +267,14 @@ function delete_group(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationGroups', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.deleted'), "success");
+			utils.display_message(i18next.t('forms.deleted'), "success");
 			CloseModal(obj);
 			display_list();
 		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				utils.display_message(i18next.t(msg.code), "fail");
 			}
-			display_message(i18next.t('forms.notdeleted'), "fail");
+			utils.display_message(i18next.t('forms.notdeleted'), "fail");
 		}
 	});
 }
@@ -290,14 +290,14 @@ function delete_motivation(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.deleted'), "success");
+			utils.display_message(i18next.t('forms.deleted'), "success");
 			CloseModal(obj);
 			display_list();
 		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				utils.display_message(i18next.t(msg.code), "fail");
 			}
-			display_message(i18next.t('forms.notdeleted'), "fail");
+			utils.display_message(i18next.t('forms.notdeleted'), "fail");
 		}
 	});
 }
@@ -309,12 +309,12 @@ function save_default_detail(obj) {
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_SetDefaultMotivationDetail', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				utils.display_message(i18next.t(msg.code), "fail");
 			}
-			display_message(i18next.t('forms.notsaved'), "fail");
+			utils.display_message(i18next.t('forms.notsaved'), "fail");
 		}
 	});
 }

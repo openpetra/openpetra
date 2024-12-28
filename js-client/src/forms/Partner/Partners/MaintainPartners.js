@@ -98,7 +98,7 @@ class MaintainPartners {
 			data = JSON.parse(data.data.d);
 
 			if (data.ATotalRecords == -1) {
-				display_error( data.AVerificationResult, "MaintainPartners" );
+				utils.display_error( data.AVerificationResult, "MaintainPartners" );
 				return;
 			}
 
@@ -244,7 +244,7 @@ class MaintainPartners {
 		myModal.find('#btnClosePartner').click(function(){ self.close_partner(this); });
 		myModal.find('#btnAddBankAccount').click(function(){
 			if (!self.PartnerStoredInDB) {
-				display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
+				utils.display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
 				return;
 			}
 			let PartnerEditForm = $('#partneredit' + self.partnerkey);
@@ -261,7 +261,7 @@ class MaintainPartners {
 		});
 		myModal.find('#btnAddMembership').click(function(){
 			if (!self.PartnerStoredInDB) {
-				display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
+				utils.display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
 				return;
 			}
 			let PartnerEditForm = $('#partneredit' + self.partnerkey);
@@ -270,7 +270,7 @@ class MaintainPartners {
 
 		myModal.find("#btnOpenHistory").click(function() {
 			if (!self.PartnerStoredInDB) {
-				display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
+				utils.display_error( i18next.t('MaintainPartners.error_first_submit_partner') );
 				return;
 			}
 			self.open_history();
@@ -512,7 +512,7 @@ class MaintainPartners {
 		if (self.data_changes_log["address"] != null) { self.data_changes_log["address"]["Value"] = this.getUpdatesAddress(self.partnerkey); }
 		var applied_perms = [];
 		for (var perm of Object.values(self.data_changes_log) ) {
-			if (perm["Valid"] == false) { return display_message( i18next.t("MaintainPartners.consent_error"), 'fail'); }
+			if (perm["Valid"] == false) { return utils.display_message( i18next.t("MaintainPartners.consent_error"), 'fail'); }
 			applied_perms.push( JSON.stringify(perm) );
 		}
 
@@ -531,7 +531,7 @@ class MaintainPartners {
 			var parsed = JSON.parse(data.data.d);
 			if (parsed.result == true) {
 				self.PartnerStoredInDB = true;
-				display_message(i18next.t('forms.saved'), "success");
+				utils.display_message(i18next.t('forms.saved'), "success");
 
 				// reload the partner
 				var r = {
@@ -549,7 +549,7 @@ class MaintainPartners {
 				self.insert_consent(obj, 'address');
 			}
 			else {
-				display_error( parsed.AVerificationResult );
+				utils.display_error( parsed.AVerificationResult );
 			}
 		})
 	}
@@ -574,11 +574,11 @@ class MaintainPartners {
 			var parsed = JSON.parse(data.data.d);
 			if (parsed.result == true) {
 				modal.CloseModal(m);
-				display_message(i18next.t('MaintainPartners.contact_was_deleted'), "success");
+				utils.display_message(i18next.t('MaintainPartners.contact_was_deleted'), "success");
 				self.display_list();
 			}
 			else {
-				display_error( parsed.AVerificationResult );
+				utils.display_error( parsed.AVerificationResult );
 			}
 		})
 	}
@@ -626,12 +626,12 @@ class MaintainPartners {
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				display_message(i18next.t('forms.saved'), "success");
+				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
 				self.updateBankAccounts();
 			}
 			else if (parsed.result == false) {
-				display_error(parsed.AVerificationResult);
+				utils.display_error(parsed.AVerificationResult);
 			}
 
 		});
@@ -648,7 +648,7 @@ class MaintainPartners {
 		payload['action'] = mode;
 		if (payload['APartnerMembershipKey'] == '') payload['APartnerMembershipKey'] = -1;
 		if (payload["AStartDate"] == "") {
-			display_error(i18next.t('MaintainPartners.MembersStartDateRequired'));
+			utils.display_error(i18next.t('MaintainPartners.MembersStartDateRequired'));
 			return;
 		}
 		if (payload["AExpiryDate"] == "") {
@@ -658,12 +658,12 @@ class MaintainPartners {
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainMemberships', payload).then(function (result) {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				display_message(i18next.t('forms.saved'), "success");
+				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
 				self.updateMemberships();
 			}
 			else if (parsed.result == false) {
-				display_error(parsed.AVerificationResult);
+				utils.display_error(parsed.AVerificationResult);
 			}
 
 		});
@@ -683,12 +683,12 @@ class MaintainPartners {
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				display_message(i18next.t('forms.saved'), "success");
+				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
 				self.updateBankAccounts();
 			}
 			else if (parsed.result == false) {
-				display_error(parsed.AVerificationResult);
+				utils.display_error(parsed.AVerificationResult);
 			}
 		});
 	}
@@ -706,12 +706,12 @@ class MaintainPartners {
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainMemberships', payload).then(function (result) {
 			var parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				display_message(i18next.t('forms.saved'), "success");
+				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
 				self.updateMemberships();
 			}
 			else if (parsed.result == false) {
-				display_error(parsed.AVerificationResult);
+				utils.display_error(parsed.AVerificationResult);
 			}
 		});
 	}
@@ -1074,7 +1074,7 @@ class MaintainPartners {
 		if (!from_modal) {
 			if (self.data_changes_log[ty] != null) {
 				// don't submit consent here, because we have unsaved consents. The order would be messed up.
-				display_error( "MaintainPartners.error_consent_unsaved_changes" );
+				utils.display_error( "MaintainPartners.error_consent_unsaved_changes" );
 				return;
 			}
 
@@ -1108,7 +1108,7 @@ class MaintainPartners {
 				if (parsed.AVerificationResult[0].message == "no_changes") {
 					modal.CloseModal(m);
 				} else {
-					display_error( parsed.AVerificationResult );
+					utils.display_error( parsed.AVerificationResult );
 				}
 			}
 

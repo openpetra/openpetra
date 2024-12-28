@@ -99,12 +99,12 @@ function save_new(obj_modal) {
 	api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainMemberships", request).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('MaintainMemberships.confirm_create'), "success");
+			utils.display_message(i18next.t('MaintainMemberships.confirm_create'), "success");
 			CloseModal(se);
 			display_list();
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 
@@ -125,12 +125,12 @@ function save_entry(update) {
 	api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainMemberships", request).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('MaintainMemberships.confirm_edit'), "success");
+			utils.display_message(i18next.t('MaintainMemberships.confirm_edit'), "success");
 			CloseModal(modalspace);
 			display_list();
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -147,11 +147,11 @@ function delete_entry(d) {
 	api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainMemberships", request).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.deleted'), 'success');
+			utils.display_message(i18next.t('forms.deleted'), 'success');
 			raw.modal('hide');
 			display_list();
 		} else {
-			display_error( i18next.t('forms.notdeleted') );
+			utils.display_error( i18next.t('forms.notdeleted') );
 		}
 	});
 }

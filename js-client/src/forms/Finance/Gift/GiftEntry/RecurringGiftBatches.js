@@ -120,7 +120,7 @@ function open_gift_transactions(obj, number = -1, reload = false, transaction_nu
 		parsed = JSON.parse(data.data.d);
 
 		if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 			return;
 		}
 
@@ -411,12 +411,12 @@ function save_edit_batch(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -433,7 +433,7 @@ function save_edit_trans(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			if (mode=="edit") {
 				CloseModal(obj);
 				updateBatch(payload['ABatchNumber']);
@@ -446,7 +446,7 @@ function save_edit_trans(obj_modal) {
 			}
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -459,7 +459,7 @@ function save_edit_trans_detail(obj_modal) {
 	let payload = translate_to_server( extract_data(obj) );
 
 	if (!payload['AStartDonations']) {
-		display_error("RecurringGiftBatches.missing_date_start");
+		utils.display_error("RecurringGiftBatches.missing_date_start");
 		return;
 	}
 
@@ -472,12 +472,12 @@ function save_edit_trans_detail(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 
 	});
@@ -494,12 +494,12 @@ function delete_trans(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -513,14 +513,14 @@ function delete_trans_detail(obj_modal) {
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .tpl_edit_trans_detail').modal('hide');
 			$('#modal_space .tpl_edit_trans').modal('show');
 			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -539,11 +539,11 @@ function submit_batch(obj, batch_id) {
 	api.post( 'serverMFinance.asmx/TGiftTransactionWebConnector_SubmitRecurringGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			display_message( i18next.t('RecurringGiftBatches.success_submit'), 'success' );
+			utils.display_message( i18next.t('RecurringGiftBatches.success_submit'), 'success' );
 			display_list('filter');
 			window.open("/Finance/Gift/GiftEntry/GiftBatches?batch=" + data["ANewGiftBatchNo"], "_blank");
 		} else {
-			display_error( data.AVerifications );
+			utils.display_error( data.AVerifications );
 		}
 	})
 }
@@ -585,7 +585,7 @@ function export_batch(batch_id) {
 			a.click();
 		}
 		else if (parsed.result < 0) {
-			display_error(parsed.AVerificationMessages);
+			utils.display_error(parsed.AVerificationMessages);
 		}
 	});
 }
@@ -616,7 +616,7 @@ function download_sepa(obj, batch_id) {
 			a.click();
 		}
 		else {
-			display_error(parsed.AMessages);
+			utils.display_error(parsed.AMessages);
 		}
 	});
 }

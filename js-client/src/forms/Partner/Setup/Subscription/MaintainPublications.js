@@ -99,7 +99,7 @@ function save_new() {
 
     api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
       function () {
-        display_message(i18next.t('MaintainPublications.confirm_create'), 'success');
+        utils.display_message(i18next.t('MaintainPublications.confirm_create'), 'success');
 				se.modal('hide');
 				display_list();
 			}
@@ -115,7 +115,7 @@ function save_entry(update) {
 
   api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainPublications", request).then(
     function () {
-      display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
+      utils.display_message(i18next.t('MaintainPublications.confirm_edit'), 'success');
 			raw.modal('hide');
 			display_list();
 		}
@@ -135,11 +135,11 @@ function delete_entry(d) {
 		function (data) {
 			parsed = JSON.parse(data.data.d);
 			if (parsed.result == true) {
-				display_message(i18next.t('forms.deleted'), 'success');
+				utils.display_message(i18next.t('forms.deleted'), 'success');
 				raw.modal('hide');
 				display_list();
 			} else {
-				display_error( i18next.t('forms.notdeleted') );
+				utils.display_error( i18next.t('forms.notdeleted') );
 			}
 		}
   );

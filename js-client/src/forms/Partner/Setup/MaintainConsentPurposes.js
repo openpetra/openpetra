@@ -93,7 +93,7 @@ function save_new() {
 
 		api.post("serverMPartner.asmx/TPartnerSetupWebConnector_MaintainConsentPurposes", request).then(
 			function () {
-				display_message(i18next.t('forms.saved'), 'success');
+				utils.display_message(i18next.t('forms.saved'), 'success');
 				se.modal('hide');
 				display_list();
 			}
@@ -111,11 +111,11 @@ function save_entry(update) {
 		function (data) {
 			parsed = JSON.parse(data.data.d);
 			if (parsed.result == true) {
-				display_message(i18next.t('forms.saved'), 'success');
+				utils.display_message(i18next.t('forms.saved'), 'success');
 				modalspace.modal('hide');
 				display_list();
 			} else {
-				display_error( 'error' );
+				utils.display_error( 'error' );
 			}
 		}
 	)
@@ -134,11 +134,11 @@ function delete_entry(d) {
 		function (data) {
 			parsed = JSON.parse(data.data.d);
 			if (parsed.result == true) {
-				display_message(i18next.t('forms.deleted'), 'success');
+				utils.display_message(i18next.t('forms.deleted'), 'success');
 				raw.modal('hide');
 				display_list();
 			} else {
-				display_error( i18next.t('forms.notdeleted') );
+				utils.display_error( i18next.t('forms.notdeleted') );
 			}
 		}
 	);

@@ -306,7 +306,7 @@ function save_edit_batch(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
 	if (payload["ADateEffective"] == '') {
-		display_message(i18next.t('GLBatches.missing_batch_date'), "fail");
+		utils.display_message(i18next.t('GLBatches.missing_batch_date'), "fail");
 		exit;
 	}
 	payload['action'] = mode;
@@ -320,12 +320,12 @@ function save_edit_batch(obj_modal) {
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -337,7 +337,7 @@ function save_edit_trans(obj_modal) {
 	// extract information from a jquery object
 	let payload = translate_to_server( extract_data(obj) );
 	if (payload["ATransactionDate"] == '') {
-		display_message(i18next.t('GLBatches.missing_transaction_date'), "fail");
+		utils.display_message(i18next.t('GLBatches.missing_transaction_date'), "fail");
 		exit;
 	}
 	payload['action'] = mode;
@@ -354,12 +354,12 @@ function save_edit_trans(obj_modal) {
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		} else {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code ? msg.code : msg.message), "fail");
+				utils.display_message(i18next.t(msg.code ? msg.code : msg.message), "fail");
 			}
 		}
 
@@ -380,13 +380,13 @@ function delete_edit_trans(obj_modal) {
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.deleted'), "success");
+			utils.display_message(i18next.t('forms.deleted'), "success");
 			CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		if (parsed.result == "false") {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				utils.display_message(i18next.t(msg.code), "fail");
 			}
 		}
 
@@ -412,11 +412,11 @@ function importTransactions(batch_id, csv_file) {
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_ImportGLTransactions', x).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			updateBatch(batch_id);
 		}
 		if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	})
 }
@@ -443,7 +443,7 @@ function exportTransactions(batch_id) {
 		}
 		if (parsed.result == "false") {
 			for (msg of parsed.AVerificationResult) {
-				display_message(i18next.t(msg.code), "fail");
+				utils.display_message(i18next.t(msg.code), "fail");
 			}
 		}
 	})
@@ -461,9 +461,9 @@ function test_post(batch_id) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
 			// 2 minute timeout
-			display_message ( data.ResultingBalances, null, 2*60*1000 );
+			utils.display_message ( data.ResultingBalances, null, 2*60*1000 );
 		} else {
-			display_error( data.AVerifications );
+			utils.display_error( data.AVerifications );
 		}
 	})
 }
@@ -476,10 +476,10 @@ function batch_post(batch_id) {
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_PostGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			display_message( i18next.t('GLBatches.success_posted'), 'success' );
+			utils.display_message( i18next.t('GLBatches.success_posted'), 'success' );
 			display_list('filter');
 		} else {
-			display_error( data.AVerifications );
+			utils.display_error( data.AVerifications );
 		}
 	})
 }
@@ -492,10 +492,10 @@ function batch_cancel(batch_id) {
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_CancelGLBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			display_message( i18next.t('GLBatches.success_cancelled'), 'success' );
+			utils.display_message( i18next.t('GLBatches.success_cancelled'), 'success' );
 			display_list('filter');
 		} else {
-			display_error( data.AVerificationResult );
+			utils.display_error( data.AVerificationResult );
 		}
 	})
 }
@@ -510,10 +510,10 @@ function batch_reverse(batch_id) {
 	api.post( 'serverMFinance.asmx/TGLTransactionWebConnector_ReverseBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 		if (data.result == true) {
-			display_message( i18next.t('GLBatches.success_revert'), 'success' );
+			utils.display_message( i18next.t('GLBatches.success_revert'), 'success' );
 			load_preset();
 		} else {
-			display_error( data.AVerificationResult );
+			utils.display_error( data.AVerificationResult );
 		}
 	})
 }

@@ -67,15 +67,15 @@ function import_file(file_field) {
 				if (result != '') {
 					var parsed = JSON.parse(result.d);
 					if (parsed.result == true) {
-						display_message(i18next.t('CostCenterTree.uploadsuccess'), "success");
+						utils.display_message(i18next.t('CostCenterTree.uploadsuccess'), "success");
 						LoadTree();
 					} else {
-						display_error(parsed.VerificationResult);
+						utils.display_error(parsed.VerificationResult);
 					}
 				}
 			})
 			.catch(error => {
-				display_message(i18next.t('CostCenterTree.uploaderror'), "fail");
+				utils.display_message(i18next.t('CostCenterTree.uploaderror'), "fail");
 			});
 		};
 	})(self[0].files[0]);

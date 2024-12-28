@@ -93,16 +93,16 @@ function ResetDatabase(self) {
 				if (result != '') {
 					hidePleaseWait();
 					if (result.d == true) {
-						display_message(i18next.t('ImportAndExportDatabase.uploadsuccess'), "success");
+						utils.display_message(i18next.t('ImportAndExportDatabase.uploadsuccess'), "success");
 					} else {
-						display_message(i18next.t('ImportAndExportDatabase.uploaderror'), "fail");
+						utils.display_message(i18next.t('ImportAndExportDatabase.uploaderror'), "fail");
 					}
 				}
 			})
 			.catch(error => {
 				//console.log(error.response)
 				hidePleaseWait();
-				display_message(i18next.t('ImportAndExportDatabase.uploaderror'), "fail");
+				utils.display_message(i18next.t('ImportAndExportDatabase.uploaderror'), "fail");
 			});
 		};
 	})(self[0].files[0]);

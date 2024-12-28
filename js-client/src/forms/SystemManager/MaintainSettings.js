@@ -35,7 +35,7 @@ function submit() {
   api.post('serverMSysMan.asmx/TSystemDefaultsConnector_SetSystemDefault', x).then(function (data) {
     result = JSON.parse(data.data.d);
     if (result == true) {
-      display_message(i18next.t('forms.saved'), "success");
+      utils.display_message(i18next.t('forms.saved'), "success");
     }
   });
 }

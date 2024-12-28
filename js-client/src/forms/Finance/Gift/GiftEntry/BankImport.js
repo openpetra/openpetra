@@ -244,12 +244,12 @@ function save_edit_trans(obj_modal) {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransaction', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			CloseModal(obj);
 			display_list();
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 	});
 }
@@ -268,11 +268,11 @@ function save_edit_trans_detail(obj_modal) {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+			utils.display_message(i18next.t('forms.saved'), "success");
 			updateTransaction(payload['AStatementKey'], payload['AOrder']);
 		}
 		else if (parsed.result == false) {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 
 	});
@@ -290,10 +290,10 @@ function delete_trans_detail(obj_modal) {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		if (parsed.result) {
-			display_message(i18next.t('forms.deleted'), "success");
+			utils.display_message(i18next.t('forms.deleted'), "success");
 			updateTransaction(payload['AStatementKey'], payload['AOrder']);
 		} else {
-			display_error(parsed.AVerificationResult);
+			utils.display_error(parsed.AVerificationResult);
 		}
 
 	});
@@ -337,15 +337,15 @@ function import_csv_file(self) {
 			data = JSON.parse(result.data.d);
 			result = data.result;
 			if (result == true) {
-				display_message(i18next.t('BankImport.upload_success'), "success");
+				utils.display_message(i18next.t('BankImport.upload_success'), "success");
 				display_dropdownlist(data.AStatementKey);
 			} else {
-				display_message(i18next.t('BankImport.upload_fail'), "fail");
+				utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
-			display_message(i18next.t('BankImport.upload_fail'), "fail");
+			utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 		});
 
 	}
@@ -389,15 +389,15 @@ function import_camt_file(self) {
 			result = JSON.parse(result.data.d);
 			result = result.result;
 			if (result == true) {
-				display_message(i18next.t('BankImport.upload_success'), "success");
+				utils.display_message(i18next.t('BankImport.upload_success'), "success");
 				display_dropdownlist();
 			} else {
-				display_message(i18next.t('BankImport.upload_fail'), "fail");
+				utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
-			display_message(i18next.t('BankImport.upload_fail'), "fail");
+			utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 		});
 
 	}
@@ -424,15 +424,15 @@ function import_camt_zip_file(self, filename) {
 			result = JSON.parse(result.data.d);
 			result = result.result;
 			if (result == true) {
-				display_message(i18next.t('BankImport.upload_success'), "success");
+				utils.display_message(i18next.t('BankImport.upload_success'), "success");
 				display_dropdownlist();
 			} else {
-				display_message(i18next.t('BankImport.upload_fail'), "fail");
+				utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
-			display_message(i18next.t('BankImport.upload_fail'), "fail");
+			utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 		});
 
 	}
@@ -470,15 +470,15 @@ function import_mt940_file(self) {
 			result = JSON.parse(result.data.d);
 			result = result.result;
 			if (result == true) {
-				display_message(i18next.t('BankImport.upload_success'), "success");
+				utils.display_message(i18next.t('BankImport.upload_success'), "success");
 				display_dropdownlist();
 			} else {
-				display_message(i18next.t('BankImport.upload_fail'), "fail");
+				utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 			}
 		})
 		.catch(error => {
 			//console.log(error.response)
-			display_message(i18next.t('BankImport.upload_fail'), "fail");
+			utils.display_message(i18next.t('BankImport.upload_fail'), "fail");
 		});
 
 	}
@@ -496,10 +496,10 @@ function transform_to_gl() {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_CreateGLBatch', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			display_message( i18next.t('forms.saved'), 'success' )
+			utils.display_message( i18next.t('forms.saved'), 'success' )
 		}
 		else {
-			display_error( parsed.AVerificationResult );
+			utils.display_error( parsed.AVerificationResult );
 		}
 	});
 
@@ -514,10 +514,10 @@ function transform_to_gift() {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_CreateGiftBatch', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			display_message( i18next.t('forms.saved'), 'success' )
+			utils.display_message( i18next.t('forms.saved'), 'success' )
 		}
 		else {
-			display_error( parsed.AVerificationResult );
+			utils.display_error( parsed.AVerificationResult );
 		}
 	});
 
@@ -532,10 +532,10 @@ function check_for_sponsorship() {
 	api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_CheckIncomingDonationsForSponsorship', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			display_message( i18next.t('TODO'), 'success' );
+			utils.display_message( i18next.t('TODO'), 'success' );
 		}
 		else {
-			display_error( parsed.AVerificationResult );
+			utils.display_error( parsed.AVerificationResult );
 		}
 	});
 }
@@ -552,11 +552,11 @@ function delete_current_statement() {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatement', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			display_message( i18next.t('forms.deleted'), 'success' );
+			utils.display_message( i18next.t('forms.deleted'), 'success' );
 			display_dropdownlist();
 		}
 		else {
-			display_error( parsed.AVerificationResult );
+			utils.display_error( parsed.AVerificationResult );
 		}
 	});
 }
@@ -573,11 +573,11 @@ function delete_old_statements() {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatements', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			display_message( i18next.t('forms.deleted'), 'success' );
+			utils.display_message( i18next.t('forms.deleted'), 'success' );
 			display_dropdownlist();
 		}
 		else {
-			display_error( parsed.AVerificationResult );
+			utils.display_error( parsed.AVerificationResult );
 		}
 	});
 }
@@ -594,11 +594,11 @@ function delete_all_statements() {
 	api.post('serverMFinance.asmx/TBankImportWebConnector_DropBankStatements', x).then(function (data) {
 		let parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			display_message( i18next.t('forms.deleted'), 'success' );
+			utils.display_message( i18next.t('forms.deleted'), 'success' );
 			display_dropdownlist();
 		}
 		else {
-			display_error( parsed.AVerificationResult );
+			utils.display_error( parsed.AVerificationResult );
 		}
 	});
 }

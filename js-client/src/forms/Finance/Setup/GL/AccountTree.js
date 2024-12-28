@@ -68,18 +68,18 @@ function import_file(file_field) {
 				if (result != '') {
 					var parsed = JSON.parse(result.d);
 					if (parsed.result == true) {
-						display_message(i18next.t('AccountTree.uploadsuccess'), "success");
+						utils.display_message(i18next.t('AccountTree.uploadsuccess'), "success");
 						LoadTree();
 					} else {
-						display_error(parsed.AVerificationResult);
+						utils.display_error(parsed.AVerificationResult);
 					}
 				}
 			})
 			.catch(error => {
 				if (error.response.data.Message != null) {
-					display_message(error.response.data.Message, "fail");
+					utils.display_message(error.response.data.Message, "fail");
 				} else {
-					display_message(i18next.t('AccountTree.uploaderror'), "fail");
+					utils.display_message(i18next.t('AccountTree.uploaderror'), "fail");
 				}
 			});
 		};
