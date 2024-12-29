@@ -412,8 +412,8 @@ class Navigation {
 			var caption = i18next.t('navigation.' + child.caption);
 
 			if (child.action != undefined && child.form != undefined) {
-				html += "<a href='/" + child.path + "/" + child.form + "' " +
-					"op_caption='" + caption + "', op_pushstate='true', op_action='" + child.action + "'>" +
+				html += "<a href='" + child.path + "/" + child.form + "' " +
+					"op_caption='" + caption + "' op_pushstate='true' op_action='" + child.action + "'>" +
 					"<i class='fas fa-" + child.icon + "'></i>" +
 					"<span>" + caption + "</span></a>";
 			} else {
@@ -421,7 +421,7 @@ class Navigation {
 				if (child.form == undefined) {
 					path = child.path;
 				}
-				html += "<a href='/" + path + "' " +
+				html += "<a href='" + path + "' " +
 					"op_caption = '" + caption + "'>" +
 					"<i class='fas fa-" + child.icon + "'></i>" +
 					"<span>" + caption + "</span></a>";
