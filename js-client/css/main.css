@@ -192,6 +192,9 @@ a.sidebar-item:hover {
     margin-bottom: 0px;
     margin-left: 2px;
 }
+.modal-dialog .nav-tabs .nav-item .nav-link {
+    color: white;
+}
 .modal-dialog .nav-tabs .nav-link.active {
     color: white;
     background: rgb(0, 175, 255);

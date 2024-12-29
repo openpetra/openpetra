@@ -29,19 +29,6 @@ import api from '../../../lib/ajax.js'
 import utils from '../../../lib/utils.js'
 import modal from '../../../lib/modal.js'
 
-function show_tab(tab_id) {
-	// used to control tabs in modal, because there are issues with bootstrap
-	let tab = $(tab_id);
-	let target = tab.attr('aria-controls');
-	tab.closest('.nav-tabs').find('.nav-link').removeClass('active');
-	tab.addClass('active');
-
-	tgr = tab.closest('.container').find('.tab-content');
-	tgr.find('.tab-pane').hide();
-	tgr.find('#'+target).show();
-
-}
-
 class MaintainPartners {
 
 	constructor() {
@@ -49,6 +36,18 @@ class MaintainPartners {
 		this.data_changes_log = {};
 		this.PBankingDetails_Store = {}
 		this.PPartnerMemberships_Store = {}
+	}
+
+	show_tab(tab_id) {
+		// used to control tabs in modal, because there are issues with bootstrap
+		let tab = $(tab_id);
+		let target = tab.attr('aria-controls');
+		tab.closest('.nav-tabs').find('.nav-link').removeClass('active');
+		tab.addClass('active');
+
+		let tgr = tab.closest('.container').find('.tab-content');
+		tgr.find('.tab-pane').hide();
+		tgr.find('#'+target).show();
 	}
 
 	Ready() {
@@ -280,6 +279,9 @@ class MaintainPartners {
 		myModal.find('#email_address').change(function(){ self.insert_consent(this, 'email address') });
 		myModal.find('#phone_landline').change(function(){ self.insert_consent(this, 'phone landline') });
 		myModal.find('#phone_mobile').change(function(){ self.insert_consent(this, 'phone mobile') });
+
+		let elements = $('.nav-tabs .nav-item .nav-link');
+		elements.each(function(index) { $(this).on("click", function(e) { self.show_tab(this) })});
 	}
 
 	display_bankaccounts(PBankingDetails, m) {
