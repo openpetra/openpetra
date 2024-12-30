@@ -803,13 +803,13 @@
 	<tr>
 		<td>
 			<div class="btn-group">
-				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 					{forms.new}
 				</button>
-				<div class="dropdown-menu">
-					<a id="btnNewFamily" class="dropdown-item">{newfamily}</a>
-					<a id="btnNewOrganisation" class="dropdown-item">{neworganisation}</a>
-				</div>
+				<ul class="dropdown-menu">
+					<li><a id="btnNewFamily" class="dropdown-item">{newfamily}</a></li>
+					<li><a id="btnNewOrganisation" class="dropdown-item">{neworganisation}</a></li>
+				</ul>
 			</div>
 			<button id="btnFilter" class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
