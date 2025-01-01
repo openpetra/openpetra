@@ -245,7 +245,7 @@ function save_edit_trans(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			display_list();
 		}
 		else if (parsed.result == false) {

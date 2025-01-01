@@ -136,7 +136,7 @@ function save_entry(obj_modal) {
 	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_SavePartnerSelfService', r).then(function (data) {
 		parsed = JSON.parse(data.data.d);
 		if (parsed.result == true) {
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			utils.display_message(i18next.t('forms.saved'), "success");
 			display_list();
 		}

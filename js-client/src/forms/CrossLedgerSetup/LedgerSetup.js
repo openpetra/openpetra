@@ -166,7 +166,7 @@ function save_entry(update) {
 		function (result) {
 			parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				CloseModal(raw);
+				modal.CloseModal(raw);
 				utils.display_message(i18next.t('LedgerSetup.confirm_edit'), 'success');
 				display_list();
 			}
@@ -187,7 +187,7 @@ function delete_entry(d) {
 		function (result) {
 			parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
-				CloseModal(raw);
+				modal.CloseModal(raw);
 				utils.display_message(i18next.t('LedgerSetup.confirm_delete'), 'success');
 				display_list();
 			}

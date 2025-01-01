@@ -65,7 +65,7 @@ function save_entry(obj_modal) {
 		if (!parsed.result) {
 			return utils.display_error(parsed.AVerificationResult);
 		} else {
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			utils.display_message(i18next.t('forms.saved'), "success");
 			setTimeout(reloadUsersPage, 5000);
 		}

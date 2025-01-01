@@ -222,7 +222,7 @@ function save_edit_group(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			updateGroup(payload['AMotivationGroupCode']);
 		} else {
 			for (msg of parsed.AVerificationResult) {
@@ -244,7 +244,7 @@ function save_edit_detail(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			updateGroup(payload['AMotivationGroupCode']);
 		} else {
 			for (msg of parsed.AVerificationResult) {
@@ -268,7 +268,7 @@ function delete_group(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.deleted'), "success");
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			display_list();
 		} else {
 			for (msg of parsed.AVerificationResult) {
@@ -291,7 +291,7 @@ function delete_motivation(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.deleted'), "success");
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			display_list();
 		} else {
 			for (msg of parsed.AVerificationResult) {

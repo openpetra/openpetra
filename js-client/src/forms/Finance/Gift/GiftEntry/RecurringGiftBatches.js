@@ -412,7 +412,7 @@ function save_edit_batch(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
@@ -435,7 +435,7 @@ function save_edit_trans(obj_modal) {
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			if (mode=="edit") {
-				CloseModal(obj);
+				modal.CloseModal(obj);
 				updateBatch(payload['ABatchNumber']);
 			} else if (mode=="create") {
 				// switch to edit mode
@@ -495,7 +495,7 @@ function delete_trans(obj_modal) {
 		parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
-			CloseModal(obj);
+			modal.CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		else if (parsed.result == false) {
