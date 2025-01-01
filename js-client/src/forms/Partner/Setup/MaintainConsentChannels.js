@@ -46,6 +46,7 @@ class MaintainConsentChannels {
 			// on reload, clear content
 			$('#browse_container').html('');
 			self.last_requested_data = data.result.PConsentChannel;
+			if (!data.result.PConsentChannel) { return }
 			for (var item of data.result.PConsentChannel) {
 				item['p_channel_code_c_clean'] = item['p_channel_code_c'].replace(/[^a-zA-Z0-9]+/g, '');
 				if (i18next.t("MaintainPartners."+item['p_name_c']) == "MaintainPartners."+item['p_name_c']) {

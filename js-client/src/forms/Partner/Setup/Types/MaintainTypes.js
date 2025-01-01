@@ -48,6 +48,7 @@ class MaintainTypes {
 				// on reload, clear content
 				$('#browse_container').html('');
 				self.last_requested_data = data.result.PType;
+				if (!data.result.PType) { return }
 				for (var item of data.result.PType) {
 					item['p_type_code_c_clean'] = item['p_type_code_c'].replace(/[^a-zA-Z0-9]+/g, '');
 					if (item['p_category_code_c'] != null) {

@@ -46,6 +46,7 @@ class MaintainConsentPurposes {
 			// on reload, clear content
 			$('#browse_container').html('');
 			self.last_requested_data = data.result.PConsentPurpose;
+			if (!data.result.PConsentPurpose) { return }
 			for (var item of data.result.PConsentPurpose) {
 				item['p_purpose_code_c_clean'] = item['p_purpose_code_c'].replace(/[^a-zA-Z0-9]+/g, '');
 				if (i18next.t("MaintainPartners."+item['p_name_c']) == "MaintainPartners."+item['p_name_c']) {
