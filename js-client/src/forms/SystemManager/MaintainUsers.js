@@ -34,7 +34,7 @@ class MaintainUsers {
 		this.display_list();
 
 		if (window.location.href.endsWith('?NewUser')) {
-			this.open_new();
+			this.open_new(this);
 		}
 	}
 
