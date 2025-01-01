@@ -37,6 +37,8 @@ import maintainpartners from '../forms/Partner/Partners/MaintainPartners.js';
 import maintaintypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
 import maintainconsentchannels from '../forms/Partner/Setup/MaintainConsentChannels.js';
 import maintainconsentpurposes from '../forms/Partner/Setup/MaintainConsentPurposes.js';
+import maintainpublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
+import maintainmemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
 import maintainusers from '../forms/SystemManager/MaintainUsers.js';
 
 class Navigation {
@@ -53,6 +55,8 @@ class Navigation {
 			'MaintainTypes': maintaintypes,
 			'MaintainConsentChannels': maintainconsentchannels,
 			'MaintainConsentPurposes': maintainconsentpurposes,
+			'MaintainPublications': maintainpublications,
+			'MaintainMemberships': maintainmemberships,
 			'MaintainUsers': maintainusers,
 		};
 		$(window).scrollTop(0);
