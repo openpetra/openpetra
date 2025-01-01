@@ -90,7 +90,7 @@ function updateBatch(BatchNumber) {
 		item = data.result.ABatch[0];
 		let batchDiv = $('#Batch' + BatchNumber + " div");
 		if (batchDiv.length) {
-			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 			batchDiv.first().replaceWith(row.children()[0]);
 		} else {
 			$('.tpl_row .collapse').collapse('hide');
@@ -121,8 +121,8 @@ function format_date() {
 };
 
 function format_item(item) {
-	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
+	let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+	// let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 	// row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
 }
@@ -173,7 +173,7 @@ function open_transactions(obj, number = -1, reload = false) {
 			}
 			// console.log(item);
 			let transaction_row = $('[phantom] .tpl_transaction').clone();
-			transaction_row = format_tpl(transaction_row, item);
+			transaction_row = tpl.format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
 		format_currency(data.ACurrencyCode);
@@ -196,7 +196,7 @@ function new_batch() {
 		function (data) {
 			parsed = JSON.parse(data.data.d);
 			new_entry_data = parsed.result;
-			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), parsed['result']['ABatch'][0] );
+			let p = tpl.format_tpl( $('[phantom] .tpl_edit_batch').clone(), parsed['result']['ABatch'][0] );
 			$('#modal_space').html(p);
 			p.find('input[name=a_batch_credit_total_n]').attr('readonly', false);
 			p.find('input[name=a_batch_debit_total_n]').attr('readonly', false);
@@ -216,7 +216,7 @@ function new_trans(batch_number, batch_date) {
 	new_entry_data['a_account_code_c'] = "0100";
 	new_entry_data['a_cost_centre_code_c'] = ledger_number * 100;
 	new_entry_data['a_transaction_date_d'] = batch_date;
-	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), new_entry_data );
+	let p = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), new_entry_data );
 	$('#modal_space').html(p);
 	p.find('[action]').val('create');
 	p.modal('show');
@@ -248,7 +248,7 @@ function edit_batch(batch_id) {
 		if (searched == null) {
 			return alert('ERROR');
 		}
-		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), searched );
+		let tpl_m = tpl.format_tpl( $('[phantom] .tpl_edit_batch').clone(), searched );
 		if (searched['a_batch_status_c'] == "Posted") {
 			tpl_m.find('.posted_readonly').attr('readonly', true)
 		}
@@ -286,7 +286,7 @@ function edit_trans(batch_id, trans_id) {
 		}
 		searched['a_account_name_c'] = searched['a_account_code_c'];
 		searched['a_cost_center_name_c'] = searched['a_cost_centre_code_c'];
-		let tpl_m = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
+		let tpl_m = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 		if (searched['a_batch_status_c'] == "Posted") {
 			tpl_m.find('.posted_readonly').attr('readonly', true)
 		}

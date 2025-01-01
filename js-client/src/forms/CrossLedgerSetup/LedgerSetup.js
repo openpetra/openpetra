@@ -46,8 +46,8 @@ function display_list() {
 }
 
 function format_item(item) {
-	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-	let view = format_tpl($("[phantom] .tpl_view").clone(), item);
+	let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+	let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 	row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
 }
@@ -88,9 +88,9 @@ function open_edit(sub_id) {
 			data["a_sepa_creditor_bic_c"] = data["ASepaCreditorBic"];
 			data["a_sepa_creditor_scheme_id_c"] = data["ASepaCreditorSchemeId"];
 			data["a_receipt_email_publication_code_c"] = data["AReceiptEmailPublicationCode"];
-			m = format_tpl(m, data);
+			m = tpl.format_tpl(m, data);
 
-			var f = format_tpl( m, z);
+			var f = tpl.format_tpl( m, z);
 			$('#modal_space').html(f);
 			$('#modal_space .modal').modal('show');
 		})

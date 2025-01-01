@@ -60,7 +60,7 @@ function updateGroup(GroupCode) {
 		item = data.result.AMotivationGroup[0];
 		let groupDiv = $('#group' + GroupCode + " div");
 		if (groupDiv.length) {
-			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 			groupDiv.first().replaceWith(row.children()[0]);
 		} else {
 			$('.tpl_row .collapse').collapse('hide');
@@ -77,7 +77,7 @@ function updateGroup(GroupCode) {
 }
 
 function format_item(item) {
-	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+	let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 	$('#browse_container').append(row);
 }
 
@@ -114,7 +114,7 @@ function open_motivations(obj, code, reload = false) {
 				}
 
 				let motivation_row = $('[phantom] .tpl_motivation').clone();
-				motivation_row = format_tpl(motivation_row, item);
+				motivation_row = tpl.format_tpl(motivation_row, item);
 				place_to_put_content.append(motivation_row);
 			}
 		}
@@ -133,7 +133,7 @@ function new_group() {
 	if (!modal.allow_modal()) {return}
 	let x = {a_ledger_number_i :window.localStorage.getItem('current_ledger')};
 	// console.log(parsed);
-	let p = format_tpl( $('[phantom] .tpl_edit_group').clone(), x );
+	let p = tpl.format_tpl( $('[phantom] .tpl_edit_group').clone(), x );
 	$('#modal_space').html(p);
 	p.find('[edit-only]').hide();
 	p.find('input[name=a_motivation_group_code_c]').attr('readonly', false);
@@ -144,7 +144,7 @@ function new_group() {
 function new_motivation(group_code) {
 	if (!modal.allow_modal()) {return}
 	let x = {a_ledger_number_i:window.localStorage.getItem('current_ledger'), a_motivation_group_code_c:group_code};
-	let p = format_tpl( $('[phantom] .tpl_edit_motivation').clone(), x);
+	let p = tpl.format_tpl( $('[phantom] .tpl_edit_motivation').clone(), x);
 	$('#modal_space').html(p);
 	p.find('input[name=a_motivation_detail_code_c]').attr('readonly', false);
 	p.find('input[name=a_tax_decuctible_l]').attr('checked', true);
@@ -172,7 +172,7 @@ function edit_group(group_code) {
 				f = group
 			}
 		}
-		let tpl_m = format_tpl( $('[phantom] .tpl_edit_group').clone(), f );
+		let tpl_m = tpl.format_tpl( $('[phantom] .tpl_edit_group').clone(), f );
 		$('#modal_space').html(tpl_m);
 		tpl_m.find('[action]').val('update');
 		tpl_m.modal('show');
@@ -202,7 +202,7 @@ function edit_motivation(group_id, detail_id) {
 		searched['a_account_name_c'] = searched['a_account_code_c'];
 		searched['a_cost_center_name_c'] = searched['a_cost_centre_code_c'];
 
-		let tpl_motivation = format_tpl( $('[phantom] .tpl_edit_motivation').clone(), searched );
+		let tpl_motivation = tpl.format_tpl( $('[phantom] .tpl_edit_motivation').clone(), searched );
 
 		$('#modal_space').html(tpl_motivation);
 		tpl_motivation.find('[action]').val('update');

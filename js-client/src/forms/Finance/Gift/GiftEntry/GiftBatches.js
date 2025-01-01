@@ -117,7 +117,7 @@ function updateBatch(BatchNumber) {
 		item = data.result.AGiftBatch[0];
 		let batchDiv = $('#Batch' + BatchNumber + " div");
 		if (batchDiv.length) {
-			let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+			let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 			batchDiv.first().replaceWith(row.children()[0]);
 		} else {
 			$('.tpl_row .collapse').collapse('hide');
@@ -148,7 +148,7 @@ function format_date() {
 };
 
 function format_item(item) {
-	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
+	let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 	$('#browse_container').append(row);
 }
 
@@ -184,7 +184,7 @@ function open_gift_transactions(obj, number = -1, reload = false, transaction_nu
 		let place_to_put_content = obj.find('.content_col').html('');
 		for (item of parsed.AMainDS.AGift) {
 			let transaction_row = $('[phantom] .tpl_gift').clone();
-			transaction_row = format_tpl(transaction_row, item);
+			transaction_row = tpl.format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
 		format_currency(parsed.ACurrencyCode);
@@ -211,7 +211,7 @@ function new_batch() {
 		function (data) {
 			parsed = JSON.parse(data.data.d);
 			batch = parsed['result']['AGiftBatch'][0];
-			let p = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
+			let p = tpl.format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 			$('#modal_space').html(p);
 			p.find('input[name=a_bank_account_code_c]').attr('readonly', false);
 			p.find('input[name=a_bank_cost_centre_c]').attr('readonly', false);
@@ -234,7 +234,7 @@ function new_trans(ledger_number, batch_number) {
 	var strToday = today.toISOString();
 	x['a_date_entered_d'] = strToday.replace('T00:00:00.000Z', '');
 
-	let p = format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
+	let p = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
 	$('#modal_space').html(p);
 	p.find('[edit-only]').hide();
 	p.find('[action]').val('create');
@@ -262,7 +262,7 @@ function new_trans_detail(btn, ledger_number, batch_number, trans_id) {
 			a_motivation_detail_code_c: parsed.ADefaultMotivationDetail
 		};
 
-		let p = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
+		let p = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
 
 		if (!parsed.AIsForMembership) {
 			p.find('.MEMBERFEE').hide();
@@ -310,7 +310,7 @@ function edit_batch(batch_id) {
 		batch['a_account_name_c'] = batch['a_bank_account_code_c'];
 		batch['a_cost_center_name_c'] = batch['a_bank_cost_centre_c'];
 
-		let tpl_m = format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
+		let tpl_m = tpl.format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 		if (parsed.ABatchIsUnposted) {
 			tpl_m.find('.only_show_when_posted').hide();
 		}
@@ -355,7 +355,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 
 		searched['p_donor_name_c'] = searched['p_donor_key_n'] + ' ' + searched['DonorName'];
 
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), searched );
 		if (parsed.ABatchIsUnposted) {
 			tpl_edit_raw.find('.only_show_when_posted').hide();
 		} else {
@@ -366,7 +366,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 		for (detail of parsed.AMainDS.AGiftDetail) {
 			if (detail.a_gift_transaction_number_i == trans_id) {
 
-				let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
+				let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
 				tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 
 			}
@@ -409,7 +409,7 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 		searched['p_donor_key_n'] = searched['DonorKey'];
 		searched['p_donor_name_c'] = searched['DonorName'];
 
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), searched );
 		if (!parsed.ABatchIsUnposted) {
 			tpl_edit_raw.find(".posted_readonly").attr('readonly', true);
 			tpl_edit_raw.find('.not_show_when_posted').hide();

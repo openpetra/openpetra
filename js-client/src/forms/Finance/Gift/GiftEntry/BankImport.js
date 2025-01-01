@@ -104,8 +104,8 @@ function format_item(item) {
 	if (item.a_account_name_c != null) {
 		item.a_description_c = item.a_account_name_c + "; " + item.a_description_c;
 	}
-	let row = format_tpl($("[phantom] .tpl_row").clone(), item);
-	// let view = format_tpl($("[phantom] .tpl_view").clone(), item);
+	let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+	// let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 	// row.find('.collapse_col').append(view);
 	$('#browse_container').append(row);
 }
@@ -124,7 +124,7 @@ function new_trans_detail(trans_order) {
 		let p = parsed.ATransactions[0];
 		p['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
 		p['a_detail_i'] = $('#modal_space .tpl_edit_trans .detail_col > *').length;
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), p );
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), p );
 		$('#modal_space').append(tpl_edit_raw);
 		let sclass = $('#modal_space > .tpl_edit_trans [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
@@ -163,10 +163,10 @@ function edit_gift_trans(statement_key, trans_order) {
 				transaction['a_account_name_c'] += "; " + transaction['a_iban_c'];
 			}
 		}
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
 		for (detail of parsed.ADetails) {
-			let tpl_trans_detail = format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
+			let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
 			tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 		}
 
@@ -196,7 +196,7 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 		}
 
 		detail['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
-		let tpl_edit_raw = format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), detail);
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), detail);
 		let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
 		tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 		$('#modal_space').append(tpl_edit_raw);

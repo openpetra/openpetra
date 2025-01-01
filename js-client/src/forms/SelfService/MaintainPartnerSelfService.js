@@ -45,22 +45,22 @@ function display_partner(parsed) {
 	last_opened_entry_data = $.extend(true, {}, parsed);
 	let m = $('[phantom] .tpl_edit').clone();
 	// normal info input
-	m = format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
-	m = format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
+	m = tpl.format_tpl(m ,parsed.result.PLocation[0], "PLocation_");
+	m = tpl.format_tpl(m ,parsed.result.PPartner[0],"PPartner_");
 	if (parsed.result.PFamily != undefined) {
-		m = format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
+		m = tpl.format_tpl(m ,parsed.result.PFamily[0],"PFamily_");
 	}
 	if (parsed.result.PPerson != undefined) {
-		m = format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
+		m = tpl.format_tpl(m ,parsed.result.PPerson[0],"PPerson_");
 	}
 	if (parsed.result.POrganisation != undefined) {
-		m = format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
+		m = tpl.format_tpl(m ,parsed.result.POrganisation[0],"POrganisation_");
 	}
 	if (parsed.result.PUnit != undefined) {
-		m = format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
+		m = tpl.format_tpl(m ,parsed.result.PUnit[0],"PUnit_");
 	}
 	if (parsed.result.PBank != undefined) {
-		m = format_tpl(m ,parsed.result.PBank[0],"PBank_");
+		m = tpl.format_tpl(m ,parsed.result.PBank[0],"PBank_");
 	}
 
 	// generated fields
@@ -73,7 +73,7 @@ function display_partner(parsed) {
 		sendmail = parsed.result.PPartnerLocation[0].p_send_mail_l;
 	}
 
-	m = format_tpl(m,
+	m = tpl.format_tpl(m,
 		{'p_default_email_address_c': parsed.ADefaultEmailAddress,
 		'p_default_phone_landline_c': parsed.ADefaultPhoneLandline,
 		'p_default_phone_mobile_c': parsed.ADefaultPhoneMobile,
