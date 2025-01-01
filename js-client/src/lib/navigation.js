@@ -6,7 +6,7 @@
 //	   CJ
 //
 // Copyright 2017-2019 by TBits.net
-// Coypright 2019-2024 by SolidCharity.com
+// Coypright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -32,7 +32,9 @@ import utils from './utils.js';
 
 import releasenotes from '../forms/ReleaseNotes.js';
 import about from '../forms/About.js';
+import importpartners from '../forms/Partner/Partners/ImportPartners.js';
 import maintainpartners from '../forms/Partner/Partners/MaintainPartners.js';
+import maintaintypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
 import maintainusers from '../forms/SystemManager/MaintainUsers.js';
 
 class Navigation {
@@ -45,6 +47,8 @@ class Navigation {
 			'ReleaseNotes': releasenotes,
 			'About': about,
 			'MaintainPartners': maintainpartners,
+			'ImportPartners': importpartners,
+			'MaintainTypes': maintaintypes,
 			'MaintainUsers': maintainusers,
 		};
 		$(window).scrollTop(0);

@@ -5,7 +5,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2021 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,155 +23,176 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-function UploadUserCSV(self) {
+import i18next from 'i18next'
+import api from '../../../lib/ajax.js'
+import utils from '../../../lib/utils.js'
 
-	var filename = self.val();
+class ImportPartners {
 
-	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
-	if (window.File && window.FileReader && window.FileList && window.Blob) {
-		//alert("Great success! All the File APIs are supported.");
-	} else {
-	  alert('The File APIs are not fully supported in this browser.');
+	Ready() {
+		let self = this;
+		$('#fileUploadUserCSV').on('change', function() { self.UploadUserCSV($(this)) });
+		$('#fileUploadUserODS').on('change', function() { self.UploadUserODS($(this)) });
+		$('#fileUploadUserXLSX').on('change', function() { self.UploadUserXLSX($(this)) });
 	}
 
-	var reader = new FileReader();
+	UploadUserCSV(filectrl) {
 
-	reader.onload = function (event) {
-		p = {'ACSVPartnerData': event.target.result, 'ADateFormat': "dmy", "ASeparator": ";"};
+		let self = this;
+		var filename = filectrl.val();
 
-		showPleaseWait();
-
-		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromCSVFile', p)
-		.then(function (result) {
-			result = JSON.parse(result.data.d);
-			hidePleaseWait();
-			if (result.result == true) {
-				utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
-			} else {
-				utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
-			}
-		})
-		.catch(error => {
-			//console.log(error.response)
-			hidePleaseWait();
-			utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
-		});
-
-	}
-	// Read in the file as a data URL.
-	reader.readAsText(self[0].files[0]);
-
-};
-
-function UploadUserODS(self) {
-
-	var filename = self.val();
-
-	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
-	if (window.File && window.FileReader && window.FileList && window.Blob) {
-		//alert("Great success! All the File APIs are supported.");
-	} else {
-	  alert('The File APIs are not fully supported in this browser.');
-	}
-
-	var reader = new FileReader();
-
-	reader.onload = function (theFile) {
-		p = {'AODSPartnerData': theFile.target.result,};
-
-		showPleaseWait();
-
-		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromODSFile', p)
-		.then(function (result) {
-			result = JSON.parse(result.data.d);
-			hidePleaseWait();
-			if (result.result == true) {
-				utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
-			} else {
-				utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
-			}
-		})
-		.catch(error => {
-			//console.log(error.response)
-			hidePleaseWait();
-			utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
-		});
-
-	}
-
-	// Read in the file as a data URL.
-	reader.readAsDataURL(self[0].files[0]);
-};
-
-function UploadUserXLSX(self) {
-
-	var filename = self.val();
-
-	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
-	if (window.File && window.FileReader && window.FileList && window.Blob) {
-		//alert("Great success! All the File APIs are supported.");
-	} else {
-	  alert('The File APIs are not fully supported in this browser.');
-	}
-
-	var reader = new FileReader();
-
-	reader.onload = function (theFile) {
-		p = {'AXLSXPartnerData': theFile.target.result};
-
-		showPleaseWait();
-
-		api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromXLSXFile', p)
-		.then(function (result) {
-			result = JSON.parse(result.data.d);
-			hidePleaseWait();
-			if (result.result == true) {
-				utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
-			} else {
-				utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
-			}
-		})
-		.catch(error => {
-			//console.log(error.response)
-			hidePleaseWait();
-			utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
-		});
-
-	}
-
-	// Read in the file as a data URL.
-	reader.readAsDataURL(self[0].files[0]);
-};
-
-function DeleteAllContacts() {
-
-	let s = confirm( i18next.t('ImportPartners.ask_delete_all') );
-	if (!s) {return}
-
-	showPleaseWait();
-
-	p = {};
-	api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeleteAllPartners', p)
-	.then(function (result) {
-		result = JSON.parse(result.data.d);
-		hidePleaseWait();
-		if (result.result == true) {
-			utils.display_message(i18next.t('ImportPartners.delete_all_partner_success'), "success");
+		// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			//alert("Great success! All the File APIs are supported.");
 		} else {
-			utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.delete_all_partners_fail');
+			alert('The File APIs are not fully supported in this browser.');
 		}
-	})
-	.catch(error => {
-		//console.log(error.response)
-		hidePleaseWait();
-		utils.display_message(i18next.t('ImportPartners.delete_all_partners_fail'), "fail");
-	});
-}
 
-function showPleaseWait() {
-	$('#myModal').modal();
-}
-function hidePleaseWait() {
-	// somehow the operation can finish too soon, so delay it by a little
-	setTimeout(function() { $('#myModal').modal('hide'); }, 500);
-}
+		var reader = new FileReader();
+
+		reader.onload = function (event) {
+			let p = {'ACSVPartnerData': event.target.result, 'ADateFormat': "dmy", "ASeparator": ";"};
+
+			self.showPleaseWait();
+
+			api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromCSVFile', p)
+			.then(function (result) {
+				result = JSON.parse(result.data.d);
+				self.hidePleaseWait();
+				if (result.result == true) {
+					utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+				} else {
+					utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+				}
+			})
+			.catch(error => {
+				//console.log(error.response)
+				self.hidePleaseWait();
+				utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+			});
+
+		}
+		// Read in the file as a data URL.
+		reader.readAsText(filectrl[0].files[0]);
+
+	};
+
+	UploadUserODS(filectrl) {
+
+		let self = this;
+		var filename = filectrl.val();
+
+		// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			//alert("Great success! All the File APIs are supported.");
+		} else {
+			alert('The File APIs are not fully supported in this browser.');
+		}
+
+		var reader = new FileReader();
+
+		reader.onload = function (theFile) {
+			let p = {'AODSPartnerData': theFile.target.result,};
+
+			self.showPleaseWait();
+
+			api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromODSFile', p)
+			.then(function (result) {
+				result = JSON.parse(result.data.d);
+				self.hidePleaseWait();
+				if (result.result == true) {
+					utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+				} else {
+					utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+				}
+			})
+			.catch(error => {
+				//console.log(error.response)
+				self.hidePleaseWait();
+				utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+			});
+
+		}
+
+		// Read in the file as a data URL.
+		reader.readAsDataURL(filectrl[0].files[0]);
+	};
+
+	UploadUserXLSX(filectrl) {
+
+		let self = this;
+		var filename = filectrl.val();
+
+		// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			//alert("Great success! All the File APIs are supported.");
+		} else {
+			alert('The File APIs are not fully supported in this browser.');
+		}
+
+		var reader = new FileReader();
+
+		reader.onload = function (theFile) {
+			let p = {'AXLSXPartnerData': theFile.target.result};
+
+			self.showPleaseWait();
+
+			api.post('serverMPartner.asmx/TImportExportWebConnector_ImportFromXLSXFile', p)
+			.then(function (result) {
+				result = JSON.parse(result.data.d);
+				self.hidePleaseWait();
+				if (result.result == true) {
+					utils.display_message(i18next.t('ImportPartners.upload_partner_success'), "success");
+				} else {
+					utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.upload_partner_fail');
+				}
+			})
+			.catch(error => {
+				//console.log(error.response)
+				self.hidePleaseWait();
+				utils.display_message(i18next.t('ImportPartners.upload_partner_fail'), "fail");
+			});
+
+		}
+
+		// Read in the file as a data URL.
+		reader.readAsDataURL(filectrl[0].files[0]);
+	};
+
+	DeleteAllContacts() {
+
+		let self = this;
+		let s = confirm( i18next.t('ImportPartners.ask_delete_all') );
+		if (!s) {return}
+
+		self.showPleaseWait();
+
+		let p = {};
+		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_DeleteAllPartners', p)
+		.then(function (result) {
+			result = JSON.parse(result.data.d);
+			self.hidePleaseWait();
+			if (result.result == true) {
+				utils.display_message(i18next.t('ImportPartners.delete_all_partner_success'), "success");
+			} else {
+				utils.display_error(result.AVerificationResult, 'ImportPartners', 'ImportPartners.delete_all_partners_fail');
+			}
+		})
+		.catch(error => {
+			//console.log(error.response)
+			self.hidePleaseWait();
+			utils.display_message(i18next.t('ImportPartners.delete_all_partners_fail'), "fail");
+		});
+	}
+
+	showPleaseWait() {
+		$('#myModal').modal();
+	}
+	hidePleaseWait() {
+		// somehow the operation can finish too soon, so delay it by a little
+		setTimeout(function() { $('#myModal').modal('hide'); }, 500);
+	}
+
+} // end of class
+
+export default new ImportPartners();

@@ -6,12 +6,12 @@
 	<div class="tpl_row" id="type{val_p_type_code_c_clean}">
 
 		<div class="row">
-			<div class="col">{val_p_type_code_c}</div>
+			<div class="col">{val_combined_code}</div>
 			<div class="col-2" style="margin-top:0.3em;">
-				<button type="button" class="btn btn-primary" onclick="open_detail(this)">
+				<button id="btnView{val_p_type_code_c_clean}" type="button" class="btn btn-primary">
 					<i class="fas fa-folder-open"></i>
 				</button>
-				<button id="btnEdit" type="button" class="btn btn-primary" onclick="open_edit('{val_p_type_code_c}')" title="{forms.edit}">
+				<button id="btnEdit{val_p_type_code_c_clean}" type="button" class="btn btn-primary" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -111,9 +111,9 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-danger" onclick="delete_entry(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button class="btn btn-danger" id="btnDelete">{forms.delete}</button>
+					<button class="btn btn-primary" id="btnSave">{forms.save}</button>
+					<button class="btn btn-light" id="btnClose">{forms.close}</button>
 				</div>
 			</div>
 		</div>
@@ -172,8 +172,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-primary" onclick="save_new()">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnSaveNew" class="btn btn-primary">{forms.save}</button>
+					<button id="btnCloseNew" class="btn btn-light">{forms.close}</button>
 				</div>
 			</div>
 		</div>
@@ -184,7 +184,7 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="open_new()">{forms.new}</button>
+			<button id="btnNew" class="btn btn-primary">{forms.new}</button>
 		</td>
 	</tr>
 </table>
@@ -203,7 +203,3 @@
 	</div>
 
 </div>
-
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/modal.js" charset="utf-8"></script>
