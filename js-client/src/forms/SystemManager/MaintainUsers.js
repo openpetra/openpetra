@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2024 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -65,8 +65,8 @@ class MaintainUsers {
 		item['permissions'] = permissions;
 
 		let row = tpl.format_tpl($('[phantom] .tpl_row').clone(), item);
-		let view = tpl.format_tpl($('[phantom] .tpl_view').clone(), item);
-		row.find('.collapse_col').append(view);
+		// let view = tpl.format_tpl($('[phantom] .tpl_view').clone(), item);
+		// row.find('.collapse_col').append(view);
 		row.find('.btnEditUser').on('click', function() { self.open_edit(self, $(this).attr("objid")) })
 		$('#browse_container').append(row);
 	}

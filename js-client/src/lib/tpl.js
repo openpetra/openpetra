@@ -5,7 +5,7 @@
 //       Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2024 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -82,7 +82,7 @@ class Tpl {
     replace_val_variables(tpl, data) {
         self = this;
         if (tpl[0] === undefined) {
-            console.log("missing tpl for format_tpl");
+            console.log("replace_val_variables: missing tpl for format_tpl");
             return "";
         }
         let id = $(tpl).attr('id');
@@ -138,7 +138,7 @@ class Tpl {
     // tpl needs to be a DOM object, not just text.
     format_tpl(tpl, data, limit_to_table) {
         if (tpl[0] === undefined) {
-            console.log("missing tpl for format_tpl");
+            console.log("format_tpl: missing tpl for format_tpl");
             return "";
         }
 
@@ -330,7 +330,7 @@ class Tpl {
                 if (t == null || t.length <=1) {return}
                 if (t[0] == "{") {return}
 
-                if (t == "false") {
+                if (t == self.translate_constants("false")) {
                     obj.html("<i class='fas fa-circle-thin'></i>");
                 } else {
                     obj.html("<i class='fas fa-check-circle'></i>");
