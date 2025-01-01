@@ -113,7 +113,7 @@ function format_item(item) {
 /////
 
 function new_trans_detail(trans_order) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	let x = {
 		"ALedgerNumber":window.localStorage.getItem('current_ledger'),
 		"AStatementKey":$('#bank_number_id').val(),
@@ -137,7 +137,7 @@ function new_trans_detail(trans_order) {
 /////
 
 function edit_gift_trans(statement_key, trans_order) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	let x = {
 		"ALedgerNumber":window.localStorage.getItem('current_ledger'),
 		"AStatementKey":statement_key,
@@ -178,7 +178,7 @@ function edit_gift_trans(statement_key, trans_order) {
 }
 
 function edit_gift_trans_detail(statement_id, order_id, detail_id) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	let x = {
 		"ALedgerNumber":window.localStorage.getItem('current_ledger'),
 		"AStatementKey":statement_id,

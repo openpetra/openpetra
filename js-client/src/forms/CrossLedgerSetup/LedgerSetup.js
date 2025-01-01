@@ -63,7 +63,7 @@ function open_detail(obj) {
 }
 
 function open_edit(sub_id) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	let z = null;
 	for (sub of last_requested_data) {
 		if (sub.a_ledger_number_i == sub_id) {
@@ -99,7 +99,7 @@ function open_edit(sub_id) {
 }
 
 function open_new() {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 
 	let p = {};
 	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetCountryCodes', p).then(function (data) {
@@ -131,7 +131,7 @@ function open_new() {
 }
 
 function save_new() {
-		if (!allow_modal()) {return}
+		if (!modal.allow_modal()) {return}
 		let se = $('#modal_space .modal').modal('show');
 		let d = extract_data(se);
 

@@ -205,7 +205,7 @@ function open_gift_transactions(obj, number = -1, reload = false, transaction_nu
 
 var new_entry_data = {};
 function new_batch() {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateAGiftBatch', x).then(
 		function (data) {
@@ -223,7 +223,7 @@ function new_batch() {
 };
 
 function new_trans(ledger_number, batch_number) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	let x = {
 		a_ledger_number_i: ledger_number,
 		a_batch_number_i: batch_number,
@@ -242,7 +242,7 @@ function new_trans(ledger_number, batch_number) {
 };
 
 function new_trans_detail(btn, ledger_number, batch_number, trans_id) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	let obj = $(btn).closest('.modal');
 	donorkey = obj.find('input[name=p_donor_name_c]').attr('key-value');
 	donorname = obj.find('input[name=p_donor_name_c]').val().replace(donorkey + " ", '');
@@ -296,7 +296,7 @@ function update_motivation_group(input_field_object, selected_value) {
 /////
 
 function edit_batch(batch_id) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 	var r = {
 				ALedgerNumber: window.localStorage.getItem('current_ledger'),
 				ABatchNumber: batch_id,
@@ -328,7 +328,7 @@ function edit_batch(batch_id) {
 }
 
 function edit_gift_trans(ledger_id, batch_id, trans_id) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id, 'AGiftTransactionNumber': trans_id};
 	// on open of a edit modal, we get new data,
@@ -379,7 +379,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 }
 
 function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
-	if (!allow_modal()) {return}
+	if (!modal.allow_modal()) {return}
 
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id, 'AGiftTransactionNumber': trans_id, 'ADetailNumber': detail_id};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionAndDetail', x).then(function (data) {
