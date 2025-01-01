@@ -93,7 +93,7 @@ function open_new() {
 function save_new() {
     if (!modal.allow_modal()) {return}
     let se = $('#modal_space .modal').modal('show');
-    let request = translate_to_server(extract_data(se));
+    let request = utils.translate_to_server(tpl.extract_data(se));
 
     request['action'] = 'create';
 
@@ -109,7 +109,7 @@ function save_new() {
 
 function save_entry(update) {
   let raw = $(update).closest('.modal');
-  let request = translate_to_server(extract_data(raw));
+  let request = utils.translate_to_server(tpl.extract_data(raw));
 
   request['action'] = 'update';
 
@@ -124,7 +124,7 @@ function save_entry(update) {
 
 function delete_entry(d) {
   let raw = $(d).closest('.modal');
-  let request = translate_to_server(extract_data(raw));
+  let request = utils.translate_to_server(tpl.extract_data(raw));
 
   request['action'] = 'delete';
 

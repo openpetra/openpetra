@@ -621,7 +621,7 @@ class MaintainPartners {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = translate_to_server( tpl.extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		if (payload['ABankingDetailsKey'] == '') payload['ABankingDetailsKey'] = -1;
 
@@ -646,7 +646,7 @@ class MaintainPartners {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = translate_to_server( tpl.extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		if (payload['APartnerMembershipKey'] == '') payload['APartnerMembershipKey'] = -1;
 		if (payload["AStartDate"] == "") {
@@ -679,7 +679,7 @@ class MaintainPartners {
 		if (!s) {return}
 
 		let obj = $(obj_modal).closest('.modal');
-		let payload = translate_to_server( tpl.extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainBankAccounts', payload).then(function (result) {
@@ -702,7 +702,7 @@ class MaintainPartners {
 		if (!s) {return}
 
 		let obj = $(obj_modal).closest('.modal');
-		let payload = translate_to_server( tpl.extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 
 		api.post('serverMPartner.asmx/TSimplePartnerEditWebConnector_MaintainMemberships', payload).then(function (result) {

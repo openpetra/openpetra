@@ -27,7 +27,7 @@ $('document').ready(function () {
 });
 
 function display_list(source) {
-	var x = extract_data($('#tabfilter'));
+	var x = tpl.extract_data($('#tabfilter'));
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatch', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -405,7 +405,7 @@ function save_edit_batch(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringBatches', payload).then(function (result) {
@@ -426,7 +426,7 @@ function save_edit_trans(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['ASepaMandateGiven'] = payload['ASepaMandateGiven'] ? payload['ASepaMandateGiven'] : "null"; // if no date is given give "null" as a string
  	payload['action'] = mode;
 
@@ -456,7 +456,7 @@ function save_edit_trans_detail(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 
 	if (!payload['AStartDonations']) {
 		utils.display_error("RecurringGiftBatches.missing_date_start");
@@ -488,7 +488,7 @@ function save_edit_trans_detail(obj_modal) {
 
 function delete_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload["action"] = "delete";
 	payload['ASepaMandateGiven'] = "null";
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
@@ -506,7 +506,7 @@ function delete_trans(obj_modal) {
 
 function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload["action"] = "delete";
 	payload['AEndDonations'] = "null";
 	payload["ARecipientKey"] = -1;

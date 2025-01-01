@@ -41,7 +41,7 @@ function updatePeriods(selected_year) {
 function calculate_report() {
 	let obj = $('#reportfilter');
 	// extract information from a jquery object
-	let params = extract_data(obj);
+	let params = tpl.extract_data(obj);
 
 	params['param_ledger_number_i'] = window.localStorage.getItem('current_ledger');
 	params['param_account_codes'] = '';

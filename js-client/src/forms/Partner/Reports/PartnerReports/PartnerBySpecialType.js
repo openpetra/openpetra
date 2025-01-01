@@ -39,7 +39,7 @@ function display_report_form(parsed) {
 function calculate_report() {
 	let obj = $('#reportfilter');
 	// extract information from a jquery object
-	let params = extract_data(obj);
+	let params = tpl.extract_data(obj);
 
 	// get all tags for the partner
 	applied_tags = []

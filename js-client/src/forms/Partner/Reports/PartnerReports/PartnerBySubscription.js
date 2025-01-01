@@ -42,7 +42,7 @@ $(function() {
 function calculate_report() {
 	let obj = $('#reportfilter');
 	// extract information from a jquery object
-	let params = extract_data(obj);
+	let params = tpl.extract_data(obj);
 
 	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySubscription.json", params);
 }

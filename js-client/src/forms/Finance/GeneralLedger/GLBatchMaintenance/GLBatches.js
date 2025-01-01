@@ -60,7 +60,7 @@ function display_list(source) {
 	}
 	// x is search
 	if (source == "filter") {
-		var x = extract_data( $('#tabfilter') );
+		var x = tpl.extract_data( $('#tabfilter') );
 	} else if (source == "preset") {
 		var x = window.localStorage.getItem('GLBatches');
 		x = JSON.parse(x);
@@ -228,7 +228,7 @@ function edit_batch(batch_id) {
 	if (!modal.allow_modal()) {return}
 	var x = window.localStorage.getItem('GLBatches');
 	if (x == null) {
-		x = extract_data( $('#tabfilter') );
+		x = tpl.extract_data( $('#tabfilter') );
 	} else {
 		x = JSON.parse(x);
 	}
@@ -304,7 +304,7 @@ function save_edit_batch(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	if (payload["ADateEffective"] == '') {
 		utils.display_message(i18next.t('GLBatches.missing_batch_date'), "fail");
 		exit;
@@ -335,7 +335,7 @@ function save_edit_trans(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	if (payload["ATransactionDate"] == '') {
 		utils.display_message(i18next.t('GLBatches.missing_transaction_date'), "fail");
 		exit;
@@ -371,7 +371,7 @@ function delete_edit_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = "delete";
 	payload['AJournalNumber'] = 1;
 	payload['AAmountInIntlCurrency'] = 0.0;

@@ -57,7 +57,7 @@ function save_entry(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
 
 	// extract information from a jquery object
-	let param = extract_data(obj);
+	let param = tpl.extract_data(obj);
 	param['AInitialModulePermissions'] = param['AInitialModulePermissions'].split(",");
 
 	api.post('serverMSysMan.asmx/TSettingsWebConnector_RunFirstSetup', param).then(function (data) {

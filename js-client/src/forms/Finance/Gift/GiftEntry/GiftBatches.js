@@ -62,7 +62,7 @@ function load_preset() {
 }
 
 function display_list(source) {
-	var x = extract_data($('#tabfilter'));
+	var x = tpl.extract_data($('#tabfilter'));
 	x['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadAGiftBatchForYearPeriod', x).then(function (data) {
 		data = JSON.parse(data.data.d);
@@ -432,7 +432,7 @@ function save_edit_batch(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	if (payload["AGlEffectiveDate"] == '') {
 		utils.display_message(i18next.t('GiftBatches.missing_batch_date'), "fail");
 		exit;
@@ -457,7 +457,7 @@ function save_edit_trans(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	if (payload["ADateEntered"] == '') {
 		utils.display_message(i18next.t('GiftBatches.missing_date_entered'), "fail");
 		exit;
@@ -490,7 +490,7 @@ function save_edit_trans_detail(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = mode;
 	if (payload['ARecipientKey'] == "") {
 		payload['ARecipientKey'] = 0;
@@ -515,7 +515,7 @@ function save_edit_trans_detail(obj_modal) {
 
 function delete_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload["action"] = "delete";
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
@@ -532,7 +532,7 @@ function delete_trans(obj_modal) {
 
 function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload["action"] = "delete";
 	payload["ARecipientKey"] = -1;
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
@@ -728,7 +728,7 @@ function adjust_batch(batch_id) {
 
 function adjust_trans(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	var r = {
 				ALedgerNumber: payload['ALedgerNumber'],
 				ABatchNumber: payload['ABatchNumber'],

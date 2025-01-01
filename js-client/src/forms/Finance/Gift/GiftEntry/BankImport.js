@@ -64,7 +64,7 @@ function load_preset() {
 }
 
 function save_preset() {
-	var x = extract_data($('#tabsettings'));
+	var x = tpl.extract_data($('#tabsettings'));
 	api.post('serverMFinance.asmx/TBankImportWebConnector_SaveSettings', x).then(function (data) {
 		data = JSON.parse(data.data.d);
 	});
@@ -236,7 +236,7 @@ function save_edit_trans(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
  	payload['action'] = mode;
 	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	payload["AStatementKey"] = $('#bank_number_id').val();
@@ -259,7 +259,7 @@ function save_edit_trans_detail(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = mode;
  	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	payload['AStatementKey'] = $('#bank_number_id').val();
@@ -283,7 +283,7 @@ function save_edit_trans_detail(obj_modal) {
 
 function delete_trans_detail(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = "delete";
 	payload['AStatementKey'] = $('#bank_number_id').val();
 	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
@@ -313,8 +313,8 @@ function import_csv_file(self) {
 	  alert('The File APIs are not fully supported in this browser.');
 	}
 
-	var settings = extract_data($('#tabsettings'));
-	var settings2 = extract_data($('#toolbar'));
+	var settings = tpl.extract_data($('#tabsettings'));
+	var settings2 = tpl.extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
@@ -371,7 +371,7 @@ function import_camt_file(self) {
 		return;
 	}
 
-	var settings = extract_data($('#toolbar'));
+	var settings = tpl.extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
@@ -407,7 +407,7 @@ function import_camt_file(self) {
 
 function import_camt_zip_file(self, filename) {
 
-	var settings = extract_data($('#toolbar'));
+	var settings = tpl.extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 
@@ -452,7 +452,7 @@ function import_mt940_file(self) {
 	  alert('The File APIs are not fully supported in this browser.');
 	}
 
-	var settings = extract_data($('#toolbar'));
+	var settings = tpl.extract_data($('#toolbar'));
 
 	var reader = new FileReader();
 

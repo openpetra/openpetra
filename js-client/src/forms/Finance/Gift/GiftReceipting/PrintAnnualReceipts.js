@@ -212,7 +212,7 @@ function LoadDefaultTemplateFiles() {
 
 function GenerateAnnualReceiptsRemote() {
 	// extract information from a jquery object
-	let payload = extract_data($('#parameters'));
+	let payload = tpl.extract_data($('#parameters'));
 	if (payload['p_donor_key_n'] == '') {
 		payload['p_donor_key_n'] = 0;
 	}

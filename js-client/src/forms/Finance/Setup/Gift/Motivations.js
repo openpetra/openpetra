@@ -216,7 +216,7 @@ function save_edit_group(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = mode;
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationGroups', payload).then(function (result) {
 		parsed = JSON.parse(result.data.d);
@@ -237,7 +237,7 @@ function save_edit_detail(obj_modal) {
 	let mode = obj.find('[action]').val();
 
 	// extract information from a jquery object
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
@@ -258,7 +258,7 @@ function save_edit_detail(obj_modal) {
 
 function delete_group(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = 'delete';
 
 	let s = confirm( i18next.t('Motivations.ask_delete_group') );
@@ -281,7 +281,7 @@ function delete_group(obj_modal) {
 
 function delete_motivation(obj_modal) {
 	let obj = $(obj_modal).closest('.modal');
-	let payload = translate_to_server( extract_data(obj) );
+	let payload = utils.translate_to_server( extract_data(obj) );
 	payload['action'] = 'delete';
 
 	let s = confirm( i18next.t('Motivations.ask_delete_detail') );
@@ -303,7 +303,7 @@ function delete_motivation(obj_modal) {
 }
 
 function save_default_detail(obj) {
-	let payload = translate_to_server( extract_data($(obj).closest('#toolbar')));
+	let payload = utils.translate_to_server( extract_data($(obj).closest('#toolbar')));
 	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
 	api.post('serverMFinance.asmx/TGiftSetupWebConnector_SetDefaultMotivationDetail', payload).then(function (result) {

@@ -68,7 +68,7 @@ var MaintainChildren = new (class {
 
   getFilter() {
 
-    var filter = extract_data($("#tabfilter"));
+    var filter = tpl.extract_data($("#tabfilter"));
 
     var req = {
       "AChildName": filter.ChildName ? filter.ChildName : "",
@@ -231,7 +231,7 @@ var MaintainChildren = new (class {
     if (!s) {return}
 
     var MaintainChildrenO = this;
-    var req = translate_to_server(extractData($("#detail_modal")));
+    var req = utils.translate_to_server(extractData($("#detail_modal")));
     req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
     req["APartnerKey"] = $("input[name=p_partner_key_n]").val();
 
@@ -251,7 +251,7 @@ var MaintainChildren = new (class {
   saveEdit() {
 
     var MaintainChildrenO = this;
-    var req = translate_to_server(extractData($("#detail_modal")));
+    var req = utils.translate_to_server(extractData($("#detail_modal")));
     req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
     req["APartnerKey"] = $("input[name=p_partner_key_n]").val();
     if (req["ADateOfBirth"] == "") {
@@ -409,7 +409,7 @@ var MaintainChildComments = new (class {
 
   saveEdit() {
 
-    var req = translate_to_server(extractData($("#comment_modal")));
+    var req = utils.translate_to_server(extractData($("#comment_modal")));
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildComments', req).then(
       function (data) {
@@ -512,7 +512,7 @@ var MaintainChildSponsorship = new (class {
   }
 
   saveEdit() {
-    var req = translate_to_server(extractData($("#recurring_modal")));
+    var req = utils.translate_to_server(extractData($("#recurring_modal")));
 
     if (!req["ADonorKey"] || isNaN(parseInt(req["ADonorKey"]))) {
       return utils.display_error("MaintainChildren.ErrMissingDonor");
@@ -547,7 +547,7 @@ var MaintainChildSponsorship = new (class {
 
   delete(obj_modal) {
     let obj = $(obj_modal).closest('.modal');
-    let payload = translate_to_server( extract_data(obj) );
+    let payload = utils.translate_to_server( extract_data(obj) );
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_DeleteSponsorshipRecurringGift', payload).then(
       function (result) {
         var parsed = JSON.parse(result.data.d);
@@ -650,7 +650,7 @@ var MaintainChildReminders = new (class {
 
   saveEdit() {
 
-    var req = translate_to_server(extractData($("#reminder_modal")));
+    var req = utils.translate_to_server(extractData($("#reminder_modal")));
 
     if (!req["AEventDate"]) {
       return utils.display_error("MaintainChildren.ErrReminderEventDate");
