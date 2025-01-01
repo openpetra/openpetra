@@ -35,6 +35,8 @@ import about from '../forms/About.js';
 import importpartners from '../forms/Partner/Partners/ImportPartners.js';
 import maintainpartners from '../forms/Partner/Partners/MaintainPartners.js';
 import maintaintypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
+import maintainconsentchannels from '../forms/Partner/Setup/MaintainConsentChannels.js';
+import maintainconsentpurposes from '../forms/Partner/Setup/MaintainConsentPurposes.js';
 import maintainusers from '../forms/SystemManager/MaintainUsers.js';
 
 class Navigation {
@@ -49,6 +51,8 @@ class Navigation {
 			'MaintainPartners': maintainpartners,
 			'ImportPartners': importpartners,
 			'MaintainTypes': maintaintypes,
+			'MaintainConsentChannels': maintainconsentchannels,
+			'MaintainConsentPurposes': maintainconsentpurposes,
 			'MaintainUsers': maintainusers,
 		};
 		$(window).scrollTop(0);
