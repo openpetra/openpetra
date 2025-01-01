@@ -35,7 +35,7 @@
 			</div>
 			-->
 			<div class="row">
-				<div class="col">{entry_status}</div><div class="col">{val_p_valid_publication_l}</div>
+				<div class="col">{forms.is_active}</div><div class="col">{val_p_valid_publication_l}</div>
 			</div>
 		</div>
 	</div>
@@ -81,10 +81,10 @@
 
 						<div class="row">
 							<div class="col">
-								{active}
+								{forms.is_active}
 							</div>
 							<div class="col">
-								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkActive" name="p_valid_publication_l">{active}</label>
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkActive" name="p_valid_publication_l">{forms.is_active}</label>
 							</div>
 						</div>
 
