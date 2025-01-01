@@ -40,6 +40,7 @@ import maintainconsentpurposes from '../forms/Partner/Setup/MaintainConsentPurpo
 import maintainpublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
 import maintainmemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
 import maintainusers from '../forms/SystemManager/MaintainUsers.js';
+import maintainsettings from '../forms/SystemManager/MaintainSettings.js';
 
 class Navigation {
 	constructor() {
@@ -58,6 +59,7 @@ class Navigation {
 			'MaintainPublications': maintainpublications,
 			'MaintainMemberships': maintainmemberships,
 			'MaintainUsers': maintainusers,
+			'MaintainSettings': maintainsettings,
 		};
 		$(window).scrollTop(0);
 

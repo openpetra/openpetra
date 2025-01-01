@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,21 +21,34 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-$('document').ready(function () {
-  let x = {ASystemDefaultName: 'SelfSignUpEnabled'};
-  api.post('serverMSysMan.asmx/TSystemDefaultsConnector_GetSystemDefault', x).then(function (data) {
-    enabled = data.data.d;
-    $('#chkSelfSignUpEnabled').prop('checked', enabled == "True");
-  });
-});
+import i18next from 'i18next'
+import api from '../../lib/ajax.js'
+import utils from '../../lib/utils.js'
 
+class MaintainSettings {
 
-function submit() {
-  let x = {AKey: 'SelfSignUpEnabled', AValue: $('#chkSelfSignUpEnabled').is(':checked')};
-  api.post('serverMSysMan.asmx/TSystemDefaultsConnector_SetSystemDefault', x).then(function (data) {
-    result = JSON.parse(data.data.d);
-    if (result == true) {
-      utils.display_message(i18next.t('forms.saved'), "success");
-    }
-  });
-}
+	Ready() {
+		let self = this;
+
+		let x = {ASystemDefaultName: 'SelfSignUpEnabled'};
+		api.post('serverMSysMan.asmx/TSystemDefaultsConnector_GetSystemDefault', x).then(function (data) {
+			let enabled = data.data.d;
+			$('#chkSelfSignUpEnabled').prop('checked', enabled == "True");
+		});
+
+		$('#btnSubmitSettings').on('click', function() {self.submit()});
+		btnSubmitSettings
+	}
+
+	submit() {
+		let x = {AKey: 'SelfSignUpEnabled', AValue: $('#chkSelfSignUpEnabled').is(':checked')};
+		api.post('serverMSysMan.asmx/TSystemDefaultsConnector_SetSystemDefault', x).then(function (data) {
+			let result = JSON.parse(data.data.d);
+			if (result == true) {
+				utils.display_message(i18next.t('forms.saved'), "success");
+			}
+		});
+	}
+} // end of class
+
+export default new MaintainSettings();
