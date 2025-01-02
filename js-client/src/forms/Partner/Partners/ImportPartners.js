@@ -31,6 +31,9 @@ class ImportPartners {
 
 	Ready() {
 		let self = this;
+		$('#btnImportData').on('click', function() {$('#fileUploadUserCSV').click()});
+		$('#btnImportDataODS').on('click', function() {$('#fileUploadUserODS').click()});
+		$('#btnImportDataXLSX').on('click', function() {$('#fileUploadUserXLSX').click()});
 		$('#fileUploadUserCSV').on('change', function() { self.UploadUserCSV($(this)) });
 		$('#fileUploadUserODS').on('change', function() { self.UploadUserODS($(this)) });
 		$('#fileUploadUserXLSX').on('change', function() { self.UploadUserXLSX($(this)) });
