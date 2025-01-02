@@ -31,10 +31,11 @@ import modal from '../../lib/modal.js'
 class MaintainUsers {
 
 	Ready() {
-		this.display_list();
+		let self = this
+		self.display_list();
 
 		if (window.location.href.endsWith('?NewUser')) {
-			this.open_new(this);
+			self.open_new();
 		}
 	}
 
@@ -46,15 +47,16 @@ class MaintainUsers {
 			$('#browse_container').html('');
 			for (var item of data.result.SUser) {
 				// format a user for every entry
-				self.format_item(self, item, data.result);
+				self.format_item(item, data.result);
 			}
 			tpl.format_chk();
 
-			$('#btnNew').on('click', function() { self.open_new(self) })
+			$('#btnNew').on('click', function() { self.open_new() })
 		})
 	}
 
-	format_item(self, item, api_result) {
+	format_item(item, api_result) {
+		let self = this
 		var permissions = "";
 		api_result.SUserModuleAccessPermission.forEach(function(permissionsRow) {
 			if (item['s_user_id_c'] == permissionsRow['s_user_id_c'] && permissionsRow['s_can_access_l'] == true) {
@@ -67,7 +69,7 @@ class MaintainUsers {
 		let row = tpl.format_tpl($('[phantom] .tpl_row').clone(), item);
 		// let view = tpl.format_tpl($('[phantom] .tpl_view').clone(), item);
 		// row.find('.collapse_col').append(view);
-		row.find('.btnEditUser').on('click', function() { self.open_edit(self, $(this).attr("objid")) })
+		row.find('.btnEditUser').on('click', function() { self.open_edit($(this).attr("objid")) })
 		$('#browse_container').append(row);
 	}
 
@@ -81,12 +83,14 @@ class MaintainUsers {
 		obj.find('.collapse').collapse('show')
 	}
 
-	initButtons(self, m) {
-		m.find('#btnSaveEntry').on('click', function() { self.save_entry(self, $(this)) })
+	initButtons(m) {
+		let self = this
+		m.find('#btnSaveEntry').on('click', function() { self.save_entry($(this)) })
 		m.find('#btnClose').on('click', function() { modal.CloseModal($(this)) })
 	}
 
-	open_new(self) {
+	open_new() {
+		let self = this
 		if (!modal.allow_modal()) {return}
 		api.post('serverMSysMan.asmx/TMaintenanceWebConnector_CreateUserWithInitialPermissions', {} ).then(function (data) {
 
@@ -111,14 +115,15 @@ class MaintainUsers {
 
 			let myModal = modal.ShowModal('edituser' + s_user_id_c, m);
 			tpl.update_requireClass(myModal, "adduser");
-			self.initButtons(self, myModal)
+			self.initButtons(myModal)
 
 			// set the language of the current user as default language for the new user
 			$('#modal_space .modal #language_code_id').val(i18next.language.toUpperCase());
 		});
 	}
 
-	open_edit(self, s_user_id_c) {
+	open_edit(s_user_id_c) {
+		let self = this
 		if (!modal.allow_modal()) {return}
 		let r = {'AUserId': s_user_id_c}
 		api.post('serverMSysMan.asmx/TMaintenanceWebConnector_LoadUserAndModulePermissions', r ).then(function (data) {
@@ -140,11 +145,12 @@ class MaintainUsers {
 
 			let myModal = modal.ShowModal('edituser' + s_user_id_c, m);
 			tpl.update_requireClass(myModal, "edituser");
-			self.initButtons(self, myModal)
+			self.initButtons(myModal)
 		});
 	}
 
-	save_entry(self, obj_modal) {
+	save_entry(obj_modal) {
+		let self = this
 		let obj = $(obj_modal).closest('.modal');
 
 		// extract information from a jquery object
