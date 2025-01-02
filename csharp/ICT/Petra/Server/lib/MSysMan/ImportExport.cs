@@ -245,7 +245,14 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                 XmlElement sequenceNode = ARootNode.OwnerDocument.CreateElement(StringHelper.UpperCamelCase(seq, false, false));
                 sequencesNode.AppendChild(sequenceNode);
 
-                sequenceNode.SetAttribute("value", AReadTransaction.DataBaseObj.GetCurrentSequenceValue(seq, AReadTransaction).ToString());
+                try
+                {
+                    sequenceNode.SetAttribute("value", AReadTransaction.DataBaseObj.GetCurrentSequenceValue(seq, AReadTransaction).ToString());
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Problem with Sequence " + seq + ": " + e.ToString());
+                }
             }
         }
 
