@@ -30,17 +30,18 @@ import api from './ajax.js';
 import i18n from './i18n.js';
 import utils from './utils.js';
 
-import releasenotes from '../forms/ReleaseNotes.js';
-import about from '../forms/About.js';
-import importpartners from '../forms/Partner/Partners/ImportPartners.js';
-import maintainpartners from '../forms/Partner/Partners/MaintainPartners.js';
-import maintaintypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
-import maintainconsentchannels from '../forms/Partner/Setup/MaintainConsentChannels.js';
-import maintainconsentpurposes from '../forms/Partner/Setup/MaintainConsentPurposes.js';
-import maintainpublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
-import maintainmemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
-import maintainusers from '../forms/SystemManager/MaintainUsers.js';
-import maintainsettings from '../forms/SystemManager/MaintainSettings.js';
+import ReleaseNotes from '../forms/ReleaseNotes.js';
+import About from '../forms/About.js';
+import ImportPartners from '../forms/Partner/Partners/ImportPartners.js';
+import MaintainPartners from '../forms/Partner/Partners/MaintainPartners.js';
+import MaintainTypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
+import MaintainConsentChannels from '../forms/Partner/Setup/MaintainConsentChannels.js';
+import MaintainConsentPurposes from '../forms/Partner/Setup/MaintainConsentPurposes.js';
+import MaintainPublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
+import MaintainMemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
+import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
+import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
+import ImportAndExportDatabase from '../forms/SystemManager/ImportAndExportDatabase.js';
 
 class Navigation {
 	constructor() {
@@ -49,17 +50,18 @@ class Navigation {
 		// will be replaced by the build script for the release
 		this.currentrelease = "CURRENTRELEASE";
 		this.formsLoaded = {
-			'ReleaseNotes': releasenotes,
-			'About': about,
-			'MaintainPartners': maintainpartners,
-			'ImportPartners': importpartners,
-			'MaintainTypes': maintaintypes,
-			'MaintainConsentChannels': maintainconsentchannels,
-			'MaintainConsentPurposes': maintainconsentpurposes,
-			'MaintainPublications': maintainpublications,
-			'MaintainMemberships': maintainmemberships,
-			'MaintainUsers': maintainusers,
-			'MaintainSettings': maintainsettings,
+			'ReleaseNotes': ReleaseNotes,
+			'About': About,
+			'MaintainPartners': MaintainPartners,
+			'ImportPartners': ImportPartners,
+			'MaintainTypes': MaintainTypes,
+			'MaintainConsentChannels': MaintainConsentChannels,
+			'MaintainConsentPurposes': MaintainConsentPurposes,
+			'MaintainPublications': MaintainPublications,
+			'MaintainMemberships': MaintainMemberships,
+			'MaintainUsers': MaintainUsers,
+			'MaintainSettings': MaintainSettings,
+			'ImportAndExportDatabase': ImportAndExportDatabase,
 		};
 		$(window).scrollTop(0);
 

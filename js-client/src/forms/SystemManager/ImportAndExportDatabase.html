@@ -1,14 +1,16 @@
+<input type="file" id="fileResetDatabase" name="file" size="10" style="visibility:hidden" accept=".yml.gz"/>
+
 <h2>{caption}</h2>
 
 <table id="toolbar">
 	<tr>
 		<td>
-			<button type="button" class="btn btn-primary" id="btnExportData" onclick="ExportAllData()">{exportalldata}</button>
+			<button type="button" class="btn btn-primary" id="btnExportData">{exportalldata}</button>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<button type="button" class="btn btn-danger" id="btnImportData" onclick="ResetAllData()">{restoredatabase}</button>
+			<button type="button" class="btn btn-danger" id="btnImportData">{restoredatabase}</button>
 		</td>
 	</tr>
 </table>
@@ -26,8 +28,3 @@
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
-<input type="file" id="fileResetDatabase" name="file" size="10" onchange="ResetDatabase($(this))" style="visibility:hidden"/>
-
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
