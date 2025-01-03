@@ -32,6 +32,7 @@ import utils from './utils.js';
 
 import ReleaseNotes from '../forms/ReleaseNotes.js';
 import About from '../forms/About.js';
+
 import ImportPartners from '../forms/Partner/Partners/ImportPartners.js';
 import MaintainPartners from '../forms/Partner/Partners/MaintainPartners.js';
 import MaintainTypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
@@ -39,9 +40,21 @@ import MaintainConsentChannels from '../forms/Partner/Setup/MaintainConsentChann
 import MaintainConsentPurposes from '../forms/Partner/Setup/MaintainConsentPurposes.js';
 import MaintainPublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
 import MaintainMemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
+
+import AccountTree from '../forms/Finance/Setup/GL/AccountTree.js';
+import CostCenterTree from '../forms/Finance/Setup/GL/CostCenterTree.js';
+import Motivations from '../forms/Finance/Setup/Gift/Motivations.js';
+
 import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
 import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
 import ImportAndExportDatabase from '../forms/SystemManager/ImportAndExportDatabase.js';
+
+
+/*
+<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
+<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
+*/
 
 class Navigation {
 	constructor() {
@@ -52,6 +65,7 @@ class Navigation {
 		this.formsLoaded = {
 			'ReleaseNotes': ReleaseNotes,
 			'About': About,
+
 			'MaintainPartners': MaintainPartners,
 			'ImportPartners': ImportPartners,
 			'MaintainTypes': MaintainTypes,
@@ -59,6 +73,11 @@ class Navigation {
 			'MaintainConsentPurposes': MaintainConsentPurposes,
 			'MaintainPublications': MaintainPublications,
 			'MaintainMemberships': MaintainMemberships,
+
+			'AccountTree': AccountTree,
+			'CostCenterTree': CostCenterTree,
+			'Motivations': Motivations,
+
 			'MaintainUsers': MaintainUsers,
 			'MaintainSettings': MaintainSettings,
 			'ImportAndExportDatabase': ImportAndExportDatabase,
