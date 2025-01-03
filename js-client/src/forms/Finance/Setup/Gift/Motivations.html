@@ -99,9 +99,9 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_group(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_group(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnGroupDelete" edit-only class="btn btn-danger">{forms.delete}</button>
+					<button id="btnGroupSave" class="btn btn-primary">{forms.save}</button>
+					<button id="btnGroupClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -221,9 +221,9 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_motivation(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_detail(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnDetailDelete" edit-only class="btn btn-danger">{forms.delete}</button>
+					<button id="btnDetailSave" class="btn btn-primary">{forms.save}</button>
+					<button id="btnDetailClose" class="btn btn-light">{forms.close}</button>
 				</div>
 			</div>
 		</div>
@@ -264,10 +264,3 @@
 	</div>
 
 </div>
-
-<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/modal.js" charset="utf-8"></script>
