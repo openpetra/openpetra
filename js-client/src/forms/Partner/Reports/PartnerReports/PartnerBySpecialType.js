@@ -26,7 +26,7 @@ var last_opened_entry_data = {};
 $('document').ready(function () {
 	loadInConsents();
 	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPartnerTypes', {}).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		display_report_form(parsed);
 	})
 });

@@ -32,7 +32,7 @@ function open_edit() {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMSysMan.asmx/TSettingsWebConnector_GetDefaultsForFirstSetup', r).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		display_screen(parsed);
 	})
 }
@@ -61,7 +61,7 @@ function save_entry(obj_modal) {
 	param['AInitialModulePermissions'] = param['AInitialModulePermissions'].split(",");
 
 	api.post('serverMSysMan.asmx/TSettingsWebConnector_RunFirstSetup', param).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		if (!parsed.result) {
 			return utils.display_error(parsed.AVerificationResult);
 		} else {

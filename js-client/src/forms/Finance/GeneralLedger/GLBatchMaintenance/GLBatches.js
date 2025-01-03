@@ -72,11 +72,11 @@ function display_list(source) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
-		for (item of data.result.ABatch) {
-			format_item(item);
+		for (var item of data.result.ABatch) {
+			self.format_item(item);
 		}
-		format_currency(data.ACurrencyCode);
-		format_date();
+		tpl.format_currency(data.ACurrencyCode);
+		tpl.format_date();
 	})
 }
 
@@ -94,14 +94,14 @@ function updateBatch(BatchNumber) {
 			batchDiv.first().replaceWith(row.children()[0]);
 		} else {
 			$('.tpl_row .collapse').collapse('hide');
-			format_item(item);
+			self.format_item(item);
 			batchDiv = $('#Batch' + BatchNumber + " div");
 			$('html, body').animate({
 						scrollTop: (batchDiv.offset().top - 100)
 					}, 500);
 		}
-		format_currency(data.ACurrencyCode);
-		format_date();
+		tpl.format_currency(data.ACurrencyCode);
+		tpl.format_date();
 		open_transactions($('#Batch' + BatchNumber), BatchNumber, true);
 	});
 }
@@ -151,7 +151,7 @@ function open_transactions(obj, number = -1, reload = false) {
 		// on open, clear content
 
 		let place_to_put_content = obj.find('.content_col').html('');
-		for (item of data.result.ATransaction) {
+		for (var item of data.result.ATransaction) {
 			if (item['a_debit_credit_indicator_l']) {
 				item['debitcredit'] = i18next.t('GLBatches.DEBIT');
 				item['creditamountbase'] = '';
@@ -176,8 +176,8 @@ function open_transactions(obj, number = -1, reload = false) {
 			transaction_row = tpl.format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
-		format_currency(data.ACurrencyCode);
-		format_date();
+		tpl.format_currency(data.ACurrencyCode);
+		tpl.format_date();
 		if (!reload) {
 			$('.tpl_row .collapse').collapse('hide');
 		}
@@ -194,7 +194,7 @@ function new_batch() {
 	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_CreateABatch', x).then(
 		function (data) {
-			parsed = JSON.parse(data.data.d);
+			let parsed = JSON.parse(data.data.d);
 			new_entry_data = parsed.result;
 			let p = tpl.format_tpl( $('[phantom] .tpl_edit_batch').clone(), parsed['result']['ABatch'][0] );
 			$('#modal_space').html(p);
@@ -236,7 +236,7 @@ function edit_batch(batch_id) {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		let searched = null;
 		new_entry_data = parsed.result;
 		for (batch of parsed.result.ABatch) {
@@ -265,7 +265,7 @@ function edit_trans(batch_id, trans_id) {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_LoadABatchAJournalATransaction', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		let searched = null;
 		new_entry_data = parsed.result;
 		for (trans of parsed.result.ATransaction) {
@@ -318,7 +318,7 @@ function save_edit_batch(obj_modal) {
 	}
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainBatches', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			modal.CloseModal(obj);
@@ -352,13 +352,13 @@ function save_edit_trans(obj_modal) {
 		payload['ADebitCreditIndicator'] = false;
 	}
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			modal.CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		} else {
-			for (msg of parsed.AVerificationResult) {
+			for (var msg of parsed.AVerificationResult) {
 				utils.display_message(i18next.t(msg.code ? msg.code : msg.message), "fail");
 			}
 		}
@@ -378,14 +378,14 @@ function delete_edit_trans(obj_modal) {
 	payload['AAmountInBaseCurrency'] = 0.0;
 	payload['ADebitCreditIndicator'] = true;
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_MaintainTransactions', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.deleted'), "success");
 			modal.CloseModal(obj);
 			updateBatch(payload['ABatchNumber']);
 		}
 		if (parsed.result == "false") {
-			for (msg of parsed.AVerificationResult) {
+			for (var msg of parsed.AVerificationResult) {
 				utils.display_message(i18next.t(msg.code), "fail");
 			}
 		}
@@ -410,7 +410,7 @@ function importTransactions(batch_id, csv_file) {
 	};
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_ImportGLTransactions', x).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			updateBatch(batch_id);
@@ -430,7 +430,7 @@ function exportTransactions(batch_id) {
 	};
 
 	api.post('serverMFinance.asmx/TGLTransactionWebConnector_ExportGLBatchTransactions', x).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 
 			var link = document.createElement("a");
@@ -442,7 +442,7 @@ function exportTransactions(batch_id) {
 			link.remove();
 		}
 		if (parsed.result == "false") {
-			for (msg of parsed.AVerificationResult) {
+			for (var msg of parsed.AVerificationResult) {
 				utils.display_message(i18next.t(msg.code), "fail");
 			}
 		}

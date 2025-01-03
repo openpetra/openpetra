@@ -118,7 +118,7 @@ class MaintainPartners {
 		return i18next.t('MaintainPartners.'+label, label);
 	}
 
-	format_item(item) {
+	self.format_item(item) {
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 		$('#browse_container').append(row);

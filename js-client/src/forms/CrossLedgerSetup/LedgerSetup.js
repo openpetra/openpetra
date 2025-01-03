@@ -38,8 +38,8 @@ function display_list() {
 		if (data.result.length == 0) {
 			open_new();
 		} else {
-			for (item of data.result) {
-				format_item(item);
+			for (var item of data.result) {
+				self.format_item(item);
 			}
 		}
 	})
@@ -139,7 +139,7 @@ function save_new() {
 		request['AIntlCurrency'] = 'EUR';
 		api.post("serverMFinance.asmx/TGLSetupWebConnector_CreateNewLedger", request).then(
 			function (result) {
-				parsed = JSON.parse(result.data.d);
+				let parsed = JSON.parse(result.data.d);
 				if (parsed.result == true) {
 					utils.display_message(i18next.t('LedgerSetup.confirm_create'), 'success');
 					se.modal('hide');
@@ -164,7 +164,7 @@ function save_entry(update) {
 
 	api.post("serverMFinance.asmx/TGLSetupWebConnector_MaintainLedger", request).then(
 		function (result) {
-			parsed = JSON.parse(result.data.d);
+			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				modal.CloseModal(raw);
 				utils.display_message(i18next.t('LedgerSetup.confirm_edit'), 'success');
@@ -185,7 +185,7 @@ function delete_entry(d) {
 
 	api.post("serverMFinance.asmx/TGLSetupWebConnector_MaintainLedger", request).then(
 		function (result) {
-			parsed = JSON.parse(result.data.d);
+			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				modal.CloseModal(raw);
 				utils.display_message(i18next.t('LedgerSetup.confirm_delete'), 'success');

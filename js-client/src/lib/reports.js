@@ -88,13 +88,13 @@ function check_for_report(AReportID) {
 	};
 
 	api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetProgress', r).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		if (!parsed.result.JobFinished) {
 			// console.log("Report progress: " + parsed.Caption + ' ' + parsed.StatusMessage);
 			setTimeout(function() { check_for_report(AReportID); }, 1000);
 		} else {
 			api.post('serverMReporting.asmx/TReportGeneratorWebConnector_GetSuccess', r).then(function (data) {
-				parsed = JSON.parse(data.data.d);
+				let parsed = JSON.parse(data.data.d);
 				if (parsed == true) {
 					print_report(AReportID);
 				} else {

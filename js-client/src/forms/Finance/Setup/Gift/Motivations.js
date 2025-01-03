@@ -92,7 +92,7 @@ class Motivations {
 		});
 	}
 
-	format_item(item) {
+	self.format_item(item) {
 		let self = this;
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		$('#browse_container').append(row);
@@ -185,7 +185,7 @@ class Motivations {
 		// on open of a edit modal, we get new data,
 		// so everything is up to date and we don't have to load it, if we only search
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', r).then(function (data) {
-			parsed = JSON.parse(data.data.d)
+			let parsed = JSON.parse(data.data.d)
 			let f = null;
 			for (var group of parsed.result.AMotivationGroup) {
 				if (group.a_motivation_group_code_c == group_code) {
@@ -211,7 +211,7 @@ class Motivations {
 				"AMotivationGroupCode":group_id
 				};
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
-			parsed = JSON.parse(data.data.d);
+			let parsed = JSON.parse(data.data.d);
 			let searched = null;
 			for (var moti of parsed.result.AMotivationDetail) {
 				if (moti.a_motivation_group_code_c == group_id && moti.a_motivation_detail_code_c == detail_id) {
@@ -270,7 +270,7 @@ class Motivations {
 		payload['action'] = mode;
 
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
-			parsed = JSON.parse(result.data.d);
+			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
@@ -295,7 +295,7 @@ class Motivations {
 		if (!s) {return}
 
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationGroups', payload).then(function (result) {
-			parsed = JSON.parse(result.data.d);
+			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				utils.display_message(i18next.t('forms.deleted'), "success");
 				modal.CloseModal(obj);

@@ -38,7 +38,7 @@ function autocomplete_contact(input_field, onselect = null, memberonly = false) 
 			ALimit: 5
 			};
 		api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_TypeAheadPartnerFind', x).then(function (result) {
-			parsed = JSON.parse(result.data.d);
+			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				list = [];
 				for (key in parsed.AResult) {

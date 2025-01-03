@@ -33,7 +33,7 @@ function display_list(source) {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		$('#browse_container').html('');
-		for (item of data.result.ARecurringGiftBatch) {
+		for (var item of data.result.ARecurringGiftBatch) {
 			var today = new Date();
 			var submit_date = today;
 			var test_date = new Date(today.getFullYear(), today.getMonth(), 15);
@@ -45,10 +45,10 @@ function display_list(source) {
 				submit_date = test_date;
 			}
 			item['submit_date'] = submit_date;
-			format_item(item);
+			self.format_item(item);
 		}
-		format_currency(item.a_currency_code_c);
-		format_date();
+		tpl.format_currency(item.a_currency_code_c);
+		tpl.format_date();
 
 		if (window.location.href.includes('?ledger_number=')) {
 			var url = new URL(window.location.href);
@@ -85,14 +85,14 @@ function updateBatch(BatchNumber) {
 			batchDiv.first().replaceWith(row.children()[0]);
 		} else {
 			$('.tpl_row .collapse').collapse('hide');
-			format_item(item);
+			self.format_item(item);
 			batchDiv = $('#Batch' + BatchNumber + " div");
 			$('html, body').animate({
 								scrollTop: (batchDiv.offset().top - 100)
 								}, 500);
 		}
-		format_currency(item.a_currency_code_c);
-		format_date();
+		tpl.format_currency(item.a_currency_code_c);
+		tpl.format_date();
 		open_gift_transactions($('#Batch' + BatchNumber), BatchNumber, true);
 	});
 }
@@ -117,7 +117,7 @@ function open_gift_transactions(obj, number = -1, reload = false, transaction_nu
 
 	let x = {"ALedgerNumber":window.localStorage.getItem('current_ledger'), "ABatchNumber":number};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 
 		if (parsed.result == false) {
 			utils.display_error(parsed.AVerificationResult);
@@ -131,8 +131,8 @@ function open_gift_transactions(obj, number = -1, reload = false, transaction_nu
 			transaction_row = tpl.format_tpl(transaction_row, item);
 			place_to_put_content.append(transaction_row);
 		}
-		format_currency(data.ACurrencyCode ? data.ACurrencyCode : "EUR");
-		format_date();
+		tpl.format_currency(data.ACurrencyCode ? data.ACurrencyCode : "EUR");
+		tpl.format_date();
 		if (!reload) {
 			$('.tpl_row .collapse').collapse('hide');
 		}
@@ -153,7 +153,7 @@ function new_batch() {
 	let x = {ALedgerNumber :window.localStorage.getItem('current_ledger')};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_CreateARecurringGiftBatch', x).then(
 		function (data) {
-			parsed = JSON.parse(data.data.d);
+			let parsed = JSON.parse(data.data.d);
 			batch = parsed['result']['ARecurringGiftBatch'][0];
 			let p = tpl.format_tpl( $('[phantom] .tpl_edit_batch').clone(), batch );
 			$('#modal_space').html(p);
@@ -243,7 +243,7 @@ function edit_batch(batch_id) {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadARecurringGiftBatchSingle', r).then(function (data) {
-		parsed = JSON.parse(data.data.d)
+		let parsed = JSON.parse(data.data.d)
 		let batch = parsed.result.ARecurringGiftBatch[0];
 
 		batch['a_account_name_c'] = batch['a_bank_account_code_c'];
@@ -265,7 +265,7 @@ function edit_gift_trans(ledger_id, batch_id, trans_id) {
 	// so everything is up to date and we don't have to load it, if we only search
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d, parseDates);
+		let parsed = JSON.parse(data.data.d, parseDates);
 
 		let searched = null;
 		for (var trans of parsed.result.ARecurringGift) {
@@ -321,7 +321,7 @@ function onselect_donor(obj, donor_key, reset_selection = true) {
 	// reload the select for bank accounts
 	let x = {"APartnerKey":donor_key};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadBankingDetailsOfPartner', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		selected = -1;
 		if (!reset_selection) {
 			selected = obj.closest('.modal').find('#BankingDetailsKey').val();
@@ -366,7 +366,7 @@ function edit_gift_trans_detail(ledger_id, batch_id, trans_id, detail_id) {
 
 	let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-		parsed = JSON.parse(data.data.d, parseDates);
+		let parsed = JSON.parse(data.data.d, parseDates);
 		let searched = null;
 		for (trans of parsed.result.ARecurringGiftDetail) {
 			if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
@@ -409,7 +409,7 @@ function save_edit_batch(obj_modal) {
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringBatches', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			modal.CloseModal(obj);
@@ -431,7 +431,7 @@ function save_edit_trans(obj_modal) {
  	payload['action'] = mode;
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			if (mode=="edit") {
@@ -470,7 +470,7 @@ function save_edit_trans_detail(obj_modal) {
 	}
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			updateGift(payload['ABatchNumber'], payload['AGiftTransactionNumber']);
@@ -492,7 +492,7 @@ function delete_trans(obj_modal) {
 	payload["action"] = "delete";
 	payload['ASepaMandateGiven'] = "null";
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			modal.CloseModal(obj);
@@ -511,7 +511,7 @@ function delete_trans_detail(obj_modal) {
 	payload['AEndDonations'] = "null";
 	payload["ARecipientKey"] = -1;
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGiftDetails', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			$('#modal_space .tpl_edit_trans_detail').modal('hide');
@@ -569,7 +569,7 @@ function export_batch(batch_id) {
 
 	// TODO Recurring
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportAllRecurringGiftBatchData', r).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result > 0) {
 			excelfile = parsed.AExportExcel;
 
@@ -600,7 +600,7 @@ function download_sepa(obj, batch_id) {
 			};
 
 	api.post('serverMFinance.asmx/TGiftTransactionWebConnector_ExportRecurringGiftBatch', r).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result) {
 			sepafile = parsed.ASEPAFileContent;
 

@@ -61,7 +61,7 @@ class MaintainTypes {
 			})
 	}
 
-	format_item(item) {
+	self.format_item(item) {
 		let self = this;
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);

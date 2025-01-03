@@ -30,7 +30,7 @@ function autocomplete_motivation_group(input_field) {
 		ALimit: 5
 		};
 	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadMotivationGroup', x).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 
 		if (parsed.result == true) {
 			list = [];
@@ -54,7 +54,7 @@ function autocomplete_motivation_detail(input_field, onselect=null) {
 		ALimit: 5
 		};
 	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadMotivationDetail', x).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			list = [];
 			for (key in parsed.AResult) {

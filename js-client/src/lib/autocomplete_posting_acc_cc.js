@@ -32,7 +32,7 @@ function autocomplete_a(input_field) {
 		ALimit: 5
 		};
 	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadAccountCode', x).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			list = [];
 			for (key in parsed.AResult) {
@@ -59,7 +59,7 @@ function autocomplete_cc(input_field) {
 		ALimit: 5
 		};
 	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_TypeAheadCostCentreCode', x).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			list = [];
 			for (key in parsed.AResult) {

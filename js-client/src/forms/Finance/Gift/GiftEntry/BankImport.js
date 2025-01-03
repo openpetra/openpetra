@@ -39,7 +39,7 @@ function display_dropdownlist(selected_statement = null) {
 		// on reload, clear content
 		let field = $('#bank_number_id').html('');
 		let first = true;
-		for (item of data.result) {
+		for (var item of data.result) {
 			if ((selected_statement == null && first) || (selected_statement == item.a_statement_key_i)) {
 				selected = "selected";
 				first = false;
@@ -84,11 +84,11 @@ function display_list() {
 		data = JSON.parse(data.data.d);
 		// on reload, clear content
 		let field = $('#browse_container').html('');
-		for (item of data.result) {
-			format_item(item);
+		for (var item of data.result) {
+			self.format_item(item);
 		}
-		format_currency(data.ACurrencyCode);
-		format_date();
+		tpl.format_currency(data.ACurrencyCode);
+		tpl.format_date();
 		$('#trans_total_debit').text(printCurrency(data.ATotalDebit, data.ACurrencyCode));
 		$('#trans_total_credit').text(printCurrency(data.ATotalCredit, data.ACurrencyCode));
 	})
@@ -120,7 +120,7 @@ function new_trans_detail(trans_order) {
 		"AOrderNumber": trans_order
 	};
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		let p = parsed.ATransactions[0];
 		p['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
 		p['a_detail_i'] = $('#modal_space .tpl_edit_trans .detail_col > *').length;
@@ -146,7 +146,7 @@ function edit_gift_trans(statement_key, trans_order) {
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		transaction = parsed.ATransactions[0];
 		if (transaction['DonorKey'] != 0) {
 			transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
@@ -186,7 +186,7 @@ function edit_gift_trans_detail(statement_id, order_id, detail_id) {
 		"ADetail": detail_id
 	};
 	api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionDetail', x).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		detail = parsed.TransactionDetail[0];
 
 		if (detail['p_recipient_key_n'] != 0) {
@@ -242,7 +242,7 @@ function save_edit_trans(obj_modal) {
 	payload["AStatementKey"] = $('#bank_number_id').val();
 
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransaction', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			modal.CloseModal(obj);
@@ -266,7 +266,7 @@ function save_edit_trans_detail(obj_modal) {
 	if (payload['ARecipientKey'] == '') { payload['ARecipientKey'] = 0; }
 
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (result) {
-		parsed = JSON.parse(result.data.d);
+		let parsed = JSON.parse(result.data.d);
 		if (parsed.result == true) {
 			utils.display_message(i18next.t('forms.saved'), "success");
 			updateTransaction(payload['AStatementKey'], payload['AOrder']);
@@ -288,7 +288,7 @@ function delete_trans_detail(obj_modal) {
 	payload['AStatementKey'] = $('#bank_number_id').val();
 	payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 	api.post('serverMFinance.asmx/TBankImportWebConnector_MaintainTransactionDetail', payload).then(function (data) {
-		parsed = JSON.parse(data.data.d);
+		let parsed = JSON.parse(data.data.d);
 		if (parsed.result) {
 			utils.display_message(i18next.t('forms.deleted'), "success");
 			updateTransaction(payload['AStatementKey'], payload['AOrder']);
