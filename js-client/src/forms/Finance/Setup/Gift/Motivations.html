@@ -8,10 +8,10 @@
 			<div class="col">{val_a_motivation_group_code_c}</div>
 			<div class="col">{val_a_motivation_group_description_c}</div>
 			<div class="col-2" style="margin-top:0.3em;">
-				<button type="button" class="btn btn-primary" onclick="open_motivations(this, '{val_a_motivation_group_code_c}')">
+				<button id="btnView{val_a_motivation_group_code_c}" type="button" class="btn btn-primary">
 					<i class="fas fa-folder-open"></i>
 				</button>
-				<button id="btnEdit" type="button" class="btn btn-primary" onclick="edit_group('{val_a_motivation_group_code_c}')" title="{forms.edit}">
+				<button id="btnEdit{val_a_motivation_group_code_c}" type="button" class="btn btn-primary" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -20,7 +20,7 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row">
 					<div class="col">
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_motivation('{val_a_motivation_group_code_c}')">
+						<button id="btnNewDetail{val_a_motivation_group_code_c}" type="button" class="btn btn-primary" style="margin-top:0.5em;">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
 					</div>
@@ -57,7 +57,7 @@
 			<div class="col" title="{val_costcentre_name}">{val_a_cost_centre_code_c}</div>
 			<div class="col">{val_a_motivation_detail_desc_c}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_motivation('{val_a_motivation_group_code_c}', '{val_a_motivation_detail_code_c}')">
+				<button id="btnEditDetail{val_a_motivation_group_code_c}{val_a_motivation_detail_code_c}" type="button" class="btn btn-primary">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -153,7 +153,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
+									<input id="txtAccount" class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="">
 								</div>
 							</div>
 						</div>
@@ -164,7 +164,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+									<input id="txtCostCentre" class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="">
 								</div>
 							</div>
 						</div>
@@ -237,15 +237,15 @@
 		<td>
 			<input type="hidden" name="a_motivation_group_code_c" value=""/>
 			<div class="autocomplete">
-				<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+				<input id="txtDefaultDetail" class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="">
 			</div>
 		</td>
-		<td><button class="btn btn-primary" onclick="save_default_detail(this)">{forms.save}</button>
+		<td><button id="btnSaveDefaultDetail" class="btn btn-primary">{forms.save}</button>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="new_group()">{forms.new}</button>
+			<button id="btnNewGroup" class="btn btn-primary">{forms.new}</button>
 		</td>
 	</tr>
 </table>

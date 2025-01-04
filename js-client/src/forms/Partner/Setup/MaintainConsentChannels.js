@@ -59,7 +59,7 @@ class MaintainConsentChannels {
 		})
 	}
 
-	self.format_item(item) {
+	format_item(item) {
 		let self = this
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);

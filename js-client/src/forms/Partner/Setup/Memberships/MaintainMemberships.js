@@ -54,7 +54,7 @@ class MaintainMemberships {
 		})
 	}
 
-	self.format_item(item) {
+	format_item(item) {
 		let self = this
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		item['a_frequency_code_c_translated'] = i18next.t('MaintainMemberships.freq_' + item['a_frequency_code_c']);

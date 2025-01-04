@@ -55,7 +55,7 @@ class MaintainUsers {
 		})
 	}
 
-	self.format_item(item, api_result) {
+	format_item(item, api_result) {
 		let self = this
 		var permissions = "";
 		api_result.SUserModuleAccessPermission.forEach(function(permissionsRow) {

@@ -4,7 +4,7 @@
 //	Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2023 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -22,46 +22,58 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-var timeout_autocomplete = null;
+import api from './ajax.js';
+import autocomplete from './autocomplete.js'
 
-function autocomplete_contact(input_field, onselect = null, memberonly = false) {
+class AutocompletePartner {
 
-	if (timeout_autocomplete) {
-		clearTimeout(timeout_autocomplete);
+	constructor() {
+		this.timeout_autocomplete = null;
 	}
-	timeout_autocomplete = setTimeout(function() {
-		let x = {
-			ASearch: $(input_field).val(),
-			APartnerClass: '',
-			AActiveOnly: false,
-			AMemberOnly: memberonly,
-			ALimit: 5
-			};
-		api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_TypeAheadPartnerFind', x).then(function (result) {
-			let parsed = JSON.parse(result.data.d);
-			if (parsed.result == true) {
-				list = [];
-				for (key in parsed.AResult) {
-					value = parsed.AResult[key];
-					list.push({key: value.p_partner_key_n,
-						label: value.p_partner_short_name_c,
-						display: (value.p_status_code_c != "ACTIVE"? value.p_status_code_c + " ":"") + 
-							"<b>" + value.p_partner_short_name_c + "</b> (" + value.p_partner_key_n + ")<br/>" +
-							value.p_street_name_c + "<br/>" + value.p_postal_code_c + " " + value.p_city_c});
+
+	autocomplete_contact(input_field, onselect = null, memberonly = false) {
+		let self = this;
+		if (self.timeout_autocomplete) {
+			clearTimeout(self.timeout_autocomplete);
+		}
+		self.timeout_autocomplete = setTimeout(function() {
+			let x = {
+				ASearch: $(input_field).val(),
+				APartnerClass: '',
+				AActiveOnly: false,
+				AMemberOnly: memberonly,
+				ALimit: 5
+				};
+			api.post('serverMPartner.asmx/TSimplePartnerFindWebConnector_TypeAheadPartnerFind', x).then(function (result) {
+				let parsed = JSON.parse(result.data.d);
+				if (parsed.result == true) {
+					let list = [];
+					for (var key in parsed.AResult) {
+						let value = parsed.AResult[key];
+						list.push({key: value.p_partner_key_n,
+							label: value.p_partner_short_name_c,
+							display: (value.p_status_code_c != "ACTIVE"? value.p_status_code_c + " ":"") + 
+								"<b>" + value.p_partner_short_name_c + "</b> (" + value.p_partner_key_n + ")<br/>" +
+								value.p_street_name_c + "<br/>" + value.p_postal_code_c + " " + value.p_city_c});
+					}
+					autocomplete.autocomplete( $(input_field), list, onselect);
+				} else {
+					let list = [];
+					autocomplete.autocomplete( $(input_field), list, onselect);
 				}
-				autocomplete( $(input_field), list, onselect);
-			} else {
-				list = [];
-				autocomplete( $(input_field), list, onselect);
-			}
-		});
-	}, 500);
+			});
+		}, 500);
+	}
+
+	autocomplete_donor(input_field, onselect = null) {
+		let self = this;
+		self.autocomplete_contact(input_field, onselect, false);
+	}
+
+	autocomplete_member(input_field, onselect = null) {
+		let self = this;
+		self.autocomplete_contact(input_field, onselect, true);
+	}
 }
 
-function autocomplete_donor(input_field, onselect = null) {
-	autocomplete_contact(input_field, onselect, false);
-}
-
-function autocomplete_member(input_field, onselect = null) {
-	autocomplete_contact(input_field, onselect, true);
-}
+export default new AutocompletePartner();

@@ -50,12 +50,6 @@ import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
 import ImportAndExportDatabase from '../forms/SystemManager/ImportAndExportDatabase.js';
 
 
-/*
-<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
-*/
-
 class Navigation {
 	constructor() {
 		this.debug = 0;

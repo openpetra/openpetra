@@ -27,6 +27,8 @@ import tpl from '../../../../lib/tpl.js'
 import api from '../../../../lib/ajax.js'
 import utils from '../../../../lib/utils.js'
 import modal from '../../../../lib/modal.js'
+import autocomplete_motivation from '../../../../lib/autocomplete_motivation.js'
+import autocomplete_acc_cc from '../../../../lib/autocomplete_posting_acc_cc.js'
 
 class Motivations {
 
@@ -37,7 +39,9 @@ class Motivations {
 	Ready() {
 		let self = this;
 		self.display_list();
-		$('#btnNew').on('click', function() {self.open_new()});
+		$('#btnNewGroup').on('click', function() {self.new_group()});
+		$('#txtDefaultDetail').on('input', function() {autocomplete_motivation.autocomplete_motivation_detail(this)});
+		$('#btnSaveDefaultDetail').on('click', function() {self.save_default_detail(this)});
 	}
 
 	display_list() {
@@ -73,29 +77,35 @@ class Motivations {
 
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
 			data = JSON.parse(data.data.d);
-			item = data.result.AMotivationGroup[0];
-			let groupDiv = $('#group' + GroupCode + " div");
+			let item = data.result.AMotivationGroup[0];
+			let groupDiv = $('#group' + GroupCode);
 			if (groupDiv.length) {
 				let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 				groupDiv.first().replaceWith(row.children()[0]);
 			} else {
 				$('.tpl_row .collapse').collapse('hide');
 				self.format_item(item);
-				groupDiv = $('#group' + GroupCode + " div");
+				groupDiv = $('#group' + GroupCode);
 				$('html, body').animate({
 									scrollTop: (groupDiv.offset().top - 100)
 									}, 500);
 			}
 			tpl.format_currency(data.ACurrencyCode);
 			tpl.format_date();
-			self.open_motivations($('#group' + GroupCode), GroupCode, true);
+			$('#btnEdit'+item['a_motivation_group_code_c']).on('click', function() {self.edit_group(item['a_motivation_group_code_c'])});
+			$('#btnView'+item['a_motivation_group_code_c']).on('click', function() {self.open_motivations(this, item['a_motivation_group_code_c'])});
+			$('#btnNewDetail'+item['a_motivation_group_code_c']).on('click', function() {self.new_motivation(item['a_motivation_group_code_c'])});
+			//self.open_motivations($('#group' + GroupCode), GroupCode, true);
 		});
 	}
 
-	self.format_item(item) {
+	format_item(item) {
 		let self = this;
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		$('#browse_container').append(row);
+		$('#btnEdit'+item['a_motivation_group_code_c']).on('click', function() {self.edit_group(item['a_motivation_group_code_c'])});
+		$('#btnView'+item['a_motivation_group_code_c']).on('click', function() {self.open_motivations(this, item['a_motivation_group_code_c'])});
+		$('#btnNewDetail'+item['a_motivation_group_code_c']).on('click', function() {self.new_motivation(item['a_motivation_group_code_c'])});
 	}
 
 	open_motivations(obj, code, reload = false) {
@@ -134,6 +144,9 @@ class Motivations {
 					let motivation_row = $('[phantom] .tpl_motivation').clone();
 					motivation_row = tpl.format_tpl(motivation_row, item);
 					place_to_put_content.append(motivation_row);
+
+					obj.find('#btnEditDetail'+item['a_motivation_group_code_c']+item['a_motivation_detail_code_c']).
+						on('click', function () {self.edit_motivation(item['a_motivation_group_code_c'], item['a_motivation_detail_code_c'])});
 				}
 			}
 			if (!reload) {
@@ -157,6 +170,8 @@ class Motivations {
 		p.find('input[name=a_motivation_group_code_c]').attr('readonly', false);
 		p.find('[action]').val('create');
 		p.modal('show');
+		$('#modal_space').find('#btnGroupClose').on('click', function () {modal.CloseModal(this)});
+		$('#modal_space').find('#btnGroupSave').on('click', function () {self.save_edit_group(this)});
 	};
 
 	new_motivation(group_code) {
@@ -171,6 +186,10 @@ class Motivations {
 		p.find('[edit-only]').hide();
 		p.find('[action]').val('create');
 		p.modal('show');
+		$('#modal_space').find('#btnDetailSave').on('click', function () {self.save_edit_detail(this)});
+		$('#modal_space').find('#btnDetailClose').on('click', function () {modal.CloseModal(this)});
+		$('#modal_space').find('#txtAccount').on('input', function () {autocomplete_acc_cc.autocomplete_a(this)});
+		$('#modal_space').find('#txtCostCentre').on('input', function () {autocomplete_acc_cc.autocomplete_cc(this)});
 	};
 
 	/////
@@ -230,11 +249,10 @@ class Motivations {
 
 			$('#modal_space').html(tpl_motivation);
 			tpl_motivation.find('[action]').val('update');
-			tpl_motivation.modal('show');
-
-			$('#modal_space').find('#btnDetailClose').on('click', function () {modal.CloseModal(this)});
-			$('#modal_space').find('#btnDetailSave').on('click', function () {self.save_edit_detail(this)});
+			$('#modal_space .modal').modal('show');
 			$('#modal_space').find('#btnDetailDelete').on('click', function () {self.delete_motivation(this)});
+			$('#modal_space').find('#btnDetailSave').on('click', function () {self.save_edit_detail(this)});
+			$('#modal_space').find('#btnDetailClose').on('click', function () {modal.CloseModal(this)});
 		})
 	}
 
@@ -244,14 +262,15 @@ class Motivations {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationGroups', payload).then(function (result) {
 			let parsed = JSON.parse(result.data.d);
 			if (parsed.result == true) {
 				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
-				updateGroup(payload['AMotivationGroupCode']);
+				self.updateGroup(payload['AMotivationGroupCode']);
+				//self.display_list();
 			} else {
 				for (var msg of parsed.AVerificationResult) {
 					utils.display_message(i18next.t(msg.code), "fail");
@@ -266,7 +285,7 @@ class Motivations {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_MaintainMotivationDetails', payload).then(function (result) {
@@ -274,7 +293,8 @@ class Motivations {
 			if (parsed.result == true) {
 				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
-				updateGroup(payload['AMotivationGroupCode']);
+				self.updateGroup(payload['AMotivationGroupCode']);
+				//self.display_list();
 			} else {
 				for (var msg of parsed.AVerificationResult) {
 					utils.display_message(i18next.t(msg.code), "fail");
@@ -288,7 +308,7 @@ class Motivations {
 	delete_group(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = 'delete';
 
 		let s = confirm( i18next.t('Motivations.ask_delete_group') );
@@ -312,7 +332,7 @@ class Motivations {
 	delete_motivation(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = 'delete';
 
 		let s = confirm( i18next.t('Motivations.ask_delete_detail') );
@@ -323,7 +343,8 @@ class Motivations {
 			if (parsed.result == true) {
 				utils.display_message(i18next.t('forms.deleted'), "success");
 				modal.CloseModal(obj);
-				self.display_list();
+				//self.display_list();
+				self.updateGroup(payload['AMotivationGroupCode']);
 			} else {
 				for (var msg of parsed.AVerificationResult) {
 					utils.display_message(i18next.t(msg.code), "fail");
@@ -335,7 +356,7 @@ class Motivations {
 
 	save_default_detail(obj) {
 		let self = this;
-		let payload = utils.translate_to_server( extract_data($(obj).closest('#toolbar')));
+		let payload = utils.translate_to_server( tpl.extract_data($(obj).closest('#toolbar')));
 		payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_SetDefaultMotivationDetail', payload).then(function (result) {
