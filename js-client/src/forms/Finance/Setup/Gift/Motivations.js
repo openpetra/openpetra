@@ -67,7 +67,15 @@ class Motivations {
 		})
 	}
 
-	updateGroup(GroupCode) {
+	install_group_click_handlers(groupcode) {
+		let self = this;
+		$('#btnEdit'+groupcode).on('click', function() {self.edit_group(groupcode)});
+		$('#btnView'+groupcode).on('click', function() {self.open_motivations(this, groupcode)});
+		$('#btnGroupCollapse'+groupcode).on('click', function() {self.open_motivations(this, groupcode)});
+		$('#btnNewDetail'+groupcode).on('click', function() {self.new_motivation(groupcode)});
+	}
+
+	update_group(GroupCode) {
 		let self = this;
 		GroupCode = GroupCode.toUpperCase();
 		let x = {
@@ -75,27 +83,16 @@ class Motivations {
 			AMotivationGroupCode: GroupCode
 		};
 
+		// we would need LoadMotivationGroupDetails
 		api.post('serverMFinance.asmx/TGiftSetupWebConnector_LoadMotivationDetails', x).then(function (data) {
 			data = JSON.parse(data.data.d);
 			let item = data.result.AMotivationGroup[0];
 			let groupDiv = $('#group' + GroupCode);
-			if (groupDiv.length) {
-				let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
-				groupDiv.first().replaceWith(row.children()[0]);
-			} else {
-				$('.tpl_row .collapse').collapse('hide');
-				self.format_item(item);
-				groupDiv = $('#group' + GroupCode);
-				$('html, body').animate({
-									scrollTop: (groupDiv.offset().top - 100)
-									}, 500);
-			}
-			tpl.format_currency(data.ACurrencyCode);
-			tpl.format_date();
-			$('#btnEdit'+item['a_motivation_group_code_c']).on('click', function() {self.edit_group(item['a_motivation_group_code_c'])});
-			$('#btnView'+item['a_motivation_group_code_c']).on('click', function() {self.open_motivations(this, item['a_motivation_group_code_c'])});
-			$('#btnNewDetail'+item['a_motivation_group_code_c']).on('click', function() {self.new_motivation(item['a_motivation_group_code_c'])});
-			//self.open_motivations($('#group' + GroupCode), GroupCode, true);
+			let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+			groupDiv.replaceWith(row);
+			self.install_group_click_handlers(item['a_motivation_group_code_c']);
+			// we did already download the details, but they are not rendered yet
+			setTimeout(function() { self.open_motivations($('#group' + GroupCode), GroupCode, true) }, 400);
 		});
 	}
 
@@ -103,9 +100,7 @@ class Motivations {
 		let self = this;
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		$('#browse_container').append(row);
-		$('#btnEdit'+item['a_motivation_group_code_c']).on('click', function() {self.edit_group(item['a_motivation_group_code_c'])});
-		$('#btnView'+item['a_motivation_group_code_c']).on('click', function() {self.open_motivations(this, item['a_motivation_group_code_c'])});
-		$('#btnNewDetail'+item['a_motivation_group_code_c']).on('click', function() {self.new_motivation(item['a_motivation_group_code_c'])});
+		self.install_group_click_handlers(item['a_motivation_group_code_c']);
 	}
 
 	open_motivations(obj, code, reload = false) {
@@ -269,7 +264,7 @@ class Motivations {
 			if (parsed.result == true) {
 				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
-				self.updateGroup(payload['AMotivationGroupCode']);
+				self.update_group(payload['AMotivationGroupCode']);
 				//self.display_list();
 			} else {
 				for (var msg of parsed.AVerificationResult) {
@@ -293,7 +288,7 @@ class Motivations {
 			if (parsed.result == true) {
 				utils.display_message(i18next.t('forms.saved'), "success");
 				modal.CloseModal(obj);
-				self.updateGroup(payload['AMotivationGroupCode']);
+				self.update_group(payload['AMotivationGroupCode']);
 				//self.display_list();
 			} else {
 				for (var msg of parsed.AVerificationResult) {
@@ -344,7 +339,7 @@ class Motivations {
 				utils.display_message(i18next.t('forms.deleted'), "success");
 				modal.CloseModal(obj);
 				//self.display_list();
-				self.updateGroup(payload['AMotivationGroupCode']);
+				self.update_group(payload['AMotivationGroupCode']);
 			} else {
 				for (var msg of parsed.AVerificationResult) {
 					utils.display_message(i18next.t(msg.code), "fail");
