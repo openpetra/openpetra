@@ -41,9 +41,12 @@ import MaintainConsentPurposes from '../forms/Partner/Setup/MaintainConsentPurpo
 import MaintainPublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
 import MaintainMemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
 
+import LedgerInfo from '../forms/Finance/GeneralLedger/Info/LedgerInfo.js';
 import AccountTree from '../forms/Finance/Setup/GL/AccountTree.js';
 import CostCenterTree from '../forms/Finance/Setup/GL/CostCenterTree.js';
 import Motivations from '../forms/Finance/Setup/Gift/Motivations.js';
+import MonthEnd from '../forms/Finance/GeneralLedger/PeriodEnd/MonthEnd.js';
+import YearEnd from '../forms/Finance/GeneralLedger/PeriodEnd/YearEnd.js';
 
 import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
 import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
@@ -68,9 +71,12 @@ class Navigation {
 			'MaintainPublications': MaintainPublications,
 			'MaintainMemberships': MaintainMemberships,
 
+			'LedgerInfo': LedgerInfo,
 			'AccountTree': AccountTree,
 			'CostCenterTree': CostCenterTree,
 			'Motivations': Motivations,
+			'MonthEnd': MonthEnd,
+			'YearEnd': YearEnd,
 
 			'MaintainUsers': MaintainUsers,
 			'MaintainSettings': MaintainSettings,

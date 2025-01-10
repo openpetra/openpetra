@@ -2,10 +2,10 @@
 //
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       Christopher Jäkel <cj@tbits.net>
+//       Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2020 by SolidCharity.com
+// Copyright 2020-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,44 +23,58 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-$('document').ready(function () {
-	updateInfo();
-});
+import i18next from 'i18next'
+import tpl from '../../../../lib/tpl.js'
+import api from '../../../../lib/ajax.js'
+import utils from '../../../../lib/utils.js'
 
-function year_end() {
+class YearEnd {
 
-	let x = {ALedgerNum: window.localStorage.getItem('current_ledger')};
-	api.post('serverMFinance.asmx/TPeriodIntervalConnector_PeriodYearEnd', x).then(function (data) {
-	let parsed = JSON.parse(data.data.d);
-		let s = false;
-		if (parsed.result == true) {
-			utils.display_message( i18next.t('forms.saved'), 'success' )
-			updateInfo();
-		}
-		else {
-			utils.display_error( parsed.AVerificationResult );
-		}
-	});
+	Ready() {
+		let self = this;
+		self.updateInfo();
+		$('#btnYearEnd').on('click', function() {self.year_end()});
+	}
 
-}
+	year_end() {
+		let self = this;
 
-function updateInfo() {
-	let x = {ALedgerNumber: window.localStorage.getItem('current_ledger')};
-	api.post('serverMFinance.asmx/TAPTransactionWebConnector_GetLedgerInfo', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		let ledger = data.result[0];
-		let to_replace = $('#ledger_info').clone();
-		to_replace.find('.current_period').find('span').text( i18next.t( 'LedgerInfo.'+ledger.a_current_period_i+'_month' ) );
-		$('.frame').html( format_tpl( to_replace, ledger ) );
-	});
+		let x = {ALedgerNum: window.localStorage.getItem('current_ledger')};
+		api.post('serverMFinance.asmx/TPeriodIntervalConnector_PeriodYearEnd', x).then(function (data) {
+		let parsed = JSON.parse(data.data.d);
+			let s = false;
+			if (parsed.result == true) {
+				utils.display_message( i18next.t('forms.saved'), 'success' )
+				updateInfo();
+			}
+			else {
+				utils.display_error( parsed.AVerificationResult );
+			}
+		});
 
-	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPostingRangeDates', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		$('#ledger_info').find('.fwd_posting').html( format_tpl( $('[phantom] .fwd_posting').clone(), data ) );
-	});
+	}
 
-	api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPeriodDates', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		$('#ledger_info').find('.period').html( format_tpl( $('[phantom] .period').clone(), data ) );
-	});
-}
+	updateInfo() {
+		let self = this;
+		let x = {ALedgerNumber: window.localStorage.getItem('current_ledger')};
+		api.post('serverMFinance.asmx/TAPTransactionWebConnector_GetLedgerInfo', x).then(function (data) {
+			data = JSON.parse(data.data.d);
+			let ledger = data.result[0];
+			let to_replace = $('#ledger_info').clone();
+			to_replace.find('.current_period').find('span').text( i18next.t( 'LedgerInfo.'+ledger.a_current_period_i+'_month' ) );
+			$('.frame').html( tpl.format_tpl( to_replace, ledger ) );
+		});
+
+		api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPostingRangeDates', x).then(function (data) {
+			data = JSON.parse(data.data.d);
+			$('#ledger_info').find('.fwd_posting').html( tpl.format_tpl( $('[phantom] .fwd_posting').clone(), data ) );
+		});
+
+		api.post('serverMFinance.asmx/TFinanceServerLookupWebConnector_GetCurrentPeriodDates', x).then(function (data) {
+			data = JSON.parse(data.data.d);
+			$('#ledger_info').find('.period').html( tpl.format_tpl( $('[phantom] .period').clone(), data ) );
+		});
+	}
+} // end of class
+
+export default new YearEnd();
