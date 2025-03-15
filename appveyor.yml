@@ -1,5 +1,5 @@
 # see http://www.appveyor.com/docs/appveyor-yml
-image: Ubuntu2404
+image: Ubuntu2204
 version: 1.0.{build}
 platform: x86
 stack: mysql, node 20
