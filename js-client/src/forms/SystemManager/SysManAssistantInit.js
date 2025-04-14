@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2020 by SolidCharity.com
+// Copyright 2020-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,6 +21,9 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import i18next from 'i18next'
+import i18n from '../../lib/i18n.js';
+
 var last_opened_entry_data = {};
 
 $('document').ready(function () {
@@ -28,7 +31,7 @@ $('document').ready(function () {
 });
 
 function open_edit() {
-	var r = {AClientLanguage: currentLng()};
+	var r = {AClientLanguage: i18n.currentLng()};
 	// on open of a edit modal, we get new data,
 	// so everything is up to date and we don't have to load it, if we only search
 	api.post('serverMSysMan.asmx/TSettingsWebConnector_GetDefaultsForFirstSetup', r).then(function (data) {

@@ -5,7 +5,7 @@
 //	Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2024 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -25,6 +25,7 @@
 
 import api from './ajax.js';
 import utils from './utils.js';
+import i18n from './i18n.js';
 import i18next from 'i18next';
 
 class Auth {
@@ -114,7 +115,7 @@ class Auth {
 		api.post('serverSessionManager.asmx/SignUpSelfService',
 			{AEmailAddress: userEmail,
 					AFirstName: firstname, ALastName: lastname, APassword: pwd,
-					ALanguageCode: currentLng()})
+					ALanguageCode: i18n.currentLng()})
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.result == true) {

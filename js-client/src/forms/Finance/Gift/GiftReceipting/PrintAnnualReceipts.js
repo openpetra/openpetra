@@ -3,7 +3,7 @@
 // @Authors:
 //  Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2023 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -20,6 +20,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra. If not, see <http://www.gnu.org/licenses/>.
 //
+
+import i18next from 'i18next'
+import i18n from '../../lib/i18n.js';
 
 $(function() {
 	var year = (new Date()).getYear() + 1900 - 1;
@@ -235,7 +238,7 @@ function GenerateAnnualReceiptsRemote() {
 		'AFrequency': 'Annual',
 		'AStartDate': payload['AStartDate'],
 		'AEndDate': payload['AEndDate'],
-		'ALanguage': currentLng(),
+		'ALanguage': i18n.currentLng(),
 		'ADeceasedFirst': true,
 		'AExtract': '',
 		'ADonorKey': payload['p_donor_key_n'],

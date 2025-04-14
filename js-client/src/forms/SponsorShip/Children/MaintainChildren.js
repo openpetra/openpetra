@@ -4,7 +4,7 @@
 //       Christopher Jäkel
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2020-2021 by SolidCharity.com
+// Copyright 2020-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,6 +21,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
+
+import i18next from 'i18next'
+import i18n from '../../lib/i18n.js';
 
 MAX_LENGTH_COMMENT_PREVIEW = 64;
 
@@ -114,7 +117,7 @@ var MaintainChildren = new (class {
   // same as show, but return a PDF file
   print() {
     var req = this.getFilter();
-    req["AReportLanguage"] = currentLng();
+    req["AReportLanguage"] = i18n.currentLng();
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_PrintChildren', req).then(
       function (data) {
@@ -134,7 +137,7 @@ var MaintainChildren = new (class {
   // same as show, but export file with addresses of sponsors
   export() {
     var req = this.getFilter();
-    req["AReportLanguage"] = currentLng();
+    req["AReportLanguage"] = i18n.currentLng();
 
     api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_ExportChildrenAndSponsorAddresses', req).then(
       function (data) {
