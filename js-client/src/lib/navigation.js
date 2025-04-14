@@ -41,6 +41,7 @@ import MaintainConsentPurposes from '../forms/Partner/Setup/MaintainConsentPurpo
 import MaintainPublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
 import MaintainMemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
 
+import LedgerSetup from '../forms/CrossLedgerSetup/LedgerSetup.js';
 import LedgerInfo from '../forms/Finance/GeneralLedger/Info/LedgerInfo.js';
 import AccountTree from '../forms/Finance/Setup/GL/AccountTree.js';
 import CostCenterTree from '../forms/Finance/Setup/GL/CostCenterTree.js';
@@ -71,6 +72,7 @@ class Navigation {
 			'MaintainPublications': MaintainPublications,
 			'MaintainMemberships': MaintainMemberships,
 
+			'LedgerSetup': LedgerSetup,
 			'LedgerInfo': LedgerInfo,
 			'AccountTree': AccountTree,
 			'CostCenterTree': CostCenterTree,
@@ -539,7 +541,7 @@ class Navigation {
 
 	loadNavigation() {
 		// TODO: caching for this user??? see window.localStorage below
-		self = this;
+		let self = this;
 		// load sidebar navigation from UINavigation.yml
 		api.post('serverSessionManager.asmx/GetNavigationMenu', {})
 			.then(function(response) {
@@ -566,77 +568,85 @@ class Navigation {
 				console.log(error);
 			});
 	}
+
+	LoadAvailableLedgerDropDown() {
+		let self = this;
+
+		// check for FINANCE-1 permission. else: hide the ledger selection
+		let permissions = window.localStorage.getItem('ModulePermissions');
+		if (permissions == null) {
+			permissions = "";
+		}
+		let permissionsFormatted = (" " + permissions.replace(/\n/g, ' ') + " ");
+		if (!permissionsFormatted.includes(" FINANCE-1 ")) {
+
+			// if the user still has access to a ledger (e.g. SponsorADMIN), then store that as default ledger
+			if (permissionsFormatted.includes(" LEDGER")) {
+				let i = permissionsFormatted.indexOf(" LEDGER") + " LEDGER".length;
+				let ledgernumber = permissionsFormatted.substring(i, i + 4);
+				window.localStorage.setItem('current_ledger', parseInt(ledgernumber));
+			}
+
+			$('#LedgerSelection').hide();
+			return;
+		}
+
+		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+			data = JSON.parse(data.data.d);
+			let dump = $('#ledger_select_dropdown').html('');
+			let menu = '';
+			let current_selected_ledger = null;
+			for (var ledger of data.result) {
+				if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') || data.result.length == 1) {
+					current_selected_ledger = ledger;
+					if (data.result.length == 1 && window.localStorage.getItem('current_ledger') == null) {
+						self.change_standard_ledger(current_selected_ledger.a_ledger_number_i);
+					}
+				}
+				menu += '<li>';
+				menu += '<a class="dropdown-item" id="btnLedger' + ledger.a_ledger_number_i + '" href="#">' +
+					ledger.a_ledger_name_c + '</a>';
+				menu += '</li>';
+			}
+			menu += '';
+			dump.append($(menu));
+			for (var ledger of data.result) {
+				$('#btnLedger'+ledger.a_ledger_number_i).on('click', function() {self.change_standard_ledger(this)});
+			}
+			if (current_selected_ledger == null) {
+				$('#current_ledger_field').html('<b style="color:#f88;">'+i18next.t('navigation.ledgerselect_none')+'</b>');
+			} else {
+				$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
+			}
+		});
+	}
+
+	change_standard_ledger(ledger_id) {
+		if (!Number.isInteger(ledger_id)) {
+			let obj = ledger_id;
+			ledger_id = obj.id.substring("btnLedger".length);
+		}
+
+		window.localStorage.setItem('current_ledger', ledger_id);
+		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+			data = JSON.parse(data.data.d);
+			for (var ledger of data.result) {
+				if (ledger.a_ledger_number_i == ledger_id) {
+					utils.display_message(i18next.t("navigation.switchledger")+" "+ledger.a_ledger_name_c, "success");
+					$('#current_ledger_field').text(ledger.a_ledger_name_c);
+				}
+			}
+		})
+	}
 }
+
+let nav = new Navigation();
+export default nav;
 
 $('document').ready(function () {
 	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
 		return; // User is not logged in
 	}
 
-	LoadAvailableLedgerDropDown();
+	nav.LoadAvailableLedgerDropDown();
 });
-
-function LoadAvailableLedgerDropDown() {
-	// check for FINANCE-1 permission. else: hide the ledger selection
-	let permissions = window.localStorage.getItem('ModulePermissions');
-	if (permissions == null) {
-		permissions = "";
-	}
-	let permissionsFormatted = (" " + permissions.replace(/\n/g, ' ') + " ");
-	if (!permissionsFormatted.includes(" FINANCE-1 ")) {
-
-		// if the user still has access to a ledger (e.g. SponsorADMIN), then store that as default ledger
-		if (permissionsFormatted.includes(" LEDGER")) {
-			let i = permissionsFormatted.indexOf(" LEDGER") + " LEDGER".length;
-			let ledgernumber = permissionsFormatted.substring(i, i + 4); 
-			window.localStorage.setItem('current_ledger', parseInt(ledgernumber));
-		}
-
-		$('#LedgerSelection').hide();
-		return;
-	}
-
-	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
-		data = JSON.parse(data.data.d);
-		let dump = $('#ledger_select_dropdown').html('');
-		let menu = '';
-		let current_selected_ledger = null;
-		for (var ledger of data.result) {
-			if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') || data.result.length == 1) {
-				current_selected_ledger = ledger;
-				if (data.result.length == 1 && window.localStorage.getItem('current_ledger') == null) {
-					change_standard_ledger(current_selected_ledger.a_ledger_number_i);
-				}
-			}
-			menu += '<li>';
-			menu += '<a class="dropdown-item" href="#" '+
-				'onclick="change_standard_ledger(' + ledger.a_ledger_number_i + ')">' +
-				ledger.a_ledger_name_c + '</a>';
-			menu += '</li>';
-		}
-		menu += '';
-		dump.append($(menu));
-		if (current_selected_ledger == null) {
-			$('#current_ledger_field').html('<b style="color:#f88;">'+i18next.t('navigation.ledgerselect_none')+'</b>');
-		} else {
-			$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
-		}
-	});
-}
-
-function change_standard_ledger(ledger_id) {
-	window.localStorage.setItem('current_ledger', ledger_id);
-	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
-		data = JSON.parse(data.data.d);
-		for (ledger of data.result) {
-			if (ledger.a_ledger_number_i == ledger_id) {
-				utils.display_message(i18next.t("navigation.switchledger")+" "+ledger.a_ledger_name_c, "success");
-				$('#current_ledger_field').text(ledger.a_ledger_name_c);
-			}
-		}
-	})
-}
-
-let nav = new Navigation();
-
-export default nav;
