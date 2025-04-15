@@ -8,7 +8,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2024 SolidCharity.com
+// Copyright 2019-2025 SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -49,7 +49,7 @@
 
 <!-- Begin of login screen -->
 <div id="login" class="container" style="display:none">
-	<button id="btnSignUp" class="btn btn-lg btn-primary float-right" style="display:none" onClick="requestSignUp()">{signup}</button>
+	<button id="btnSignUp" class="btn btn-lg btn-primary float-right" style="display:none">{signup}</button>
 
 	<form class="form-signin">
 		<input type="text" class="form-control" placeholder="{email}" id="txtEmail" autofocus>
@@ -69,7 +69,7 @@
 	</div>
 
 	<div class="form-signin">
-		<span>{forgotpwd}</span> <a href="#" onClick="requestNewPassword()">{reqnewpwdclickhere}</a>
+		<span>{forgotpwd}</span> <a href="#" id="btnRequestNewPassword">{reqnewpwdclickhere}</a>
 	</div>
 
 	<div class="row">
