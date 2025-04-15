@@ -5,7 +5,7 @@
 //	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2024 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -479,7 +479,9 @@ class MaintainPartners {
 		self.last_opened_entry_data.p_default_phone_landline_c = self.last_opened_entry_data.ADefaultPhoneLandline;
 		self.last_opened_entry_data.p_default_phone_mobile_c = self.last_opened_entry_data.ADefaultPhoneMobile;
 
-		let updated_data = replace_data(self.last_opened_entry_data, x);
+		let updated_data = utils.replace_data(self.last_opened_entry_data, x);
+
+		console.log(updated_data);
 
 		// get all tags for the partner
 		let applied_tags = []
@@ -832,6 +834,7 @@ class MaintainPartners {
 			let m = modal.ShowModal('history'+self.partnerkey, Temp);
 
 			m.find('#btnSubmitConsentEditHistory').click(function(){self.submit_consent_edit(this,false);});
+			m.find('#btnCloseTplHistory').click(function(){modal.CloseModal(this);});
 
 			// select the first data type by default
 			let firstPermission = m.find('button.selecttype:first');
@@ -881,7 +884,7 @@ class MaintainPartners {
 			APartnerKey: self.partnerkey,
 			ADataType: datatype
 		};
-		var Target = FindModal('history'+self.partnerkey);
+		var Target = modal.FindModal('history'+self.partnerkey);
 		Target.attr("selected-data-type", datatype);
 
 		api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetHistory', req).then(function (data) {
@@ -1037,6 +1040,7 @@ class MaintainPartners {
 	}
 
 	submit_changes_consent(obj) {
+		var self = this;
 		let m = modal.FindMyModal(obj);
 
 		var current_field = m.find("data[name=field]").val();

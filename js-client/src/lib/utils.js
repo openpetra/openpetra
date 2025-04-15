@@ -5,7 +5,7 @@
 //         Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2024 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -212,11 +212,11 @@ class Utils {
             }
             // maybe a update name is in a object
             if (replace_obj[variable] instanceof Object) {
-                replace_obj[variable] = replace_data(replace_obj[variable], update_data, variable+"_");
+                replace_obj[variable] = this.replace_data(replace_obj[variable], update_data, variable+"_");
             }
             if (replace_obj[variable] instanceof Array) {
-                for (list_item of replace_obj[variable]) {
-                list_item = replace_data(list_item, update_data, variable+"_");
+                for (var list_item of replace_obj[variable]) {
+                    list_item = this.replace_data(list_item, update_data, variable+"_");
                 }
             }
         }

@@ -98,7 +98,7 @@ function save_entry(obj_modal) {
 	last_opened_entry_data.p_default_phone_landline_c = last_opened_entry_data.ADefaultPhoneLandline;
 	last_opened_entry_data.p_default_phone_mobile_c = last_opened_entry_data.ADefaultPhoneMobile;
 
-	let updated_data = replace_data(last_opened_entry_data, x);
+	let updated_data = utils.replace_data(last_opened_entry_data, x);
 
 	// get all tags for the partner
 	applied_tags = []
