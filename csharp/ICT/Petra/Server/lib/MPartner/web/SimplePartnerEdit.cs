@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2024 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -398,6 +398,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         }
                     }
                 });
+
+            // fix broken record, that does not have a location
+            if (MainDS.PLocation.Rows.Count == 0) {
+                PLocationRow location = MainDS.PLocation.NewRowTyped();
+                location.SiteKey = DomainManager.GSiteKey;
+                // TODO: read country code from SystemDefaults table
+                location.CountryCode = "DE";
+                location.LocationKey = -1;
+                MainDS.PLocation.Rows.Add(location);
+            }
+            if (MainDS.PPartnerLocation.Rows.Count == 0) {
+                PPartnerLocationRow partnerlocation = MainDS.PPartnerLocation.NewRowTyped();
+                partnerlocation.PartnerKey = MainDS.PPartner[0].PartnerKey;
+                partnerlocation.LocationKey = MainDS.PLocation[0].LocationKey;
+                partnerlocation.SiteKey = MainDS.PLocation[0].SiteKey;
+                partnerlocation.SendMail = false;
+                MainDS.PPartnerLocation.Rows.Add(partnerlocation);
+            }
 
             APartnerTypes = PartnerTypes;
             ASubscriptions = Subscriptions;
