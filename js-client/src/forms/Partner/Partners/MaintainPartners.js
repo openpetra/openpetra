@@ -481,8 +481,6 @@ class MaintainPartners {
 
 		let updated_data = utils.replace_data(self.last_opened_entry_data, x);
 
-		console.log(updated_data);
-
 		// get all tags for the partner
 		let applied_tags = []
 		m.find('#types').find('.tpl_check').each(function (i, o) {

@@ -33,6 +33,7 @@ import utils from './utils.js';
 import ReleaseNotes from '../forms/ReleaseNotes.js';
 import About from '../forms/About.js';
 
+import MaintainPartnerSelfService from '../forms/SelfService/MaintainPartnerSelfService.js';
 import ImportPartners from '../forms/Partner/Partners/ImportPartners.js';
 import MaintainPartners from '../forms/Partner/Partners/MaintainPartners.js';
 import MaintainTypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
@@ -64,6 +65,7 @@ class Navigation {
 			'ReleaseNotes': ReleaseNotes,
 			'About': About,
 
+			'MaintainPartnerSelfService': MaintainPartnerSelfService,
 			'MaintainPartners': MaintainPartners,
 			'ImportPartners': ImportPartners,
 			'MaintainTypes': MaintainTypes,
