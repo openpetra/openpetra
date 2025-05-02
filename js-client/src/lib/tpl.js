@@ -527,10 +527,10 @@ class Tpl {
                         }
                     } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
                         // avoid cross site scripting. still allow newlines as html code
-                        html = v.replace(/<br\/>/g, 'NEWLINE').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/NEWLINE/g, '<br/>');
-
+                        let html = v.replace(/<br\/>/g, 'NEWLINE').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/NEWLINE/g, '<br/>');
+                        let pos = -1;
                         while ((pos = html.indexOf('mailto(')) >= 0) {
-                            email = html.substring(pos + 'mailto('.length);
+                            let email = html.substring(pos + 'mailto('.length);
                             email = email.substring(0, email.indexOf(')'));
                             html = html.replace('mailto(' + email + ')', '<a href="' + email + '">' + email + '</a>');
                         }

@@ -42,6 +42,8 @@ import MaintainConsentPurposes from '../forms/Partner/Setup/MaintainConsentPurpo
 import MaintainPublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
 import MaintainMemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
 
+import MaintainChildren from '../forms/SponsorShip/Children/MaintainChildren.js';
+
 import LedgerSetup from '../forms/CrossLedgerSetup/LedgerSetup.js';
 import LedgerInfo from '../forms/Finance/GeneralLedger/Info/LedgerInfo.js';
 import AccountTree from '../forms/Finance/Setup/GL/AccountTree.js';
@@ -73,6 +75,8 @@ class Navigation {
 			'MaintainConsentPurposes': MaintainConsentPurposes,
 			'MaintainPublications': MaintainPublications,
 			'MaintainMemberships': MaintainMemberships,
+
+			'MaintainChildren': MaintainChildren,
 
 			'LedgerSetup': LedgerSetup,
 			'LedgerInfo': LedgerInfo,
