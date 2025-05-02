@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2024 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1039,9 +1039,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             decimal AGiftAmount,
             DateTime AStartDonations,
             DateTime? AEndDonations,
+            out ARecurringGiftDetailTable ARecurringGiftDetail,
             out TVerificationResultCollection AVerificationResult) 
         {
             AVerificationResult = new TVerificationResultCollection();
+            ARecurringGiftDetail = new ARecurringGiftDetailTable();
 
             if (ADonorKey <= 0)
             {
@@ -1151,6 +1153,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             try
             {
                 SponsorshipTDSAccess.SubmitChanges(MainDS);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(ARecipientKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                ARecurringGiftDetail = result.ARecurringGiftDetail;
                 return true;
             }
             catch (Exception e)

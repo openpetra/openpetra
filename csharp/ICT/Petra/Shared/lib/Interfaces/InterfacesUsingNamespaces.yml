@@ -10,5 +10,5 @@ InterfacesUsingNamespaces:
     Personnel: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Petra.Shared.MCommon]
     SysMan: [Ict.Common.IO, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.Security, Ict.Petra.Shared.MPartner.Partner.Data]
     Reporting: [Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MFinance.GL.Data]
-    Sponsorship: [Ict.Petra.Shared.MSponsorship.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MPartner.Partner.Data]
+    Sponsorship: [Ict.Petra.Shared.MSponsorship.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MFinance.Gift.Data]
     
