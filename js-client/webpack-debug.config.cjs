@@ -49,7 +49,13 @@ module.exports = {
           },
           {
             // Loads a SASS/SCSS file and compiles it to CSS
-            loader: 'sass-loader'
+            loader: 'sass-loader',
+            // silence deprecation warnings from Bootstrap 5
+            options: {
+              sassOptions: {
+                silenceDeprecations: ['mixed-decls', 'color-functions', 'global-builtin', 'import'],
+              }
+            }
           }
         ]
       },
