@@ -656,8 +656,9 @@ var MaintainChildSponsorship = new (class {
 	}
 
 	delete(obj_modal) {
+		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server(tpl.extract_data(obj));
 		api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_DeleteSponsorshipRecurringGift', payload).then(
 			function (result) {
 				var parsed = JSON.parse(result.data.d);
@@ -667,7 +668,9 @@ var MaintainChildSponsorship = new (class {
 				}
 
 				modal.CloseModal(obj)
-				MaintainChildren.edit(null, payload["ARecipientKey"], "sponsorship");
+
+				var recurring_detail = parsed.ARecurringGiftDetail;
+				self.build(self.parent_modal, recurring_detail);
 			});
 	}
 

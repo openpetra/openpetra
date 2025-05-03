@@ -1175,8 +1175,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             Int32 ABatchNumber,
             Int32 AGiftTransactionNumber,
             Int32 ADetailNumber,
+            Int64 ARecipientKey,
+            out ARecurringGiftDetailTable ARecurringGiftDetail,
             out TVerificationResultCollection AVerificationResult) 
         {
+            ARecurringGiftDetail = new ARecurringGiftDetailTable();
             AVerificationResult = new TVerificationResultCollection();
 
             TDBTransaction Transaction = new TDBTransaction();
@@ -1244,6 +1247,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 }
 
                 SponsorshipTDSAccess.SubmitChanges(MainDS, DB);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(ARecipientKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                ARecurringGiftDetail = result.ARecurringGiftDetail;
+
                 return true;
             }
             catch (Exception e)
