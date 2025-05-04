@@ -52,6 +52,8 @@ import Motivations from '../forms/Finance/Setup/Gift/Motivations.js';
 import MonthEnd from '../forms/Finance/GeneralLedger/PeriodEnd/MonthEnd.js';
 import YearEnd from '../forms/Finance/GeneralLedger/PeriodEnd/YearEnd.js';
 
+import BankImport from '../forms/Finance/Gift/GiftEntry/BankImport.js';
+
 import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
 import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
 import ImportAndExportDatabase from '../forms/SystemManager/ImportAndExportDatabase.js';
@@ -85,6 +87,8 @@ class Navigation {
 			'Motivations': Motivations,
 			'MonthEnd': MonthEnd,
 			'YearEnd': YearEnd,
+
+			'BankImport': BankImport,
 
 			'MaintainUsers': MaintainUsers,
 			'MaintainSettings': MaintainSettings,

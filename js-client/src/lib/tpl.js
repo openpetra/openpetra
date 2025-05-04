@@ -289,13 +289,14 @@ class Tpl {
     }
 
     format_currency(currencyCode) {
+        let self = this;
         $(".format_currency:contains('-')").addClass('debit');
         $('.format_currency').each(
             function(x, obj) {
                 obj = $(obj);
                 let t = obj.text();
                 if (t == null || t.length == 0) {return}
-                obj.text(this.printCurrency(t, currencyCode));
+                obj.text(self.printCurrency(t, currencyCode));
 
             }
         )
@@ -461,7 +462,7 @@ class Tpl {
     }
 
     insertData(o, d, to_string=false, currencyCode="EUR", limit_to_table='') {
-        self = this
+        let self = this
         // o = JQuery object | str
         // d = object
         // to_string = bool :: false
@@ -523,7 +524,7 @@ class Tpl {
                         }
                         else
                         {
-                            f.text( this.printCurrency(v, currencyCode) );
+                            f.text( self.printCurrency(v, currencyCode) );
                         }
                     } else if ( ["SPAN","SUB","H1","H2"].indexOf(f.prop("tagName")) > -1 ) {
                         // avoid cross site scripting. still allow newlines as html code
