@@ -34,7 +34,6 @@ import AutocompleteMotivation from '../../../lib/autocomplete_motivation.js'
 class MaintainChildren {
 
 	constructor() {
-		this.countComboboxes = 0;
 	}
 
 	show_tab(tab_id) {
@@ -51,6 +50,7 @@ class MaintainChildren {
 
 	Ready() {
 		let self = this
+		self.countComboboxes = 0;
 
 		$(document).on('show.bs.modal', '.modal', function (event) {
 			var zIndex = 1040 + (10 * $('.modal:visible').length);
@@ -455,17 +455,19 @@ var MaintainChildComments = new (class {
 		this.MAX_LENGTH_COMMENT_PREVIEW = 64;
 	}
 
-	build(obj, result) {
+	build(obj_modal, comments) {
 		// builds the entrys as rows in there location
 		// requires a list of PPartnerComment API data
 		let self = this;
+		let obj = $(obj_modal).closest('.modal');
+		self.parent_modal = obj;
 
 		var CommentsFamily = obj.find("[id=family_situations] .container-list").html("");
 		var CommentsSchool = obj.find("[id=school_situations] .container-list").html("");
 
 		this.highest_index = 0;
 
-		for (var comment of result) {
+		for (var comment of comments) {
 			var Copy = $("[phantom] .comment").clone();
 
 			// save current highest index
@@ -483,28 +485,41 @@ var MaintainChildComments = new (class {
 				case "FAMILY": CommentsFamily.append(Copy); break;
 				case "SCHOOL": CommentsSchool.append(Copy); break;
 			}
+			Copy.find("#btnEdit").on('click', function () {self.edit(this)});
+
+		}
+
+		if (!self.buttons_init) {
+			obj.find("#btnNewFamilySituation").on('click', function () {self.showCreate(obj, 'FAMILY')});
+			obj.find("#btnNewSchoolSituation").on('click', function () {self.showCreate(obj, 'SCHOOL')});
+			self.buttons_init = true;
 		}
 	}
 
-	showCreate(type) {
+	showCreate(obj, type) {
 		let self = this;
 
-		var ddd = {
-			"p_partner_key_n" : $("#detail_modal [name=p_partner_key_n]").val(),
+		var data = {
+			"p_partner_key_n" : obj.find("[name=p_partner_key_n]").val(),
 			"p_index_i" : (this.highest_index + 1),
 			"p_comment_c" : "",
 			"p_comment_type_c" : type
 		};
 
-		tpl.insertData("#comment_modal", ddd);
-		$("#comment_modal").attr("mode", "create");
-		$("#comment_modal").modal("show");
+		let temp = $("#comment_modal").clone();
+		tpl.insertData(temp, data);
+		temp.attr("mode", "create");
+		let m = modal.ShowModal('comment_new_' + type, temp);
+		console.log(m)
+		m.find('#btnSave').on('click', function () {self.saveEdit(this)});
+		m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
 	}
 
-	saveEdit() {
-
+	saveEdit(obj_modal) {
 		let self = this;
-		var req = utils.translate_to_server(tpl.extractData($("#comment_modal")));
+		let obj = $(obj_modal).closest('.modal');
+		var req = utils.translate_to_server(tpl.extractData(obj));
+		req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
 
 		api.post('serverMSponsorship.asmx/TSponsorshipWebConnector_MaintainChildComments', req).then(
 			function (data) {
@@ -514,15 +529,8 @@ var MaintainChildComments = new (class {
 					return utils.display_error(parsed.AVerificationResult);
 				}
 
-				$("#comment_modal").modal("hide");
-
-				var tabname = null;
-				switch (req["ACommentType"]) {
-					case "FAMILY": tabname = "family_situations"; break;
-					case "SCHOOL": tabname = "school_situations"; break;
-				}
-
-				self.edit(null, req["APartnerKey"], tabname);
+				modal.CloseModal(obj);
+				self.build(self.parent_modal, parsed.APartnerComment);
 			}
 		);
 
@@ -553,10 +561,13 @@ var MaintainChildComments = new (class {
 
 				if (!edit_comment) { return; }
 
-				tpl.insertData("#comment_modal", edit_comment);
-				$("#comment_modal").attr("mode", "edit");
-				$("#comment_modal").modal("show");
-
+				let temp = $("#comment_modal").clone();
+				tpl.insertData(temp, edit_comment);
+				temp.attr("mode", "edit");
+				let m = modal.ShowModal('comment_edit', temp);
+				console.log("show modal comment")
+				m.find('#btnSave').on('click', function () {self.saveEdit(this)});
+				m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
 			}
 		);
 	}
@@ -588,11 +599,14 @@ var MaintainChildSponsorship = new (class {
 
 			var Temp = $("[phantom] .sponsorship").clone();
 			tpl.insertData(Temp, sponsorship, sponsorship.CurrencyCode);
-			let newRow = SponsorList.append(Temp);
-			newRow.find("#btnEditSponsorship").on('click', function () {self.edit(this)});
+			SponsorList.append(Temp);
+			Temp.find("#btnEditSponsorship").on('click', function () {self.edit(this)});
 		}
 
-		obj.find("#btnNewSponsorship").on('click', function () {self.showCreate(obj)});
+		if (!self.buttons_init) {
+			obj.find("#btnNewSponsorship").on('click', function () {self.showCreate(obj)});
+			self.buttons_init = true;
+		}
 	}
 
 	showCreate(obj) {
@@ -649,8 +663,7 @@ var MaintainChildSponsorship = new (class {
 
 				modal.CloseModal(obj)
 
-				var recurring_detail = parsed.ARecurringGiftDetail;
-				self.build(self.parent_modal, recurring_detail);
+				self.build(self.parent_modal, parsed.ARecurringGiftDetail);
 			}
 		);
 	}
@@ -669,8 +682,7 @@ var MaintainChildSponsorship = new (class {
 
 				modal.CloseModal(obj)
 
-				var recurring_detail = parsed.ARecurringGiftDetail;
-				self.build(self.parent_modal, recurring_detail);
+				self.build(self.parent_modal, parsed.ARecurringGiftDetail);
 			});
 	}
 
@@ -726,16 +738,17 @@ var MaintainChildReminders = new (class {
 		this.MAX_LENGTH_COMMENT_PREVIEW = 64;
 	}
 
-	build(obj, result) {
+	build(obj_modal, reminders) {
 		// builds the entrys as rows in there location
 		// requires a list of PPartnerReminder API data
 		let self = this;
-
+		let obj = $(obj_modal).closest('.modal');
+		self.parent_modal = obj;
 		var Reminders = obj.find("[id=dates_reminder] .container-list").html("");
 
 		this.highest_index = 0;
 
-		for (var reminder of result) {
+		for (var reminder of reminders) {
 			var Copy = $("[phantom] .reminder").clone();
 
 			// save current highest index
@@ -750,28 +763,40 @@ var MaintainChildReminders = new (class {
 
 			tpl.insertData(Copy, reminder);
 			Reminders.append(Copy);
+			Copy.find("#btnEdit").on('click', function () {self.edit(this)});
+		}
+
+		if (!self.buttons_init) {
+			obj.find("#btnNewReminder").on('click', function () {self.showCreate(obj)});
+			self.buttons_init = true;
 		}
 	}
 
-	showCreate(type) {
+	showCreate(obj) {
 		let self = this;
 
-		var ddd = {
-			"p_partner_key_n": $("#detail_modal [name=p_partner_key_n]").val(),
+		var data = {
+			"p_partner_key_n": obj.find("[name=p_partner_key_n]").val(),
 			"p_reminder_id_i": (this.highest_index + 1),
 			"p_comment_c" : "",
 			"p_event_date_d": "",
 			"p_first_reminder_date_d": ""
 		};
 
-		tpl.insertData("#reminder_modal", ddd);
-		$("#reminder_modal").attr("mode", "create");
-		$("#reminder_modal").modal("show");
+		let temp = $("#reminder_modal").clone();
+		tpl.insertData(temp, data);
+		temp.attr("mode", "create");
+		let m = modal.ShowModal('reminder_new', temp);
+
+		m.find('#btnSave').on('click', function () {self.saveEdit(this)});
+		m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
 	}
 
-	saveEdit() {
-
-		var req = utils.translate_to_server(tpl.extractData($("#reminder_modal")));
+	saveEdit(obj_modal) {
+		let self = this;
+		let obj = $(obj_modal).closest('.modal');
+		var req = utils.translate_to_server(tpl.extractData(obj));
+		req["ALedgerNumber"] = window.localStorage.getItem("current_ledger");
 
 		if (!req["AEventDate"]) {
 			return utils.display_error("MaintainChildren.ErrReminderEventDate");
@@ -793,14 +818,15 @@ var MaintainChildReminders = new (class {
 					return utils.display_error(parsed.AVerificationResult);
 				}
 
-				$("#reminder_modal").modal("hide");
-				MaintainChildren.edit(null, req["APartnerKey"], "dates_reminder");
+				modal.CloseModal(obj)
+				self.build(self.parent_modal, parsed.APartnerReminder);
 			}
 		);
 
 	}
 
 	edit(obj) {
+		let self = this;
 		obj = $(obj).closest(".reminder");
 
 		var reminder_id = obj.find("[name=p_reminder_id_i]").val();
@@ -824,10 +850,12 @@ var MaintainChildReminders = new (class {
 
 				if (!edit_reminder) { return; }
 
-				tpl.insertData("#reminder_modal", edit_reminder);
-				$("#reminder_modal").attr("mode", "edit");
-				$("#reminder_modal").modal("show");
-
+				let temp = $("#reminder_modal").clone();
+				tpl.insertData(temp, edit_reminder);
+				temp.attr("mode", "edit");
+				let m = modal.ShowModal('reminder_edit', temp);
+				m.find('#btnSave').on('click', function () {self.saveEdit(this)});
+				m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
 			}
 		);
 	}

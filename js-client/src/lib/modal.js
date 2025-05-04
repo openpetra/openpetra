@@ -92,7 +92,7 @@ class Modal {
         let m=$(btn).closest('.modal');
         m.modal('hide');
         if (remove) {
-            window.setTimeout(function() {m.remove();}, 500);
+            m.remove();
         }
     }
 }

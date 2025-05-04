@@ -894,15 +894,18 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// maintain comments about the child
         [RequireModulePermission("SPONSORADMIN")]
         public static bool MaintainChildComments(
+            Int32 ALedgerNumber,
             string AComment,
             string ACommentType,
             Int32 AIndex,
             Int64 APartnerKey,
+            out PPartnerCommentTable APartnerComment,
             out TVerificationResultCollection AVerificationResult)
         {
 
             SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
+            APartnerComment = new PPartnerCommentTable();
 
             if (APartnerKey == -1)
             {
@@ -945,6 +948,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             try
             {
                 SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(APartnerKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                APartnerComment = result.PPartnerComment;
+
                 return true;
             }
             catch (Exception e)
@@ -958,16 +966,19 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// maintain reminders about the child
         [RequireModulePermission("SPONSORADMIN")]
         public static bool MaintainChildReminders(
+            Int32 ALedgerNumber,
             String AComment,
             Int32 AReminderId,
             Int64 APartnerKey,
             DateTime AEventDate,
             DateTime AFirstReminderDate,
+            out PPartnerReminderTable APartnerReminder,
             out TVerificationResultCollection AVerificationResult)
         {
 
             SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
+            APartnerReminder = new PPartnerReminderTable();
 
             if (APartnerKey == -1)
             {
@@ -1015,6 +1026,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             try
             {
                 SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(APartnerKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                APartnerReminder = result.PPartnerReminder;
+
                 return true;
             }
             catch (Exception e)
