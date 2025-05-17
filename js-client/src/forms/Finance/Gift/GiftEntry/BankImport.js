@@ -44,6 +44,16 @@ class BankImport {
 		self.display_dropdownlist();
 		self.load_preset();
 		$('#autocomplete_bankaccountcode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+		$('#import_csv_file').on('change', function () {self.import_csv_file(this)});
+		$('#import_camt_file').on('change', function () {self.import_camt_file(this)});
+		$('#import_mt940_file').on('change', function () {self.import_mt940_file(this)});
+		$('#btnDeleteCurrentStmt').on('click', function () {self.delete_current_statement()});
+		$('#btnDeleteOldStmts').on('click', function () {self.delete_old_statements()});
+		$('#btnDeleteAllStmts').on('click', function () {self.delete_all_statements()});
+		$('#btnTransformToGL').on('click', function () {self.transform_to_gl()});
+		$('#btnTransformToGift').on('click', function () {self.transform_to_gift()});
+		$('#btnCheckSponsorship').on('click', function () {self.check_for_sponsorship()});
+		$('#btnSavePreset').on('click', function () {self.save_preset()});
 	}
 
 	display_dropdownlist(selected_statement = null) {

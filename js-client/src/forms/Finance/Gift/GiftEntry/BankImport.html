@@ -314,18 +314,18 @@
 		</td>
 		<td>
 			<div class="btn-group">
-				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					{forms.import}
 				</button>
-				<div class="dropdown-menu">
-					<a class="dropdown-item" onclick="$('#import_csv_file').click()">{import_csv}</a>
-					<a class="dropdown-item" onclick="$('#import_camt_file').click()">{import_camt}</a>
-					<a class="dropdown-item" onclick="$('#import_mt940_file').click()">{import_mt940}</a>
-				</div>
+				<ul class="dropdown-menu">
+					<li><a class="dropdown-item" onclick="$('#import_csv_file').click()">{import_csv}</a></li>
+					<li><a class="dropdown-item" onclick="$('#import_camt_file').click()">{import_camt}</a></li>
+					<li><a class="dropdown-item" onclick="$('#import_mt940_file').click()">{import_mt940}</a></li>
+				</ul>
 			</div>
-			<input type="file" hidden id="import_csv_file" onchange="import_csv_file(this)" accept=".csv,.txt">
-			<input type="file" hidden id="import_camt_file" onchange="import_camt_file(this)" accept=".xml,.zip">
-			<input type="file" hidden id="import_mt940_file" onchange="import_mt940_file(this)" accept=".sta,.mt940">
+			<input type="file" hidden id="import_csv_file" accept=".csv,.txt">
+			<input type="file" hidden id="import_camt_file" accept=".xml,.zip">
+			<input type="file" hidden id="import_mt940_file" accept=".sta,.mt940">
 		</td>
 	</tr>
 </table>
@@ -423,7 +423,7 @@
 </pre>
 	</div>
 	</div>
-	<button type="button" class="btn btn-light" onclick="save_preset('BankImport')">{forms.save_preset}</button>
+	<button id="btnSavePreset" type="button" class="btn btn-light">{forms.save_preset}</button>
 	<button type="button" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{forms.close}</button>
 </div>
 
@@ -440,14 +440,14 @@
         </select>
 
         <div class="btn-group">
-            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 {forms.delete}
             </button>
-            <div class="dropdown-menu">
-                <a class="dropdown-item" onclick="delete_current_statement()">{delete_stmt}</a>
-                <a class="dropdown-item" onclick="delete_old_statements()">{delete_old_stmt_1_year}</a>
-                <a class="dropdown-item" onclick="delete_all_statements()">{delete_all_stmts}</a>
-            </div>
+            <ul class="dropdown-menu">
+                <li><a id="btnDeleteCurrentStmt" class="dropdown-item">{delete_stmt}</a></li>
+                <li><a id="btnDeleteOldStmts" class="dropdown-item">{delete_old_stmt_1_year}</a></li>
+                <li><a id="btnDeleteAllStmts" class="dropdown-item">{delete_all_stmts}</a></li>
+            </ul>
         </div>
       </div>
     </div>
@@ -471,10 +471,10 @@
       </div>
     </div>
 </div>
-    <button type="button" class="btn btn-primary" style="float:right; margin:2px;" onclick="transform_to_gl();">{transform_to_gl}</button>
-    <button type="button" class="btn btn-primary" style="float:right; margin:2px;" onclick="transform_to_gift();">{transform_to_gift}</button>
+    <button id="btnTransformToGL" type="button" class="btn btn-primary" style="float:right; margin:2px;">{transform_to_gl}</button>
+    <button id="btnTransformToGift" type="button" class="btn btn-primary" style="float:right; margin:2px;">{transform_to_gift}</button>
     <!-- TODO disable this button if no permissions for reading sponsorships -->
-    <button type="button" class="btn btn-light" onclick="check_for_sponsorship();">
+    <button id="btnCheckSponsorship" type="button" class="btn btn-light">
             <span>{check_sponsorship}&nbsp;</span><i class="fas fa-question"></i>
     </button>
 </div>
