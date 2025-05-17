@@ -380,11 +380,11 @@ class Tpl {
     }
 
     getKeyValue(object, name) {
-        value = undefined;
+        let value = undefined;
         object.find('[key-name]').each(function (i, obj) {
             obj = $(obj);
             if (obj.attr('key-name') == name) {
-            value = obj.attr('key-value');
+                value = obj.attr('key-value');
             }
         });
         return value;

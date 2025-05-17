@@ -31,15 +31,19 @@ import utils from '../../../../lib/utils.js'
 import modal from '../../../../lib/modal.js'
 import AutocompletePartner from '../../../../lib/autocomplete_partner.js'
 import AutocompleteMotivation from '../../../../lib/autocomplete_motivation.js'
-import AutocompletePostingAccCc from '../../../../lib/autocomplete_posting_acc_cc.js'
+import AutocompleteAccCc from '../../../../lib/autocomplete_posting_acc_cc.js'
 
 class BankImport {
 
 	Ready() {
 		let self = this;
-		$('#bank_number_id').click(function(){ self.display_list(); });
+
+		$('#bank_number_id').on('click', function(){ self.display_list(); });
+		$('#btnDisplay').on('click', function() { self.display_list(); })
+
 		self.display_dropdownlist();
 		self.load_preset();
+		$('#autocomplete_bankaccountcode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
 	}
 
 	display_dropdownlist(selected_statement = null) {
@@ -118,12 +122,14 @@ class BankImport {
 	}
 
 	format_item(item) {
+		let self = this;
 		if (item.a_account_name_c != null) {
 			item.a_description_c = item.a_account_name_c + "; " + item.a_description_c;
 		}
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		// let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 		// row.find('.collapse_col').append(view);
+		row.find('#btnEdit').on('click', function () {self.edit_gift_trans(item['a_statement_key_i'],item['a_order_i'])});
 		$('#browse_container').append(row);
 	}
 
@@ -140,15 +146,22 @@ class BankImport {
 		api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 			let parsed = JSON.parse(data.data.d);
 			let p = parsed.ATransactions[0];
-			p['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
+			p['p_donor_key_n'] = tpl.getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
 			p['a_detail_i'] = $('#modal_space .tpl_edit_trans .detail_col > *').length;
 			let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), p );
 			$('#modal_space').append(tpl_edit_raw);
 			let sclass = $('#modal_space > .tpl_edit_trans [name=MatchAction]:checked').val();
 			tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 			tpl_edit_raw.find('[action]').val('create');
-			tpl_edit_raw.modal('show');
-			self.update_requireClass(tpl_edit_raw, sclass);
+
+			tpl.update_requireClass(tpl_edit_raw, sclass);
+			let m = tpl_edit_raw.modal('show');
+
+			m.find('#autocomplete_motivationdetail').on('input', function () {AutocompleteMotivation.autocomplete_motivation_detail(this, self.update_motivation_group)});
+			m.find('#autocomplete_glaccountcode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+			m.find('#autocomplete_glcostcenter').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+			m.find('#btnSave').on('click', function () {self.save_edit_trans_detail(this)});
+			m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
 		})
 	}
 
@@ -166,7 +179,7 @@ class BankImport {
 		// so everything is up to date and we don't have to load it, if we only search
 		api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionAndDetails', x).then(function (data) {
 			let parsed = JSON.parse(data.data.d);
-			transaction = parsed.ATransactions[0];
+			let transaction = parsed.ATransactions[0];
 			if (transaction['DonorKey'] != 0) {
 				transaction['p_donor_name_c'] = transaction['DonorKey'] + ' ' + transaction['DonorName'];
 			} else {
@@ -186,13 +199,22 @@ class BankImport {
 
 			for (var detail of parsed.ADetails) {
 				let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
+				tpl_trans_detail.find('#btnEditGiftTransDetail').on('click',
+					function(){self.edit_gift_trans_detail(detail['a_statement_key_i'], detail['a_order_i'], detail['a_detail_i'])});
 				tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 			}
 
 			$('#modal_space').html(tpl_edit_raw);
-			tpl_edit_raw.find('[action]').val('update');
-			tpl_edit_raw.modal('show');
-			self.update_requireClass(tpl_edit_raw, parsed.ATransactions[0].MatchAction);
+
+			tpl.update_requireClass(tpl_edit_raw, parsed.ATransactions[0].MatchAction);
+			let m = tpl_edit_raw.modal('show');
+			m.find('[action]').val('update');
+			m.find('#fieldsetMatchAction').on('change', function() { tpl.update_requireClass(tpl_edit_raw, $(this).find('[type=radio]:checked').val());});
+			m.find('#inputDonor').on('input', function() { AutocompletePartner.autocomplete_donor(this)});
+			m.find('#btnClearDonor').on('click', function() { self.clear_donor(this)});
+			m.find('#btnSave').on('click', function() { self.save_edit_trans(this)});
+			m.find('#btnClose').on('click', function() { modal.CloseModal(this)});
+			m.find('#btnNewDetail').on('click', function() { self.new_trans_detail(transaction['a_order_i'])});
 		})
 	}
 
@@ -207,7 +229,7 @@ class BankImport {
 		};
 		api.post('serverMFinance.asmx/TBankImportWebConnector_LoadTransactionDetail', x).then(function (data) {
 			let parsed = JSON.parse(data.data.d);
-			detail = parsed.TransactionDetail[0];
+			let detail = parsed.TransactionDetail[0];
 
 			if (detail['p_recipient_key_n'] != 0) {
 				detail['p_member_name_c'] = detail['p_recipient_key_n'] + ' ' + detail['p_recipient_short_name_c'];
@@ -215,19 +237,25 @@ class BankImport {
 				detail['p_member_name_c'] = "";
 			}
 
-			detail['p_donor_key_n'] = getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
+			detail['p_donor_key_n'] = tpl.getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
 			let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), detail);
 			let sclass = $('#modal_space > .modal [name=MatchAction]:checked').val();
 			tpl_edit_raw.append( $('<input type=hidden name=AMatchAction value="'+ sclass + '">') );
 			$('#modal_space').append(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('update');
-			tpl_edit_raw.modal('show');
-			self.update_requireClass(tpl_edit_raw, sclass);
+			tpl.update_requireClass(tpl_edit_raw, sclass);
+			let m = tpl_edit_raw.modal('show');
 
 			if (detail['a_membership_l']) {
 				tpl_edit_raw.find('.MEMBERFEE').show();
 			}
 
+			m.find('#autocomplete_motivationdetail').on('input', function () {AutocompleteMotivation.autocomplete_motivation_detail(this, self.update_motivation_group)});
+			m.find('#autocomplete_glaccountcode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+			m.find('#autocomplete_glcostcenter').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+			m.find('#btnSave').on('click', function () {self.save_edit_trans_detail(this)});
+			m.find('#btnDelete').on('click', function () {self.delete_trans_detail(this)});
+			m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
 		})
 	}
 
@@ -257,7 +285,7 @@ class BankImport {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 		payload["AStatementKey"] = $('#bank_number_id').val();
@@ -281,7 +309,7 @@ class BankImport {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
 		payload['AStatementKey'] = $('#bank_number_id').val();
@@ -306,7 +334,7 @@ class BankImport {
 	delete_trans_detail(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = "delete";
 		payload['AStatementKey'] = $('#bank_number_id').val();
 		payload['ALedgerNumber'] = window.localStorage.getItem('current_ledger');
