@@ -147,6 +147,9 @@ class BankImport {
 			let parsed = JSON.parse(data.data.d);
 			let p = parsed.ATransactions[0];
 			p['p_donor_key_n'] = tpl.getKeyValue($('.tpl_edit_trans'), 'p_donor_key_n');
+			if (p['DonorKey'] == p['p_donor_key_n']) {
+				p['p_donor_short_name_c'] = p['DonorName'];
+			}
 			p['a_detail_i'] = $('#modal_space .tpl_edit_trans .detail_col > *').length;
 			let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), p );
 			$('#modal_space').append(tpl_edit_raw);
@@ -160,6 +163,8 @@ class BankImport {
 			m.find('#autocomplete_motivationdetail').on('input', function () {AutocompleteMotivation.autocomplete_motivation_detail(this, self.update_motivation_group)});
 			m.find('#autocomplete_glaccountcode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
 			m.find('#autocomplete_glcostcenter').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+			m.find('#autocomplete_member').on('input', function () {AutocompletePartner.autocomplete_member(this)});
+			m.find('#btnClearMember').on('click', function() { self.clear_member(this)});
 			m.find('#btnSave').on('click', function () {self.save_edit_trans_detail(this)});
 			m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
 		})
@@ -198,9 +203,10 @@ class BankImport {
 			let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
 			for (var detail of parsed.ADetails) {
+				let item = detail;
 				let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
 				tpl_trans_detail.find('#btnEditGiftTransDetail').on('click',
-					function(){self.edit_gift_trans_detail(detail['a_statement_key_i'], detail['a_order_i'], detail['a_detail_i'])});
+					function(){self.edit_gift_trans_detail(item['a_statement_key_i'], item['a_order_i'], item['a_detail_i'])});
 				tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 			}
 
@@ -253,6 +259,8 @@ class BankImport {
 			m.find('#autocomplete_motivationdetail').on('input', function () {AutocompleteMotivation.autocomplete_motivation_detail(this, self.update_motivation_group)});
 			m.find('#autocomplete_glaccountcode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
 			m.find('#autocomplete_glcostcenter').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+			m.find('#autocomplete_member').on('input', function () {AutocompletePartner.autocomplete_member(this)});
+			m.find('#btnClearMember').on('click', function() { self.clear_member(this)});
 			m.find('#btnSave').on('click', function () {self.save_edit_trans_detail(this)});
 			m.find('#btnDelete').on('click', function () {self.delete_trans_detail(this)});
 			m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
