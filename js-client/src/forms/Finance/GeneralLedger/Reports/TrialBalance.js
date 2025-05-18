@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2020 by SolidCharity.com
+// Copyright 2020-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,37 +21,47 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-var last_opened_entry_data = {};
+import tpl from '../../../../lib/tpl.js'
+import finance from '../../../../lib/finance.js'
+import reports from '../../../../lib/reports.js'
+import AutocompleteAccCc from '../../../../lib/autocomplete_posting_acc_cc.js'
 
-$('document').ready(function () {
-	get_available_years(
-		'#reportfilter [name=param_year_i]',
-		'#reportfilter [name=param_start_period_i]',
-		'#reportfilter [name=param_end_period_i]',
-		function() {
-			load_preset();
-		});
-});
+class TrialBalance {
+	constructor() {
+	}
 
-function updatePeriods(selected_year) {
-	get_available_periods(selected_year, '#reportfilter [name=param_start_period_i]', false);
-	get_available_periods(selected_year, '#reportfilter [name=param_end_period_i]', false);
+	Ready() {
+		finance.get_available_years(
+			'#reportfilter [name=param_year_i]',
+			'#reportfilter [name=param_start_period_i]',
+			'#reportfilter [name=param_end_period_i]',
+			function() {
+				// load_preset();
+			});
+	}
+
+	updatePeriods(selected_year) {
+		finance.get_available_periods(selected_year, '#reportfilter [name=param_start_period_i]', false);
+		finance.get_available_periods(selected_year, '#reportfilter [name=param_end_period_i]', false);
+	}
+
+	calculate_report() {
+		let obj = $('#reportfilter');
+		// extract information from a jquery object
+		let params = tpl.extract_data(obj);
+
+		params['param_ledger_number_i'] = window.localStorage.getItem('current_ledger');
+		params['param_account_codes'] = '';
+		params['param_rgrAccounts'] = '';
+		params['param_rgrCostCentres'] = '';
+		params['param_reference_start'] = '';
+		params['param_start_period'] -= 1;
+		params['param_end_period'] -= 1;
+		params['param_cost_centre_code_start'] = '*NOTUSED*';
+		// TODO: param_start_date, param_end_date
+
+		reports.calculate_report_common("forms/Finance/GeneralLedger/Reports/TrialBalance.json", params);
+	}
 }
 
-function calculate_report() {
-	let obj = $('#reportfilter');
-	// extract information from a jquery object
-	let params = tpl.extract_data(obj);
-
-	params['param_ledger_number_i'] = window.localStorage.getItem('current_ledger');
-	params['param_account_codes'] = '';
-	params['param_rgrAccounts'] = '';
-	params['param_rgrCostCentres'] = '';
-	params['param_reference_start'] = '';
-	params['param_start_period'] -= 1;
-	params['param_end_period'] -= 1;
-	params['param_cost_centre_code_start'] = '*NOTUSED*';
-	// TODO: param_start_date, param_end_date
-
-	calculate_report_common("forms/Finance/GeneralLedger/Reports/TrialBalance.json", params);
-}
+export default new TrialBalance();
