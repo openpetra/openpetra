@@ -25,12 +25,20 @@
 
 import i18next from 'i18next'
 import api from './ajax.js'
+import axios from 'axios';
 
 class Reports {
 
 	constructor() {
 		let self = this;
 		this.myPleaseWaitDiv = self.initPleaseWaitDiv();
+
+		// for the report parameters json file
+		self.src = axios.create({
+			baseURL: '/src/',
+			responseType: 'json'
+		});
+		self.src.defaults.headers.get['Content-Type'] = 'application/json';
 	}
 
 	initPleaseWaitDiv() {
@@ -87,8 +95,8 @@ class Reports {
 			$('#reporttxt').html(report);
 		});
 		window.localStorage.setItem('current_report_ReportID', AReportID);
-		$('#DownloadExcel').show();
-		$('#DownloadPDF').show();
+		$('#btnDownloadExcel').show();
+		$('#btnDownloadPDF').show();
 		self.myPleaseWaitDiv.hidePleaseWait();
 	}
 
@@ -141,7 +149,7 @@ class Reports {
 		}
 
 		if (report_common_params_file != '') {
-			src.get(report_common_params_file, {}).then(function (data) {
+			self.src.get(report_common_params_file, {}).then(function (data) {
 				for (var param in data.data) {
 					// only if parameter does not exist yet
 					let exists = false;
@@ -176,7 +184,7 @@ class Reports {
 
 			api.post('serverMReporting.asmx/TReportGeneratorWebConnector_Start', r).then(function (data) {
 				self.myPleaseWaitDiv.showPleaseWait();
-				setTimeout(function() { check_for_report(ReportID); }, 1000);
+				setTimeout(function() { self.check_for_report(ReportID); }, 1000);
 			});
 		});
 	}

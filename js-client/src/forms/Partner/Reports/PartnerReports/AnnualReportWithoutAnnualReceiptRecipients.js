@@ -37,6 +37,9 @@ class AnnualReportWithoutAnnualReceiptRecipients {
 		$("#DonationStartDate").val(year + "-01-01");
 		$("#DonationEndDate").val(year + "-12-31");
 		self.get_publications();
+		$('#btnCalculate').on('click', function () {self.calculate_report()});
+		$('#btnDownloadExcel').on('click', function () {reports.download_excel()});
+		$('#btnDownloadPDF').on('click', function () {reports.download_pdf()});
 	}
 
 	get_publications() {

@@ -34,6 +34,9 @@ class PartnerByCity {
 	Ready() {
 		let self = this;
 		self.loadInConsents();
+		$('#btnCalculate').on('click', function () {self.calculate_report()});
+		$('#btnDownloadExcel').on('click', function () {reports.download_excel()});
+		$('#btnDownloadPDF').on('click', function () {reports.download_pdf()});
 	}
 
 	calculate_report() {
@@ -43,7 +46,7 @@ class PartnerByCity {
 		let params = tpl.extract_data(obj);
 
 		// get all tags for the partner
-		applied_tags = []
+		let applied_tags = []
 		obj.find('#types').find('.tpl_check').each(function (i, o) {
 			o = $(o);
 			if (o.find('input').is(':checked')) {

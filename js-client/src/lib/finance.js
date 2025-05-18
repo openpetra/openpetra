@@ -53,7 +53,7 @@ class Finance {
 		})
 	}
 
-	get_available_periods(year, destVariable, fn_to_call, OfferMultiplePeriods) {
+	get_available_periods(year, destVariable, fn_to_call = null, OfferMultiplePeriods = false) {
 		let selectedPeriod = $(destVariable).val();
 		if (selectedPeriod == null) {
 			selectedPeriod = -1;

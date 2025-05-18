@@ -32,6 +32,7 @@ class AccountDetail {
 	}
 
 	Ready() {
+		let self  = this;
 		finance.get_available_years(
 			'#reportfilter [name=param_year_i]',
 			'#reportfilter [name=param_start_period_i]',
@@ -39,11 +40,17 @@ class AccountDetail {
 			function() {
 				// load_preset();
 			});
+		$('#selectYear').on('change', function() { self.updatePeriods($(this).val()) });
+		$('#autocomplete_acc_start').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+		$('#autocomplete_acc_end').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+		$('#btnCalculate').on('click', function () {self.calculate_report()});
+		$('#btnDownloadExcel').on('click', function () {reports.download_excel()});
+		$('#btnDownloadPDF').on('click', function () {reports.download_pdf()});
 	}
 
 	updatePeriods(selected_year) {
-		finance.get_available_periods(selected_year, '#reportfilter [name=param_start_period_i]', false);
-		finance.get_available_periods(selected_year, '#reportfilter [name=param_end_period_i]', false);
+		finance.get_available_periods(selected_year, '#reportfilter [name=param_start_period_i]');
+		finance.get_available_periods(selected_year, '#reportfilter [name=param_end_period_i]');
 	}
 
 	calculate_report() {

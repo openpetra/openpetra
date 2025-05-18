@@ -5,7 +5,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2024 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -56,12 +56,5 @@ api.interceptors.response.use(function (response) {
     }
     return Promise.reject(error);
   });
-
-// for the report parameters json file
-var src = axios.create({
-    baseURL: '/src/',
-    responseType: 'json'
-});
-src.defaults.headers.get['Content-Type'] = 'application/json';
 
 export default api;
