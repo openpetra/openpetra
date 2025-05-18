@@ -48,18 +48,30 @@ class PrintAnnualReceipts {
 		$("#StartDate").val(year + "-01-01");
 		$("#EndDate").val(year + "-12-31");
 		self.LoadDefaultTemplateFiles();
+		$('#btnAnnualReceiptsAll').on('click', function() {self.GenerateAnnualReceipts('all')});
+		$('#btnAnnualReceiptsPrint').on('click', function() {self.GenerateAnnualReceipts('print')});
+		$('#btnAnnualReceiptsEmail').on('click', function() {self.GenerateAnnualReceipts('email')});
+		$('#autocomplete_donor').on('input', function() { AutocompletePartner.autocomplete_donor(this)});
+		$('#btnClearDonor').on('click', function() {$('input[name=p_donor_name_c]').val('');$('input[name=p_donor_name_c]').attr('key-value',0)});
+		$('#btnStoreHTMLTemplate').on('click', function() {self.StoreHtmlTemplateAsDefault()});
+		$('#btnClearHTMLTemplate').on('click', function() {self.ClearHtmlTemplateAsDefault()});
+		$('#btnStoreLogo').on('click', function() {self.StoreLogoTemplateAsDefault()});
+		$('#btnClearLogo').on('click', function() {self.ClearLogoTemplateAsDefault()});
+		$('#btnStoreSignature').on('click', function() {self.StoreSignatureTemplateAsDefault()});
+		$('#btnClearSignature').on('click', function() {self.ClearSignatureTemplateAsDefault()});
 	}
 
 	ReadFile(control, fn) {
+		let self = this;
 		if (control[0].files.length == 0) {
-			fn("", "");
+			fn(self, "", "");
 			return;
 		}
 
 		var reader = new FileReader();
 
 		reader.onload = (function(theFile) {
-				base64EncodedFileContent=theFile.target.result;
+				let base64EncodedFileContent=theFile.target.result;
 				// somehow, theFile.name on Firefox is undefined
 				let filename = theFile.name;
 				if (filename == undefined) {
@@ -68,14 +80,13 @@ class PrintAnnualReceipts {
 				if (filename == undefined) {
 					filename="undefined.txt";
 				}
-				fn(filename, base64EncodedFileContent);
+				fn(self, filename, base64EncodedFileContent);
 			});
 
 		reader.readAsDataURL(control[0].files[0]);
 	}
 
-	SetHtmlTemplate(filename, filedata) {
-		let self = this;
+	SetHtmlTemplate(self, filename, filedata) {
 		self.htmldata = filedata;
 
 		if (self.htmldata.length == 0 && self.DefaultNames["DefaultFileNameHTML"] == "") {
@@ -87,15 +98,14 @@ class PrintAnnualReceipts {
 		self.ReadFile(self.logoimage, self.SetLogo);
 	}
 
-	SetLogo(filename, filedata) {
-		let self = this;
+	SetLogo(self, filename, filedata) {
 		self.logodata = filedata;
 		self.logoname = filename;
 
 		self.ReadFile(self.signatureimage, self.SetSignature);
 	}
 
-	SetSignature(filename, filedata) {
+	SetSignature(self, filename, filedata) {
 		self.signaturedata = filedata;
 		self.signaturename = filename;
 
@@ -103,6 +113,7 @@ class PrintAnnualReceipts {
 	}
 
 	GenerateAnnualReceipts(action) {
+		let self = this;
 		self.receiptaction = action;
 		self.htmltemplate = $('#HTMLTemplate');
 		self.logoimage = $('#LogoImage');
@@ -122,8 +133,9 @@ class PrintAnnualReceipts {
 
 	SetTemplateDefault(filename, filedata, purpose) {
 
+		let p = {}
 		if (filename == "delete") {
-			let p = {'AFileContent': "",
+			p = {'AFileContent': "",
 				'AFileName': "",
 				'APurpose': purpose
 				};
@@ -132,7 +144,7 @@ class PrintAnnualReceipts {
 				utils.display_message(i18next.t('PrintAnnualReceipts.emptytemplatefile'), "fail");
 				return;
 			}
-			let p = {'AFileContent': filedata,
+			p = {'AFileContent': filedata,
 				'AFileName': filename,
 				'APurpose': purpose
 				};
@@ -149,22 +161,19 @@ class PrintAnnualReceipts {
 		});
 	}
 
-	SetHtmlTemplateDefault(filename, filedata) {
-		let self = this;
+	SetHtmlTemplateDefault(self, filename, filedata) {
 		self.SetTemplateDefault(filename, filedata, "HTML");
 		self.DefaultNames["DefaultFileNameHTML"] = filename;
 		tpl.insertData("#parameters", self.DefaultNames);
 	}
 
-	SetLogoTemplateDefault(filename, filedata) {
-		let self = this;
+	SetLogoTemplateDefault(self, filename, filedata) {
 		self.SetTemplateDefault(filename, filedata, "LOGO");
 		self.DefaultNames["DefaultFileNameLogo"] = filename;
 		tpl.insertData("#parameters", self.DefaultNames);
 	}
 
-	SetSignatureTemplateDefault(filename, filedata) {
-		let self = this;
+	SetSignatureTemplateDefault(self, filename, filedata) {
 		self.SetTemplateDefault(filename, filedata, "SIGN");
 		self.DefaultNames["DefaultFileNameSignature"] = filename;
 		tpl.insertData("#parameters", self.DefaultNames);
@@ -178,6 +187,7 @@ class PrintAnnualReceipts {
 	}
 
 	StoreLogoTemplateAsDefault() {
+		let self = this;
 		self.logoimage = $('#LogoImage');
 
 		self.ReadFile(self.logoimage, self.SetLogoTemplateDefault);
@@ -306,7 +316,7 @@ class PrintAnnualReceipts {
 			self.hidePleaseWait();
 			utils.display_message(i18next.t('PrintAnnualReceipts.uploaderror'), "fail");
 		});
-	};
+	}
 
 	showPleaseWait() {
 		$('#myModal').modal();
