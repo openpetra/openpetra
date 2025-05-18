@@ -57,6 +57,8 @@ import GLBatches from '../forms/Finance/GeneralLedger/GLBatchMaintenance/GLBatch
 import GiftBatches from '../forms/Finance/Gift/GiftEntry/GiftBatches.js';
 import RecurringGiftBatches from '../forms/Finance/Gift/GiftEntry/RecurringGiftBatches.js';
 
+import AccountDetail from '../forms/Finance/GeneralLedger/Reports/AccountDetail.js';
+
 import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
 import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
 import ImportAndExportDatabase from '../forms/SystemManager/ImportAndExportDatabase.js';
@@ -95,6 +97,8 @@ class Navigation {
 			'GLBatches': GLBatches,
 			'GiftBatches': GiftBatches,
 			'RecurringGiftBatches': RecurringGiftBatches,
+
+			'AccountDetail': AccountDetail,
 
 			'MaintainUsers': MaintainUsers,
 			'MaintainSettings': MaintainSettings,
