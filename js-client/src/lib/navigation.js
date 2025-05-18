@@ -44,6 +44,7 @@ import MaintainMemberships from '../forms/Partner/Setup/Memberships/MaintainMemb
 
 import PartnerByCity from '../forms/Partner/Reports/PartnerReports/PartnerByCity.js';
 import PartnerBySpecialType from '../forms/Partner/Reports/PartnerReports/PartnerBySpecialType.js';
+import PartnerBySubscription from '../forms/Partner/Reports/PartnerReports/PartnerBySubscription.js';
 
 import MaintainChildren from '../forms/SponsorShip/Children/MaintainChildren.js';
 
@@ -89,6 +90,7 @@ class Navigation {
 
 			'PartnerByCity': PartnerByCity,
 			'PartnerBySpecialType': PartnerBySpecialType,
+			'PartnerBySubscription': PartnerBySubscription,
 
 			'MaintainChildren': MaintainChildren,
 
