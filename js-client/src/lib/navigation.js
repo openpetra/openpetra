@@ -64,6 +64,7 @@ import RecurringGiftBatches from '../forms/Finance/Gift/GiftEntry/RecurringGiftB
 
 import AccountDetail from '../forms/Finance/GeneralLedger/Reports/AccountDetail.js';
 import TrialBalance from '../forms/Finance/GeneralLedger/Reports/TrialBalance.js';
+import PrintAnnualReceipts from '../forms/Finance/Gift/GiftReceipting/PrintAnnualReceipts.js';
 
 import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
 import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
@@ -111,6 +112,7 @@ class Navigation {
 
 			'AccountDetail': AccountDetail,
 			'TrialBalance': TrialBalance,
+			'PrintAnnualReceipts': PrintAnnualReceipts,
 
 			'MaintainUsers': MaintainUsers,
 			'MaintainSettings': MaintainSettings,
