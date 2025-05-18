@@ -55,6 +55,7 @@ import YearEnd from '../forms/Finance/GeneralLedger/PeriodEnd/YearEnd.js';
 import BankImport from '../forms/Finance/Gift/GiftEntry/BankImport.js';
 import GLBatches from '../forms/Finance/GeneralLedger/GLBatchMaintenance/GLBatches.js';
 import GiftBatches from '../forms/Finance/Gift/GiftEntry/GiftBatches.js';
+import RecurringGiftBatches from '../forms/Finance/Gift/GiftEntry/RecurringGiftBatches.js';
 
 import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
 import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
@@ -93,6 +94,7 @@ class Navigation {
 			'BankImport': BankImport,
 			'GLBatches': GLBatches,
 			'GiftBatches': GiftBatches,
+			'RecurringGiftBatches': RecurringGiftBatches,
 
 			'MaintainUsers': MaintainUsers,
 			'MaintainSettings': MaintainSettings,
