@@ -37,6 +37,7 @@ class ImportPartners {
 		$('#fileUploadUserCSV').on('change', function() { self.UploadUserCSV($(this)) });
 		$('#fileUploadUserODS').on('change', function() { self.UploadUserODS($(this)) });
 		$('#fileUploadUserXLSX').on('change', function() { self.UploadUserXLSX($(this)) });
+		$('#btnDeleteAllContacts').on('click', function() {self.DeleteAllContacts()});
 	}
 
 	UploadUserCSV(filectrl) {
