@@ -391,7 +391,7 @@
 			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<select name="AYear" onchange="get_available_periods($(this).val(), display_list)"></select>
+			<select id="selectYear" name="AYear" ></select>
 		</div>
 	</div>
 	<div class="row">
@@ -416,9 +416,9 @@
 		</div>
 	</div>
 	</div>
-	<button type="button" class="btn btn-light" onclick="save_preset('GiftBatches')">{forms.save_preset}</button>
+	<button id="btnSavePreset" type="button" class="btn btn-light">{forms.save_preset}</button>
 	<button type="button" class="btn btn-light" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
-	<button type="button" class="btn btn-primary" onclick="display_list('filter');$('#tabfilter').collapse('toggle')">{forms.search}</button>
+	<button id="btnSearch" type="button" class="btn btn-primary">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
 </div>
 

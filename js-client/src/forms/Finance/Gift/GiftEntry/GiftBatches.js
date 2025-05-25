@@ -37,10 +37,19 @@ class GiftBatches {
 
 	Ready() {
 		let self = this;
-		self.get_available_years(
-			function() {
-				self.load_preset();
-			});
+		self.countComboboxes = 0;
+		self.get_available_years();
+	}
+
+	AfterLoadingComboboxes() {
+		let self = this;
+		self.countComboboxes++;
+		if (self.countComboboxes == 2) {
+			$('#btnSavePreset').on('click', function () {utils.save_preset('GiftBatches')});
+			$('#btnSearch').on('click', function () {self.display_list('filter');$('#tabfilter').collapse('toggle')});
+			$('#selectYear').on('change', function () {self.get_available_periods($(this).val(), self.display_list)});
+			self.load_preset();
+		}
 	}
 
 	load_preset() {
@@ -581,7 +590,7 @@ class GiftBatches {
 
 	/////
 
-	get_available_years(fn_to_call) {
+	get_available_years() {
 		let self = this;
 		let x = {
 			ALedgerNumber: window.localStorage.getItem('current_ledger'),
@@ -600,11 +609,13 @@ class GiftBatches {
 				$('#tabfilter [name=AYear]').append(y);
 			}
 
-			self.get_available_periods(currentYearNumber, fn_to_call);
+			self.get_available_periods(currentYearNumber);
+
+			self.AfterLoadingComboboxes();
 		})
 	}
 
-	get_available_periods(year, fn_to_call) {
+	get_available_periods(year) {
 		let self = this;
 		let selectedPeriod = $('#tabfilter [name=APeriod]').val();
 		if (selectedPeriod == null) {
@@ -632,9 +643,7 @@ class GiftBatches {
 				$('#tabfilter [name=APeriod]').append(y);
 			}
 
-			if (fn_to_call != undefined) {
-				fn_to_call();
-			}
+			self.AfterLoadingComboboxes();
 		})
 
 	}

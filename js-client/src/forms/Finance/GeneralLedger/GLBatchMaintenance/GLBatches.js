@@ -37,19 +37,32 @@ class GLBatches {
 
 	Ready() {
 		let self = this;
+		self.countComboboxes = 0;
 
 		finance.get_available_years(
 			'#tabfilter [name=ABatchYear]',
 			'#tabfilter [name=ABatchPeriod]',
 			'',
-			function() {
-				self.load_preset();
-			});
+			function() { self.AfterLoadingComboboxes()} );
 	};
+
+	AfterLoadingComboboxes() {
+		let self = this;
+		self.countComboboxes++;
+		if (self.countComboboxes == 1) {
+			self.updatePeriods($('select[name="ABatchYear"]').val())
+		}
+		else if (self.countComboboxes == 2) {
+			$('#selectYear').on('change', function () {self.updatePeriods($(this).val())});
+			$('#btnSavePreset').on('click', function () {utils.save_preset('GLBatches')});
+			$('#btnSearch').on('click', function () {self.display_list('filter');$('#tabfilter').collapse('toggle')});
+			self.load_preset();
+		}
+	}
 
 	updatePeriods(year) {
 		let self = this;
-		finance.get_available_periods(year, '#tabfilter [name=ABatchPeriod]', self.display_list, true);
+		finance.get_available_periods(year, '#tabfilter [name=ABatchPeriod]', function() { self.AfterLoadingComboboxes()}, true);
 	}
 
 	load_preset() {
