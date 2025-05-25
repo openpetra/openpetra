@@ -38,6 +38,7 @@ class RecurringGiftBatches {
 	Ready() {
 		let self = this;
 		self.display_list();
+		$('#btnNewBatch').on('click', function() { self.new_batch() })
 	}
 
 	display_list(source) {
@@ -60,7 +61,8 @@ class RecurringGiftBatches {
 					submit_date = test_date;
 				}
 				item['submit_date'] = submit_date;
-				self.format_item(item);
+				let row = self.format_item(item);
+				$('#browse_container').append(row);
 			}
 			tpl.format_currency(item.a_currency_code_c);
 			tpl.format_date();
@@ -98,11 +100,12 @@ class RecurringGiftBatches {
 			var item = data.result.ARecurringGiftBatch[0];
 			let batchDiv = $('#Batch' + BatchNumber + " div");
 			if (batchDiv.length) {
-				let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+				let row = self.format_item(item);
 				batchDiv.first().replaceWith(row.children()[0]);
 			} else {
 				$('.tpl_row .collapse').collapse('hide');
-				self.format_item(item);
+				let row = self.format_item(item);
+				$('#browse_container').append(row);
 				batchDiv = $('#Batch' + BatchNumber + " div");
 				$('html, body').animate({
 									scrollTop: (batchDiv.offset().top - 100)
@@ -115,8 +118,11 @@ class RecurringGiftBatches {
 	}
 
 	format_item(item) {
+		let self = this;
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
-		$('#browse_container').append(row);
+		row.find('#btnOpenTransactions').on('click', function() { self.open_gift_transactions(this) });
+		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
+		return row;
 	}
 
 	open_gift_transactions(obj, number = -1, reload = false, transaction_number = -1) {
@@ -180,6 +186,10 @@ class RecurringGiftBatches {
 				p.find('[edit-only]').hide();
 				p.find('[action]').val('create');
 				p.modal('show');
+				p.find('#inputAccountCode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+				p.find('#inputCostCentreCode').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+				p.find("#btnClose").on('click', function() { modal.CloseModal(this) });
+				p.find("#btnSave").on('click', function() { self.save_edit_batch(this) });
 			}
 		)
 	};
@@ -276,7 +286,10 @@ class RecurringGiftBatches {
 			$('#modal_space').html(tpl_m);
 			tpl_m.find('[action]').val('edit');
 			tpl_m.modal('show');
-
+			tpl_m.find('#inputAccountCode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+			tpl_m.find('#inputCostCentreCode').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+			tpl_m.find("#btnClose").on('click', function() { modal.CloseModal(this) });
+			tpl_m.find("#btnSave").on('click', function() { self.save_edit_batch(this) });
 		})
 	}
 
@@ -433,7 +446,7 @@ class RecurringGiftBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 
 		api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringBatches', payload).then(function (result) {
@@ -455,7 +468,7 @@ class RecurringGiftBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['ASepaMandateGiven'] = payload['ASepaMandateGiven'] ? payload['ASepaMandateGiven'] : "null"; // if no date is given give "null" as a string
 		payload['action'] = mode;
 
@@ -486,7 +499,7 @@ class RecurringGiftBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 
 		if (!payload['AStartDonations']) {
 			utils.display_error("RecurringGiftBatches.missing_date_start");
@@ -519,7 +532,7 @@ class RecurringGiftBatches {
 	delete_trans(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 		payload['ASepaMandateGiven'] = "null";
 		api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainRecurringGifts', payload).then(function (result) {
@@ -538,7 +551,7 @@ class RecurringGiftBatches {
 	delete_trans_detail(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 		payload['AEndDonations'] = "null";
 		payload["ARecipientKey"] = -1;

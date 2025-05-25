@@ -39,6 +39,7 @@ class GiftBatches {
 		let self = this;
 		self.countComboboxes = 0;
 		self.get_available_years();
+		$('#btnNewBatch').on('click', function() { self.new_batch() })
 	}
 
 	AfterLoadingComboboxes() {
@@ -94,7 +95,9 @@ class GiftBatches {
 			// on reload, clear content
 			$('#browse_container').html('');
 			for (var item of data.result.AGiftBatch) {
-				self.format_item(item);
+				let row = self.format_item(item);
+				$('#browse_container').append(row);
+
 			}
 			tpl.format_currency(data.ACurrencyCode);
 			tpl.format_date();
@@ -118,7 +121,8 @@ class GiftBatches {
 			// on reload, clear content
 			$('#browse_container').html('');
 			for (var item of data.result.AGiftBatch) {
-				self.format_item(item);
+				let row = self.format_item(item);
+				$('#browse_container').append(row);
 			}
 			tpl.format_currency(data.ACurrencyCode);
 			tpl.format_date();
@@ -145,11 +149,12 @@ class GiftBatches {
 			let item = data.result.AGiftBatch[0];
 			let batchDiv = $('#Batch' + BatchNumber + " div");
 			if (batchDiv.length) {
-				let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+				let row = self.format_item(item);
 				batchDiv.first().replaceWith(row.children()[0]);
 			} else {
 				$('.tpl_row .collapse').collapse('hide');
-				self.format_item(item);
+				let row = self.format_item(item);
+				$('#browse_container').append(row);
 				batchDiv = $('#Batch' + BatchNumber + " div");
 				$('html, body').animate({
 									scrollTop: (batchDiv.offset().top - 100)
@@ -176,8 +181,11 @@ class GiftBatches {
 	}
 
 	format_item(item) {
+		let self = this;
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
-		$('#browse_container').append(row);
+		row.find('#btnOpenTransactions').on('click', function() { self.open_gift_transactions(this) });
+		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
+		return row;
 	}
 
 	open_gift_transactions(obj, number = -1, reload = false, transaction_number = -1) {
@@ -247,6 +255,10 @@ class GiftBatches {
 				p.find('[edit-only]').hide();
 				p.find('[action]').val('create');
 				p.modal('show');
+				p.find('#inputAccountCode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+				p.find('#inputCostCentreCode').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+				p.find("#btnClose").on('click', function() { modal.CloseModal(this) });
+				p.find("#btnSave").on('click', function() { self.save_edit_batch(this) });
 			}
 		)
 	}
@@ -355,6 +367,10 @@ class GiftBatches {
 			$('#modal_space').html(tpl_m);
 			tpl_m.find('[action]').val('edit');
 			tpl_m.modal('show');
+			tpl_m.find('#inputAccountCode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+			tpl_m.find('#inputCostCentreCode').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+			tpl_m.find("#btnClose").on('click', function() { modal.CloseModal(this) });
+			tpl_m.find("#btnSave").on('click', function() { self.save_edit_batch(this) });
 		})
 	}
 
@@ -466,7 +482,7 @@ class GiftBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		if (payload["AGlEffectiveDate"] == '') {
 			utils.display_message(i18next.t('GiftBatches.missing_batch_date'), "fail");
 			exit;
@@ -492,7 +508,7 @@ class GiftBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		if (payload["ADateEntered"] == '') {
 			utils.display_message(i18next.t('GiftBatches.missing_date_entered'), "fail");
 			exit;
@@ -526,7 +542,7 @@ class GiftBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = mode;
 		if (payload['ARecipientKey'] == "") {
 			payload['ARecipientKey'] = 0;
@@ -552,7 +568,7 @@ class GiftBatches {
 	delete_trans(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 		api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGifts', payload).then(function (result) {
 			let parsed = JSON.parse(result.data.d);
@@ -570,7 +586,7 @@ class GiftBatches {
 	delete_trans_detail(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload["action"] = "delete";
 		payload["ARecipientKey"] = -1;
 		api.post('serverMFinance.asmx/TGiftTransactionWebConnector_MaintainGiftDetails', payload).then(function (result) {
@@ -774,7 +790,7 @@ class GiftBatches {
 	adjust_trans(obj_modal) {
 		let self = this;
 		let obj = $(obj_modal).closest('.modal');
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		var r = {
 			ALedgerNumber: payload['ALedgerNumber'],
 			ABatchNumber: payload['ABatchNumber'],

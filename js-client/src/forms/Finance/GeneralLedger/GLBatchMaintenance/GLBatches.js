@@ -44,6 +44,7 @@ class GLBatches {
 			'#tabfilter [name=ABatchPeriod]',
 			'',
 			function() { self.AfterLoadingComboboxes()} );
+		$('#btnNewBatch').on('click', function() { self.new_batch() })
 	};
 
 	AfterLoadingComboboxes() {
@@ -104,7 +105,8 @@ class GLBatches {
 			// on reload, clear content
 			$('#browse_container').html('');
 			for (var item of data.result.ABatch) {
-				self.format_item(item);
+				let row = self.format_item(item);
+				$('#browse_container').append(row);
 			}
 			tpl.format_currency(data.ACurrencyCode);
 			tpl.format_date();
@@ -122,11 +124,12 @@ class GLBatches {
 			let item = data.result.ABatch[0];
 			let batchDiv = $('#Batch' + BatchNumber + " div");
 			if (batchDiv.length) {
-				let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
+				let row = self.format_item(item);
 				batchDiv.first().replaceWith(row.children()[0]);
 			} else {
 				$('.tpl_row .collapse').collapse('hide');
-				self.format_item(item);
+				let row = self.format_item(item);
+				$('#browse_container').append(row);
 				batchDiv = $('#Batch' + BatchNumber + " div");
 				$('html, body').animate({
 							scrollTop: (batchDiv.offset().top - 100)
@@ -157,7 +160,9 @@ class GLBatches {
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		// let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 		// row.find('.collapse_col').append(view);
-		$('#browse_container').append(row);
+		row.find('#btnOpenTransactions').on('click', function() { self.open_transactions(this) });
+		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
+		return row;
 	}
 
 	open_transactions(obj, number = -1, reload = false) {
@@ -236,6 +241,8 @@ class GLBatches {
 				p.find('input[name=a_batch_debit_total_n]').attr('readonly', false);
 				p.find('[action]').val('create');
 				p.modal('show');
+				p.find("#btnClose").on('click', function() { modal.CloseModal(this) });
+				p.find("#btnSave").on('click', function() { self.save_edit_batch(this) });
 			}
 		)
 	};
@@ -287,11 +294,13 @@ class GLBatches {
 			let tpl_m = tpl.format_tpl( $('[phantom] .tpl_edit_batch').clone(), searched );
 			if (searched['a_batch_status_c'] == "Posted") {
 				tpl_m.find('.posted_readonly').attr('readonly', true)
+				tpl_m.find('.not_show_when_posted').hide()
 			}
 			$('#modal_space').html(tpl_m);
 			tpl_m.find('[action]').val('edit');
 			tpl_m.modal('show');
-
+			tpl_m.find("#btnClose").on('click', function() { modal.CloseModal(this) });
+			tpl_m.find("#btnSave").on('click', function() { self.save_edit_batch(this) });
 		})
 	}
 
@@ -342,7 +351,7 @@ class GLBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		if (payload["ADateEffective"] == '') {
 			utils.display_message(i18next.t('GLBatches.missing_batch_date'), "fail");
 			exit;
@@ -374,7 +383,7 @@ class GLBatches {
 		let mode = obj.find('[action]').val();
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		if (payload["ATransactionDate"] == '') {
 			utils.display_message(i18next.t('GLBatches.missing_transaction_date'), "fail");
 			exit;
@@ -411,7 +420,7 @@ class GLBatches {
 		let obj = $(obj_modal).closest('.modal');
 
 		// extract information from a jquery object
-		let payload = utils.translate_to_server( extract_data(obj) );
+		let payload = utils.translate_to_server( tpl.extract_data(obj) );
 		payload['action'] = "delete";
 		payload['AJournalNumber'] = 1;
 		payload['AAmountInIntlCurrency'] = 0.0;
