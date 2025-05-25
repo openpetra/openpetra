@@ -1033,6 +1033,7 @@ class MaintainPartners {
 				m.find("[mode]").hide();
 				m.find("[mode=consent_edit]").show();
 				m.find('#btnSubmitConsentEdit').click(function(){self.submit_consent_edit(this,true);});
+				m.find('#btnCloseConsentEdit').click(function(){modal.CloseModal(this);});
 			}
 		})
 	}
