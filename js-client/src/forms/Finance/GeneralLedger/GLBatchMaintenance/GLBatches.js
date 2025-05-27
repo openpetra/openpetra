@@ -214,6 +214,9 @@ class GLBatches {
 				let transaction_row = $('[phantom] .tpl_transaction').clone();
 				transaction_row = tpl.format_tpl(transaction_row, item);
 				place_to_put_content.append(transaction_row);
+				let cur_item = item;
+				transaction_row.find('#btnEditTransaction').on('click', function() {
+					self.edit_trans(cur_item['a_batch_number_i'], cur_item['a_transaction_number_i'])});
 			}
 			tpl.format_currency(data.ACurrencyCode);
 			tpl.format_date();
@@ -262,6 +265,7 @@ class GLBatches {
 		$('#modal_space').html(p);
 		p.find('[action]').val('create');
 		p.modal('show');
+		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 	};
 
 	/////
@@ -339,7 +343,7 @@ class GLBatches {
 			$('#modal_space').html(tpl_m);
 			tpl_m.find('[action]').val('edit');
 			tpl_m.modal('show');
-
+			tpl_m.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}
 

@@ -154,6 +154,9 @@ class RecurringGiftBatches {
 				let transaction_row = $('[phantom] .tpl_gift').clone();
 				transaction_row = tpl.format_tpl(transaction_row, item);
 				place_to_put_content.append(transaction_row);
+				let cur_item = item;
+				transaction_row.find('#btnEditTransaction').on('click', function() {
+					self.edit_gift_trans(cur_item['a_ledger_number_i'], cur_item['a_batch_number_i'], cur_item['a_gift_transaction_number_i'])});
 			}
 			tpl.format_currency(data.ACurrencyCode ? data.ACurrencyCode : "EUR");
 			tpl.format_date();
@@ -209,12 +212,14 @@ class RecurringGiftBatches {
 		x['a_date_entered_d'] = strToday.replace('T00:00:00.000Z', '');
 
 		let p = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
-		p = loadbankaccounts(null, -1, -1, p);
+		p = self.loadbankaccounts(null, -1, -1, p);
 
 		$('#modal_space').html(p);
 		p.find('[edit-only]').hide();
 		p.find('[action]').val('create');
 		p.modal('show');
+
+		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 
 		self.install_ContactEdit_and_RefreshAccounts(p, '-1');
 	};
@@ -242,6 +247,7 @@ class RecurringGiftBatches {
 
 		p.find('[name=AStartDonations]').val(new Date().toDateInputValue());
 		p.modal('show');
+		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 	};
 
 	update_motivation_group(input_field_object, selected_value) {
@@ -301,7 +307,7 @@ class RecurringGiftBatches {
 		// so everything is up to date and we don't have to load it, if we only search
 
 		api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-			let parsed = JSON.parse(data.data.d, parseDates);
+			let parsed = JSON.parse(data.data.d, tpl.parseDates);
 
 			let searched = null;
 			for (var trans of parsed.result.ARecurringGift) {
@@ -323,17 +329,18 @@ class RecurringGiftBatches {
 
 					let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
 					tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
-
+					tpl_trans_detail.find('#btnEditDetail').on('click', function() {self.edit_gift_trans_detail(
+						item['a_ledger_number_i'], item['a_batch_number_i'], item['a_gift_transaction_number_i'], item['a_detail_number_i'])});
 				}
 			}
 
 			self.install_ContactEdit_and_RefreshAccounts(tpl_edit_raw, searched['p_donor_key_n']);
 
-			tpl_edit_raw = loadbankaccounts(parsed.result.PPartnerBankingDetails, searched['p_donor_key_n'], searched['p_banking_details_key_i'], tpl_edit_raw)
+			tpl_edit_raw = self.loadbankaccounts(parsed.result.PPartnerBankingDetails, searched['p_donor_key_n'], searched['p_banking_details_key_i'], tpl_edit_raw)
 			$('#modal_space').html(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
 			tpl_edit_raw.modal('show');
-
+			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}
 
@@ -406,7 +413,7 @@ class RecurringGiftBatches {
 
 		let x = {"ALedgerNumber":ledger_id, "ABatchNumber":batch_id};
 		api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadRecurringGiftTransactionsForBatch', x).then(function (data) {
-			let parsed = JSON.parse(data.data.d, parseDates);
+			let parsed = JSON.parse(data.data.d, tpl.parseDates);
 			let searched = null;
 			for (var trans of parsed.result.ARecurringGiftDetail) {
 				if (trans.a_gift_transaction_number_i == trans_id && trans.a_detail_number_i == detail_id) {
@@ -435,7 +442,7 @@ class RecurringGiftBatches {
 			$('#modal_space').append(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
 			tpl_edit_raw.modal('show');
-
+			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}
 

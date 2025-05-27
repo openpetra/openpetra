@@ -223,6 +223,9 @@ class GiftBatches {
 				let transaction_row = $('[phantom] .tpl_gift').clone();
 				transaction_row = tpl.format_tpl(transaction_row, item);
 				place_to_put_content.append(transaction_row);
+				let cur_item = item;
+				transaction_row.find('#btnEditTransaction').on('click', function() {
+					self.edit_gift_trans(cur_item['a_ledger_number_i'], cur_item['a_batch_number_i'], cur_item['a_gift_transaction_number_i'])});
 			}
 			tpl.format_currency(parsed.ACurrencyCode);
 			tpl.format_date();
@@ -281,6 +284,7 @@ class GiftBatches {
 		p.find('[edit-only]').hide();
 		p.find('[action]').val('create');
 		p.modal('show');
+		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 	}
 
 	new_trans_detail(btn, ledger_number, batch_number, trans_id) {
@@ -315,6 +319,7 @@ class GiftBatches {
 			p.find('[edit-only]').hide();
 			p.find('[action]').val('create');
 			p.modal('show');
+			p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		});
 	}
 
@@ -383,7 +388,7 @@ class GiftBatches {
 		// so everything is up to date and we don't have to load it, if we only search
 
 		api.post('serverMFinance.asmx/TGiftTransactionWebConnector_LoadGiftTransactionAndDetails', x).then(function (data) {
-			let parsed = JSON.parse(data.data.d, parseDates);
+			let parsed = JSON.parse(data.data.d, tpl.parseDates);
 
 			if (parsed.result == false) {
 				utils.display_error(parsed.AVerificationResult);
@@ -391,7 +396,7 @@ class GiftBatches {
 			}
 
 			let searched = null;
-			for (trans of parsed.AMainDS.AGift) {
+			for (var trans of parsed.AMainDS.AGift) {
 				if (trans.a_gift_transaction_number_i == trans_id) {
 					searched = trans;
 					break;
@@ -416,13 +421,15 @@ class GiftBatches {
 
 					let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
 					tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
-
+					tpl_trans_detail.find('#btnEditDetail').on('click', function() {self.edit_gift_trans_detail(
+						item['a_ledger_number_i'], item['a_batch_number_i'], item['a_gift_transaction_number_i'], item['a_detail_number_i'])});
 				}
 			}
 
 			$('#modal_space').html(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
 			tpl_edit_raw.modal('show');
+			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}
 
@@ -471,7 +478,7 @@ class GiftBatches {
 			$('#modal_space').append(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
 			tpl_edit_raw.modal('show');
-
+			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}
 

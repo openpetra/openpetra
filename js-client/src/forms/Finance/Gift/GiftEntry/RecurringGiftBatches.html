@@ -68,7 +68,7 @@
 			<div class="col">{val_DonorName}</div>
 			<div class="col format_currency">{val_GiftTotal}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans({val_a_ledger_number_i}, {val_a_batch_number_i}, {val_a_gift_transaction_number_i})">
+				<button id="btnEditTransaction" type="button" class="btn btn-primary" name="button">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -80,7 +80,7 @@
 			<div class="col">{val_a_motivation_group_code_c} {val_a_motivation_detail_code_c}</div>
 			<div class="col format_curr">{val_a_gift_amount_n}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
+				<button id="btnEditDetail" type="button" class="btn btn-primary" name="button">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -271,7 +271,7 @@
 				<div class="modal-footer">
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -386,7 +386,7 @@
 				<div class="modal-footer">
 					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
 					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
