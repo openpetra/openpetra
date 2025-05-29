@@ -125,6 +125,7 @@ class RecurringGiftBatches {
 		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
 		row.find('#btnSubmitBatch').on('click', function() { self.submit_batch(item['a_batch_number_i']) });
 		row.find('#btnDownloadSepa').on('click', function() { self.download_sepa(item['a_batch_number_i']) });
+		// row.find('#btnExportBatch').on('click', function() { self.export_batch(item['a_batch_number_i']) });
 		return row;
 	}
 
@@ -203,11 +204,11 @@ class RecurringGiftBatches {
 	new_trans(ledger_number, batch_number) {
 		let self = this;
 		if (!modal.allow_modal()) {return}
+		let transaction_number = $("#Batch" + batch_number + " .tpl_gift").length + 1
 		let x = {
 			a_ledger_number_i: ledger_number,
 			a_batch_number_i: batch_number,
-			a_gift_transaction_number_i: $("#Batch" + batch_number + " .tpl_gift").length + 1,
-
+			a_gift_transaction_number_i: transaction_number,
 		};
 		var today = new Date();
 		today.setUTCHours(0, 0, 0, 0);
@@ -224,6 +225,7 @@ class RecurringGiftBatches {
 
 		p.find('input[name=p_donor_name_c]').on('input', function () {
 			AutocompletePartner.autocomplete_donor(this, function(obj, value) { self.onselect_donor(obj, value); })});
+		p.find('#btnNewDetail').on('click', function() { self.new_trans_detail(this, ledger_number, batch_number, transaction_number) });
 		p.find('#btnDelete').on('click', function() { self.delete_trans(this) });
 		p.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
 		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
@@ -254,6 +256,13 @@ class RecurringGiftBatches {
 
 		p.find('[name=AStartDonations]').val(new Date().toDateInputValue());
 		p.modal('show');
+		p.find('input[name=a_motivation_detail_code_c]').on('input', function() {
+			AutocompleteMotivation.autocomplete_motivation_detail(this, function(obj, val) {self.update_motivation_group(obj, val)})});
+		p.find('input[name=p_member_name_c]').on('input', function() {
+			AutocompletePartner.autocomplete_member(this)});
+		p.find('#btnClearMember').on('click', function() { self.clear_member(this) });
+		p.find('#btnDelete').on('click', function() { self.delete_trans_detail(this) });
+		p.find('#btnSave').on('click', function() { self.save_edit_trans_detail(this) });
 		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 	};
 
@@ -337,7 +346,7 @@ class RecurringGiftBatches {
 					let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail').clone(), detail );
 					tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 					tpl_trans_detail.find('#btnEditDetail').on('click', function() {self.edit_gift_trans_detail(
-						item['a_ledger_number_i'], item['a_batch_number_i'], item['a_gift_transaction_number_i'], item['a_detail_number_i'])});
+						detail.a_ledger_number_i, detail.a_batch_number_i, detail.a_gift_transaction_number_i, detail.a_detail_number_i)});
 				}
 			}
 
@@ -349,6 +358,7 @@ class RecurringGiftBatches {
 			tpl_edit_raw.modal('show');
 			tpl_edit_raw.find('input[name=p_donor_name_c]').on('input', function () {
 				AutocompletePartner.autocomplete_donor(this, function(obj, value) { self.onselect_donor(obj, value); })});
+			tpl_edit_raw.find('#btnNewDetail').on('click', function() { self.new_trans_detail(this, ledger_id, batch_id, trans_id) });
 			tpl_edit_raw.find('#btnDelete').on('click', function() { self.delete_trans(this) });
 			tpl_edit_raw.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
 			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
@@ -453,6 +463,13 @@ class RecurringGiftBatches {
 			$('#modal_space').append(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
 			tpl_edit_raw.modal('show');
+			tpl_edit_raw.find('input[name=a_motivation_detail_code_c]').on('input', function() {
+				AutocompleteMotivation.autocomplete_motivation_detail(this, function(obj, val) {self.update_motivation_group(obj, val)})});
+			tpl_edit_raw.find('input[name=p_member_name_c]').on('input', function() {
+				AutocompletePartner.autocomplete_member(this)});
+			tpl_edit_raw.find('#btnClearMember').on('click', function() { self.clear_member(this) });
+			tpl_edit_raw.find('#btnDelete').on('click', function() { self.delete_trans_detail(this) });
+			tpl_edit_raw.find('#btnSave').on('click', function() { self.save_edit_trans_detail(this) });
 			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}

@@ -244,7 +244,7 @@
 						<div class="row" edit-only>
 							<div class="col" id="Batch{val_a_batch_number_i}Gift{val_a_gift_transaction_number_i}">
 								<h4>Detail</h4>
-								<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans_detail(this, {val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
+								<button id="btnNewDetail" type="button" class="btn btn-primary not_show_when_posted">
 									<span>{forms.new}</span>
 									<i class="fas fa-plus"></i>
 								</button>
@@ -342,7 +342,7 @@
 							<div class="col">
 								<input type="hidden" name="a_motivation_group_code_c" value=""/>
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this, update_motivation_group)">
+									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="">
 								</div>
 							</div>
 						</div>
@@ -353,8 +353,8 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="p_member_name_c" placeholder="{EnterMemberName}" key-name="p_recipient_key_n" value="" size="40" oninput="autocomplete_member(this)">
-									<button class="btn btn-danger" onclick="clear_member(this)">{clear_member}</button>
+									<input class="" type="text" name="p_member_name_c" placeholder="{EnterMemberName}" key-name="p_recipient_key_n" value="" size="40">
+									<button id="btnClearMember" class="btn btn-danger">{clear_member}</button>
 								</div>
 							</div>
 						</div>
@@ -363,8 +363,8 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
-					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
+					<button id="btnDelete" edit-only class="btn btn-danger not_show_when_posted">{forms.delete}</button>
+					<button id="btnSave" class="btn btn-primary not_show_when_posted">{forms.save}</button>
 					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
