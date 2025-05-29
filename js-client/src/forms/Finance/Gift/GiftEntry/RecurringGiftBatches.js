@@ -121,6 +121,7 @@ class RecurringGiftBatches {
 		let self = this;
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		row.find('#btnOpenTransactions').on('click', function() { self.open_gift_transactions(this) });
+		row.find('#btnNewTransaction').on('click', function() { self.new_trans(item['a_ledger_number_i'], item['a_batch_number_i']) });
 		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
 		return row;
 	}
@@ -219,6 +220,10 @@ class RecurringGiftBatches {
 		p.find('[action]').val('create');
 		p.modal('show');
 
+		p.find('input[name=p_donor_name_c]').on('input', function () {
+			AutocompletePartner.autocomplete_donor(this, function(obj, value) { self.onselect_donor(obj, value); })});
+		p.find('#btnDelete').on('click', function() { self.delete_trans(this) });
+		p.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
 		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 
 		self.install_ContactEdit_and_RefreshAccounts(p, '-1');
@@ -340,6 +345,10 @@ class RecurringGiftBatches {
 			$('#modal_space').html(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
 			tpl_edit_raw.modal('show');
+			tpl_edit_raw.find('input[name=p_donor_name_c]').on('input', function () {
+				AutocompletePartner.autocomplete_donor(this, function(obj, value) { self.onselect_donor(obj, value); })});
+			tpl_edit_raw.find('#btnDelete').on('click', function() { self.delete_trans(this) });
+			tpl_edit_raw.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
 			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}
@@ -489,9 +498,8 @@ class RecurringGiftBatches {
 				} else if (mode=="create") {
 					// switch to edit mode
 					self.updateBatch(payload['ABatchNumber']);
-					let p = $('#modal_space .modal');
-					p.find('[edit-only]').show();
-					p.find('[action]').val('edit');
+					obj.find('[edit-only]').show();
+					obj.find('[action]').val('edit');
 				}
 			}
 			else if (parsed.result == false) {

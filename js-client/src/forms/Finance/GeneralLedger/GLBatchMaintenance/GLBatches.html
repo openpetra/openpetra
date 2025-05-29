@@ -23,7 +23,7 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row" style="margin-top:0.5em;">
 					<div class="col">
-						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="new_trans({val_a_batch_number_i}, '{val_a_date_effective_d}')">
+						<button id="btnNewTransaction" type="button" class="btn btn-primary only_show_when_not_posted">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
 						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="importTransactions({val_a_batch_number_i})">
@@ -293,7 +293,7 @@
 								</div>
 								<div class="col">
 									<div class="autocomplete">
-										<input class="posted_readonly" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
+										<input class="posted_readonly" type="text" name="a_account_name_c" key-name="a_account_code_c" value="">
 									</div>
 								</div>
 							</div>
@@ -304,7 +304,7 @@
 								</div>
 								<div class="col">
 									<div class="autocomplete">
-										<input class="posted_readonly" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+										<input class="posted_readonly" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="">
 									</div>
 								</div>
 							</div>
@@ -314,8 +314,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-danger" onclick="delete_edit_trans(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_trans(this)">{forms.save}</button>
+					<button id="btnDelete" class="btn btn-danger">{forms.delete}</button>
+					<button id="btnSave" class="btn btn-primary">{forms.save}</button>
 					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>

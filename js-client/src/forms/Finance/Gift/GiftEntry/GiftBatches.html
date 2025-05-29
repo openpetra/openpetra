@@ -24,7 +24,7 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row" style="margin-top:0.5em;">
 					<div class="col">
-						<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
+						<button id="btnNewTransaction" type="button" class="btn btn-primary not_show_when_posted">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
 						<button type="button" class="btn btn-primary" onclick="export_batch({val_a_batch_number_i})">
@@ -234,7 +234,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" size="40">
 								</div>
 							</div>
 						</div>
@@ -266,9 +266,9 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-warning only_show_when_posted" onclick="adjust_trans(this)">{adjustgift}</button>
-					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
-					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
+					<button id="btnAdjust" edit-only class="btn btn-warning only_show_when_posted">{adjustgift}</button>
+					<button id="btnDelete" edit-only class="btn btn-danger not_show_when_posted">{forms.delete}</button>
+					<button id="btnSave" class="btn btn-primary not_show_when_posted">{forms.save}</button>
 					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>

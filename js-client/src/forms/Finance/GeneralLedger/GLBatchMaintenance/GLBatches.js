@@ -161,6 +161,7 @@ class GLBatches {
 		// let view = tpl.format_tpl($("[phantom] .tpl_view").clone(), item);
 		// row.find('.collapse_col').append(view);
 		row.find('#btnOpenTransactions').on('click', function() { self.open_transactions(this) });
+		row.find('#btnNewTransaction').on('click', function() { self.new_trans(item['a_batch_number_i'], item['a_date_effective_d']) });
 		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
 		return row;
 	}
@@ -265,6 +266,10 @@ class GLBatches {
 		$('#modal_space').html(p);
 		p.find('[action]').val('create');
 		p.modal('show');
+		p.find('input[name=a_account_name_c]').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+		p.find('input[name=a_cost_center_name_c]').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+		p.find('#btnDelete').on('click', function() { self.delete_edit_trans(this) });
+		p.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
 		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 	};
 
@@ -343,6 +348,10 @@ class GLBatches {
 			$('#modal_space').html(tpl_m);
 			tpl_m.find('[action]').val('edit');
 			tpl_m.modal('show');
+			tpl_m.find('input[name=a_account_name_c]').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
+			tpl_m.find('input[name=a_cost_center_name_c]').on('input', function () {AutocompleteAccCc.autocomplete_cc(this)});
+			tpl_m.find('#btnDelete').on('click', function() { self.delete_edit_trans(this) });
+			tpl_m.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
 			tpl_m.find('#btnClose').on('click', function() { modal.CloseModal(this) });
 		})
 	}
