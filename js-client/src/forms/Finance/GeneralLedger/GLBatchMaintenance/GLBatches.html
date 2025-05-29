@@ -26,7 +26,7 @@
 						<button id="btnNewTransaction" type="button" class="btn btn-primary only_show_when_not_posted">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
-						<button id="btnImportTransactions" type="button" class="btn btn-primary only_show_when_not_posted">
+						<button id="btnShowImportTransactions" type="button" class="btn btn-primary only_show_when_not_posted">
 							<span>{import}&nbsp;</span><i class="fas fa-file"></i>
 						</button>
 						<button id="btnExportTransactions" type="button" class="btn btn-primary">
@@ -55,7 +55,7 @@
 									<p>{column_meaning}: {trans_ccenter_code} {trans_account_code} {trans_narrative_code} {trans_ref} {trans_date} {DEBIT} {CREDIT}</p>
 								</div>
 								<div class="row"><textarea rows="8" cols="80" class="import_textarea"></textarea></div>
-								<div class="row"><button id="btnImportPastedTransactionsTODO" type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).parent().parent().find('.import_textarea').val() )">{forms.import}</button></div>
+								<div class="row"><button id="btnImportTransactions" type="button" class="btn btn-primary">{forms.import}</button></div>
 							</div>
 							<div class="col-1">
 								<button type="button" class="btn btn-light" onclick="$(this).closest('.import_space').css('display', 'none')">

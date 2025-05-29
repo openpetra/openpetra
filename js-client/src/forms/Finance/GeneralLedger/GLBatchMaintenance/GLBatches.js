@@ -162,7 +162,8 @@ class GLBatches {
 		// row.find('.collapse_col').append(view);
 		row.find('#btnOpenTransactions').on('click', function() { self.open_transactions(this) });
 		row.find('#btnNewTransaction').on('click', function() { self.new_trans(item['a_batch_number_i'], item['a_date_effective_d']) });
-		row.find('#btnImportTransactions').on('click', function() { self.importTransactions(item['a_batch_number_i']) });
+		row.find('#btnShowImportTransactions').on('click', function() { self.importTransactions(item['a_batch_number_i']) });
+		row.find('#btnImportTransactions').on('click', function() { self.importTransactions(item['a_batch_number_i'], $(this).parent().parent().find('.import_textarea').val()) });
 		row.find('#btnExportTransactions').on('click', function() { self.exportTransactions(item['a_batch_number_i']) });
 		row.find('#btnCancelBatch').on('click', function() { self.batch_cancel(item['a_batch_number_i']) });
 		row.find('#btnTestBatch').on('click', function() { self.test_post(item['a_batch_number_i']) });
