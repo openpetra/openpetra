@@ -26,22 +26,22 @@
 						<button id="btnNewTransaction" type="button" class="btn btn-primary only_show_when_not_posted">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
-						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="importTransactions({val_a_batch_number_i})">
+						<button id="btnImportTransactions" type="button" class="btn btn-primary only_show_when_not_posted">
 							<span>{import}&nbsp;</span><i class="fas fa-file"></i>
 						</button>
-						<button type="button" class="btn btn-primary" onclick="exportTransactions({val_a_batch_number_i})">
+						<button id="btnExportTransactions" type="button" class="btn btn-primary">
 							<span>{export}&nbsp;</span><i class="fas fa-file"></i>
 						</button>
-						<button type="button" class="btn btn-warning only_show_when_not_posted" onclick="batch_cancel({val_a_batch_number_i})">
+						<button id="btnCancelBatch" type="button" class="btn btn-warning only_show_when_not_posted">
 							<span>{batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
-						<button type="button" class="btn btn-primary btn-warning only_show_when_posted" onclick="batch_reverse({val_a_batch_number_i})">
+						<button id="btnReverseBatch" type="button" class="btn btn-primary btn-warning only_show_when_posted">
 							<span>{batch_reverse}&nbsp;</span><i class="fas fa-unlock"></i>
 						</button>
-						<button type="button" class="btn btn-primary only_show_when_not_posted" onclick="test_post({val_a_batch_number_i})">
+						<button id="btnTestBatch" type="button" class="btn btn-primary only_show_when_not_posted">
 							<span>{batch_test_post}&nbsp;</span><i class="fas fa-question"></i>
 						</button>
-						<button type="button" class="btn btn-primary btn-warning only_show_when_not_posted" onclick="batch_post({val_a_batch_number_i})">
+						<button id="btnPostBatch" type="button" class="btn btn-primary btn-warning only_show_when_not_posted">
 							<span>{batch_post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
 						<div class="import_space" style="display:none;">
@@ -55,7 +55,7 @@
 									<p>{column_meaning}: {trans_ccenter_code} {trans_account_code} {trans_narrative_code} {trans_ref} {trans_date} {DEBIT} {CREDIT}</p>
 								</div>
 								<div class="row"><textarea rows="8" cols="80" class="import_textarea"></textarea></div>
-								<div class="row"><button type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).parent().parent().find('.import_textarea').val() )">{forms.import}</button></div>
+								<div class="row"><button id="btnImportPastedTransactionsTODO" type="button" class="btn btn-primary" onclick="importTransactions({val_a_batch_number_i}, $(this).parent().parent().find('.import_textarea').val() )">{forms.import}</button></div>
 							</div>
 							<div class="col-1">
 								<button type="button" class="btn btn-light" onclick="$(this).closest('.import_space').css('display', 'none')">

@@ -123,6 +123,8 @@ class RecurringGiftBatches {
 		row.find('#btnOpenTransactions').on('click', function() { self.open_gift_transactions(this) });
 		row.find('#btnNewTransaction').on('click', function() { self.new_trans(item['a_ledger_number_i'], item['a_batch_number_i']) });
 		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
+		row.find('#btnSubmitBatch').on('click', function() { self.submit_batch(item['a_batch_number_i']) });
+		row.find('#btnDownloadSepa').on('click', function() { self.download_sepa(item['a_batch_number_i']) });
 		return row;
 	}
 

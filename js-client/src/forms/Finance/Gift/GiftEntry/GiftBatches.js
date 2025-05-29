@@ -185,6 +185,11 @@ class GiftBatches {
 		let row = tpl.format_tpl($("[phantom] .tpl_row").clone(), item);
 		row.find('#btnOpenTransactions').on('click', function() { self.open_gift_transactions(this) });
 		row.find('#btnNewTransaction').on('click', function() { self.new_trans(item['a_ledger_number_i'], item['a_batch_number_i']) });
+		row.find('#btnExportBatch').on('click', function() { self.export_batch(item['a_batch_number_i']) });
+		row.find('#btnAdjustBatch').on('click', function() { self.adjust_batch(item['a_batch_number_i']) });
+		row.find('#btnPostBatch').on('click', function() { self.post_batch(item['a_batch_number_i']) });
+		row.find('#btnCancelBatch').on('click', function() { self.cancel_batch(this, item['a_batch_number_i']) });
+		row.find('#btnPreviewBatch').on('click', function() { self.preview_batch(item['a_batch_number_i']) });
 		row.find('#btnEditBatch').on('click', function() { self.edit_batch(item['a_batch_number_i']) });
 		return row;
 	}
