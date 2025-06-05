@@ -67,6 +67,7 @@ import AccountDetail from '../forms/Finance/GeneralLedger/Reports/AccountDetail.
 import TrialBalance from '../forms/Finance/GeneralLedger/Reports/TrialBalance.js';
 import PrintAnnualReceipts from '../forms/Finance/Gift/GiftReceipting/PrintAnnualReceipts.js';
 
+import SysManAssistantInit from '../forms/SystemManager/SysManAssistantInit.js';
 import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
 import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
 import ImportAndExportDatabase from '../forms/SystemManager/ImportAndExportDatabase.js';
@@ -116,6 +117,7 @@ class Navigation {
 			'TrialBalance': TrialBalance,
 			'PrintAnnualReceipts': PrintAnnualReceipts,
 
+			'SysManAssistantInit': SysManAssistantInit,
 			'MaintainUsers': MaintainUsers,
 			'MaintainSettings': MaintainSettings,
 			'ImportAndExportDatabase': ImportAndExportDatabase,
