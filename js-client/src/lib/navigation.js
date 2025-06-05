@@ -32,6 +32,7 @@ import utils from './utils.js';
 
 import ReleaseNotes from '../forms/ReleaseNotes.js';
 import About from '../forms/About.js';
+import ChangePassword from '../forms/Settings/ChangePassword.js';
 
 import MaintainPartnerSelfService from '../forms/SelfService/MaintainPartnerSelfService.js';
 import ImportPartners from '../forms/Partner/Partners/ImportPartners.js';
@@ -80,6 +81,7 @@ class Navigation {
 		this.formsLoaded = {
 			'ReleaseNotes': ReleaseNotes,
 			'About': About,
+			'ChangePassword': ChangePassword,
 
 			'MaintainPartnerSelfService': MaintainPartnerSelfService,
 			'MaintainPartners': MaintainPartners,
@@ -152,7 +154,7 @@ class Navigation {
 		var navPage = this.GetNavigationPage(name);
 		if (navPage == null) {
 			var refresh = "";
-			self = this;
+			let self = this;
 			if (self.develop) {
 				refresh = "?" + Date.now();
 			} else {
@@ -589,6 +591,7 @@ class Navigation {
 							self.OpenForm(e.state.name, e.state.title, false);
 						}
 					};
+					// eg. Settings/ChangePassword
 					if (result.assistant != "" && window.location.pathname == "/") {
 						if (window.location.pathname != "/" + result.assistant) {
 							self.OpenForm(result.assistant);
