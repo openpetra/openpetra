@@ -16,7 +16,7 @@ Setup for Development
 
 See the [instructions for the OpenPetra server](https://github.com/openpetra/openpetra#development-setup), which includes the installation of the client.
 
-To develop, make sure to include `bundle.js` instead of `bundle.min.js` in `src/index.html`, and run
+To develop, make sure to include `bundle.js` instead of `bundle.min.js` in `js-client/index.html`, and run
 
 ```
 cd js-client
