@@ -94,6 +94,7 @@ CREATE TABLE p_membership (
 ;
 
 CREATE TABLE seq_partner_membership (sequence INTEGER AUTO_INCREMENT, dummy INTEGER, PRIMARY KEY(sequence));
+INSERT INTO seq_partner_membership VALUES(NULL, -1);
 
 ALTER TABLE p_partner_membership_paid
   ADD CONSTRAINT p_partner_membership_paid_fk1
