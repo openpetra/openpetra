@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -210,6 +210,7 @@ namespace Ict.Common.IO
                     string value = attrToWrite.Value;
 
                     if (value.Contains(",") || value.Contains(":") || value.Contains("=")
+                        || value.Contains("[") || value.Contains("]")
                         || value.Contains("\"") || value.Contains("#"))
                     {
                         value = "\"" + value.Replace("\"", "\\\"") + "\"";
@@ -232,12 +233,13 @@ namespace Ict.Common.IO
 
                     firstAttribute = false;
 
-                    attributesYml.Append(attrToWrite.Name + "=");
+                    attributesYml.Append(attrToWrite.Name + ": ");
 
                     attrToWrite.Value = attrToWrite.Value.Replace("\\", "\\\\");
                     attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\\\n");
 
                     if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")
+                        || attrToWrite.Value.Contains("[") || attrToWrite.Value.Contains("]")
                         || attrToWrite.Value.Contains("\"") || attrToWrite.Value.Contains("#"))
                     {
                         attributesYml.Append("\"" + attrToWrite.Value.Replace("\"", "\\\"") + "\"");
@@ -250,7 +252,7 @@ namespace Ict.Common.IO
 
                 if (!firstAttribute)
                 {
-                    AYmlDocument.Append("{" + attributesYml.ToString() + "}" + Environment.NewLine);
+                    AYmlDocument.Append(" {" + attributesYml.ToString() + "}" + Environment.NewLine);
                 }
                 else
                 {
