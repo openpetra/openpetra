@@ -751,6 +751,7 @@ namespace Ict.Common.IO
                     if (!PrintedOriginalError)
                     {
                         TLogging.Log("Problem in line " + currentLine.ToString() + " " + line);
+                        TLogging.Log(e.Message);
 
                         if (TLogging.DebugLevel > 0)
                         {
