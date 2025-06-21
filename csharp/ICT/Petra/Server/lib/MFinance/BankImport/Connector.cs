@@ -1735,7 +1735,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             AJournalRow gljournalRow = GLDS.AJournal.NewRowTyped();
             gljournalRow.LedgerNumber = glbatchRow.LedgerNumber;
             gljournalRow.BatchNumber = glbatchRow.BatchNumber;
-            gljournalRow.JournalNumber = glbatchRow.LastJournal + 1;
+            gljournalRow.JournalNumber = 1;
             gljournalRow.TransactionCurrency = LedgerTable[0].BaseCurrency;
             glbatchRow.LastJournal++;
             gljournalRow.JournalPeriod = glbatchRow.BatchPeriod;

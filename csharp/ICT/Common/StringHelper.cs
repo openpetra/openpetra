@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -917,7 +917,7 @@ namespace Ict.Common
             {
                 result = GetNextCSV(ref list, separator, false, false);
 
-                if (result != origList)
+                if (result != origList.Replace("\\", ""))
                 {
                     return result;
                 }
