@@ -659,8 +659,16 @@ namespace Ict.Common
                     {
                         if (list[position] == '\\')
                         {
-                            escape = true;
-                            position++;
+                            if (list[position + 1] == 'x')
+                            {
+                                value.Append('\\');
+                                position++;
+                            }
+                            else
+                            {
+                                escape = true;
+                                position++;
+                            }
                         }
                     }
 
@@ -786,8 +794,16 @@ namespace Ict.Common
                     {
                         if (list[position] == '\\')
                         {
-                            escape = true;
-                            position++;
+                            if (list[position + 1] == 'x')
+                            {
+                                value.Append('\\');
+                                position++;
+                            }
+                            else
+                            {
+                                escape = true;
+                                position++;
+                            }
                         }
                     }
 
@@ -917,7 +933,7 @@ namespace Ict.Common
             {
                 result = GetNextCSV(ref list, separator, false, false);
 
-                if (result != origList.Replace("\\", ""))
+                if (result != origList)
                 {
                     return result;
                 }
