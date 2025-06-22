@@ -235,14 +235,29 @@ namespace Ict.Common.IO
 
                     attributesYml.Append(attrToWrite.Name + ": ");
 
-                    attrToWrite.Value = attrToWrite.Value.Replace("\\", "\\\\");
-                    attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\\\n");
+                    // replace backslash
+                    attrToWrite.Value = attrToWrite.Value.Replace("\\", "\\x5C");
+                    // replace line feed
+                    attrToWrite.Value = attrToWrite.Value.Replace("\r", "").Replace("\n", "\\x10");
+                    // replace colon with ASCII code 58
+                    attrToWrite.Value = attrToWrite.Value.Replace(":", "\\x3A");
+                    // replace { with ASCII code
+                    attrToWrite.Value = attrToWrite.Value.Replace("{", "\\x7B");
+                    // replace } with ASCII code
+                    attrToWrite.Value = attrToWrite.Value.Replace("}", "\\x7D");
+                    // replace tab with ASCII code
+                    attrToWrite.Value = attrToWrite.Value.Replace("\t", "\\x09");
+                    // replace quote with ASCII code
+                    attrToWrite.Value = attrToWrite.Value.Replace("\"", "\\x22");
 
-                    if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains(":") || attrToWrite.Value.Contains("=")
+                    if (attrToWrite.Value.Contains(",") || attrToWrite.Value.Contains("=")
+                        || attrToWrite.Value.Contains("?")
+                        || attrToWrite.Value.Contains("|")
+                        || attrToWrite.Value.Contains("\\x")
                         || attrToWrite.Value.Contains("[") || attrToWrite.Value.Contains("]")
-                        || attrToWrite.Value.Contains("\"") || attrToWrite.Value.Contains("#"))
+                        || attrToWrite.Value.Contains("#"))
                     {
-                        attributesYml.Append("\"" + attrToWrite.Value.Replace("\"", "\\\"") + "\"");
+                        attributesYml.Append("\"" + attrToWrite.Value + "\"");
                     }
                     else
                     {
@@ -606,6 +621,14 @@ namespace Ict.Common.IO
                 }
             }
 
+            s = s.Replace("\\x5C", "\\");
+            s = s.Replace("\\x09", "\t");
+            s = s.Replace("\\x10", "\n");
+            s = s.Replace("\\x3A", ":");
+            s = s.Replace("\\x7B", "{");
+            s = s.Replace("\\x7D", "}");
+            s = s.Replace("\\x22", "\"");
+
             return s;
         }
 
@@ -722,7 +745,7 @@ namespace Ict.Common.IO
                                 // scalar
                                 // this should not be an element, but an attribute of the parent
                                 parent.RemoveChild(newElement);
-                                nodeContent = nodeContent.Trim().Replace("\\n", "\n");
+                                nodeContent = StripQuotes(nodeContent.Trim()).Replace("\\n", Environment.NewLine);
 
                                 if (nodeContent.StartsWith("\"") && nodeContent.EndsWith("\""))
                                 {

@@ -1,2 +1,2 @@
 RootNode:
-    testname: {Filename: data\\Kontoauszuege\\test.csv}
+    testname: {Filename: "data\x5CKontoauszuege\x5Ctest.csv"}
