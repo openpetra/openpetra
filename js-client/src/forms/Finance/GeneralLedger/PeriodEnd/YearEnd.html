@@ -1,6 +1,6 @@
 
 <br>
-<button type="button" class="btn btn-primary btn-warning" data-toggle="modal" data-target="#confirmModal">{end_year}</button>
+<button type="button" class="btn btn-primary btn-warning" data-bs-toggle="modal" data-bs-target="#confirmModal">{end_year}</button>
 
 <br/>
 <br/>
@@ -57,25 +57,20 @@
   </div>
 
 <!-- Modal confirmation dialog -->
-<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="confirmModalLabel">{forms.confirm_title}</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
       </div>
       <div class="modal-body">
       {confirm_body}
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">{forms.no}</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="year_end()" >{forms.yes}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{forms.no}</button>
+        <button id="btnYearEnd" type="button" class="btn btn-primary" data-bs-dismiss="modal">{forms.yes}</button>
       </div>
     </div>
   </div>
 </div>
-
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>

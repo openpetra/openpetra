@@ -13,7 +13,7 @@
 			<div class="col format_date">{val_s_last_login_date_d}</div>
 			<div class="col">{val_permissions}</div>
 			<div class="col-1">
-				<button class="btn btn-primary" onclick="open_edit('{val_s_user_id_c}')"><i class="fas fa-wrench"></i></button>
+				<button class="btn btn-primary btnEditUser" objid="{val_s_user_id_c}"><i class="fas fa-wrench"></i></button>
 			</div>
 
 		</div>
@@ -135,8 +135,8 @@
 		</div>
 		<div class="modal-footer">
 			<input type="hidden" value="{SUser.s_modification_id_t}" name="s_modification_id_t">
-			<button class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
-			<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+			<button id="btnSaveEntry" class="btn btn-primary">{forms.save}</button>
+			<button id="btnClose" class="btn btn-light">{forms.close}</button>
 		</div>
 		</div>
 		</div>
@@ -147,7 +147,7 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="open_new()">{forms.new}</button>
+			<button id="btnNew" class="btn btn-primary">{forms.new}</button>
 		</td>
 	</tr>
 </table>
@@ -172,7 +172,3 @@
 	</div>
 
 </div>
-
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/modal.js" charset="utf-8"></script>

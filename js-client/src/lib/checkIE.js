@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,24 +23,22 @@
 
 function failForInternetExplorer()
 {
-	if (navigator.appName == 'Microsoft Internet Explorer' || navigator.appName == 'Netscape') {
-		var userAgent = navigator.userAgent;
-		var testForMSIE = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+    var userAgent = navigator.userAgent;
+    var testForMSIE = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
 
-		if (testForMSIE.exec(userAgent) != null) {
-			return true;
-		}
-		/*test for Internet Explorer 11*/
-		else if (!!userAgent.match(/Trident.*rv\:11\./)) {
-			return true;
-		}
-	}
+    if (testForMSIE.exec(userAgent) != null) {
+        return true;
+    }
+    /*test for Internet Explorer 11*/
+    else if (!!userAgent.match(/Trident.*rv\:11\./)) {
+        return true;
+    }
 
 	return false;
 }
 
 
-$('document').ready(function () {
+$(function () {
 	if (failForInternetExplorer()) {
 		window.location = "/page_for_ie.html";
 	}

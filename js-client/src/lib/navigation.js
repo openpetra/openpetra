@@ -2,11 +2,11 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
-//       CJ <cj@tbits.net>
+//	   Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
+//	   CJ
 //
 // Copyright 2017-2019 by TBits.net
-// Coypright 2019-2021 by SolidCharity.com
+// Coypright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -24,13 +24,104 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import axios from 'axios';
+import i18next from 'i18next';
+import api from './ajax.js';
+import i18n from './i18n.js';
+import utils from './utils.js';
+
+import ReleaseNotes from '../forms/ReleaseNotes.js';
+import About from '../forms/About.js';
+import ChangePassword from '../forms/Settings/ChangePassword.js';
+
+import MaintainPartnerSelfService from '../forms/SelfService/MaintainPartnerSelfService.js';
+import ImportPartners from '../forms/Partner/Partners/ImportPartners.js';
+import MaintainPartners from '../forms/Partner/Partners/MaintainPartners.js';
+import MaintainTypes from '../forms/Partner/Setup/Types/MaintainTypes.js';
+import MaintainConsentChannels from '../forms/Partner/Setup/MaintainConsentChannels.js';
+import MaintainConsentPurposes from '../forms/Partner/Setup/MaintainConsentPurposes.js';
+import MaintainPublications from '../forms/Partner/Setup/Subscription/MaintainPublications.js';
+import MaintainMemberships from '../forms/Partner/Setup/Memberships/MaintainMemberships.js';
+
+import PartnerByCity from '../forms/Partner/Reports/PartnerReports/PartnerByCity.js';
+import PartnerBySpecialType from '../forms/Partner/Reports/PartnerReports/PartnerBySpecialType.js';
+import PartnerBySubscription from '../forms/Partner/Reports/PartnerReports/PartnerBySubscription.js';
+import AnnualReportWithoutAnnualReceiptRecipients from '../forms/Partner/Reports/PartnerReports/AnnualReportWithoutAnnualReceiptRecipients.js'
+
+import MaintainChildren from '../forms/SponsorShip/Children/MaintainChildren.js';
+
+import LedgerSetup from '../forms/CrossLedgerSetup/LedgerSetup.js';
+import LedgerInfo from '../forms/Finance/GeneralLedger/Info/LedgerInfo.js';
+import AccountTree from '../forms/Finance/Setup/GL/AccountTree.js';
+import CostCenterTree from '../forms/Finance/Setup/GL/CostCenterTree.js';
+import Motivations from '../forms/Finance/Setup/Gift/Motivations.js';
+import MonthEnd from '../forms/Finance/GeneralLedger/PeriodEnd/MonthEnd.js';
+import YearEnd from '../forms/Finance/GeneralLedger/PeriodEnd/YearEnd.js';
+
+import BankImport from '../forms/Finance/Gift/GiftEntry/BankImport.js';
+import GLBatches from '../forms/Finance/GeneralLedger/GLBatchMaintenance/GLBatches.js';
+import GiftBatches from '../forms/Finance/Gift/GiftEntry/GiftBatches.js';
+import RecurringGiftBatches from '../forms/Finance/Gift/GiftEntry/RecurringGiftBatches.js';
+
+import AccountDetail from '../forms/Finance/GeneralLedger/Reports/AccountDetail.js';
+import TrialBalance from '../forms/Finance/GeneralLedger/Reports/TrialBalance.js';
+import PrintAnnualReceipts from '../forms/Finance/Gift/GiftReceipting/PrintAnnualReceipts.js';
+
+import SysManAssistantInit from '../forms/SystemManager/SysManAssistantInit.js';
+import MaintainUsers from '../forms/SystemManager/MaintainUsers.js';
+import MaintainSettings from '../forms/SystemManager/MaintainSettings.js';
+import ImportAndExportDatabase from '../forms/SystemManager/ImportAndExportDatabase.js';
+
+
 class Navigation {
 	constructor() {
 		this.debug = 0;
 		this.develop = 1;
 		// will be replaced by the build script for the release
 		this.currentrelease = "CURRENTRELEASE";
-		this.classesLoaded = [];
+		this.formsLoaded = {
+			'ReleaseNotes': ReleaseNotes,
+			'About': About,
+			'ChangePassword': ChangePassword,
+
+			'MaintainPartnerSelfService': MaintainPartnerSelfService,
+			'MaintainPartners': MaintainPartners,
+			'ImportPartners': ImportPartners,
+			'MaintainTypes': MaintainTypes,
+			'MaintainConsentChannels': MaintainConsentChannels,
+			'MaintainConsentPurposes': MaintainConsentPurposes,
+			'MaintainPublications': MaintainPublications,
+			'MaintainMemberships': MaintainMemberships,
+
+			'PartnerByCity': PartnerByCity,
+			'PartnerBySpecialType': PartnerBySpecialType,
+			'PartnerBySubscription': PartnerBySubscription,
+			'AnnualReportWithoutAnnualReceiptRecipients': AnnualReportWithoutAnnualReceiptRecipients,
+
+			'MaintainChildren': MaintainChildren,
+
+			'LedgerSetup': LedgerSetup,
+			'LedgerInfo': LedgerInfo,
+			'AccountTree': AccountTree,
+			'CostCenterTree': CostCenterTree,
+			'Motivations': Motivations,
+			'MonthEnd': MonthEnd,
+			'YearEnd': YearEnd,
+
+			'BankImport': BankImport,
+			'GLBatches': GLBatches,
+			'GiftBatches': GiftBatches,
+			'RecurringGiftBatches': RecurringGiftBatches,
+
+			'AccountDetail': AccountDetail,
+			'TrialBalance': TrialBalance,
+			'PrintAnnualReceipts': PrintAnnualReceipts,
+
+			'SysManAssistantInit': SysManAssistantInit,
+			'MaintainUsers': MaintainUsers,
+			'MaintainSettings': MaintainSettings,
+			'ImportAndExportDatabase': ImportAndExportDatabase,
+		};
 		$(window).scrollTop(0);
 
 		this.module = null;
@@ -39,17 +130,13 @@ class Navigation {
 	}
 
 	// some javascript files (eg. MaintainPartners) can only be loaded once, due to global variables. They must have a <formname>_Ready() function.
-	LoadJavascript(name, formname, refresh)
+	async LoadJavascript(name, formname, refresh)
 	{
-		// check if there is a ReadyFunc, then call this and we are done
-		var ReadyFunc = formname + "_Ready";
-		if(eval("typeof(" + ReadyFunc + ") == typeof(Function)")) {
-			ReadyFunc += "();";
-			eval(ReadyFunc);
-			return;
+		if (formname in this.formsLoaded) {
+			this.formsLoaded[formname].Ready()
+		} else {
+			console.log("Problem in navigation.js: missing form " + formname)
 		}
-
-		$.getScript(("/src/forms/" + name + '.js' + refresh).replace("//", "/"));
 	}
 
 	OpenForm(name, title = "", pushState=true, parameter="")
@@ -69,7 +156,7 @@ class Navigation {
 		var navPage = this.GetNavigationPage(name);
 		if (navPage == null) {
 			var refresh = "";
-			self = this;
+			let self = this;
 			if (self.develop) {
 				refresh = "?" + Date.now();
 			} else {
@@ -83,9 +170,9 @@ class Navigation {
 			axios.get("/src/forms/" + name + ".html" + refresh)
 				.then(function(response) {
 					var content = response.data;
-					content = replaceAll(content, ".js", ".js" + refresh);
+					content = content.replaceAll(".js", ".js" + refresh);
 					var formname = name.substring(name.lastIndexOf('/')+1);
-					content = translate(content, formname);
+					content = i18n.translate(content, formname);
 					$("#containerIFrames").html(content);
 					self.LoadJavascript(name, formname, refresh);
 			});
@@ -182,8 +269,7 @@ class Navigation {
 		}
 
 		if (node != null && this.debug) {
-			console.log("GetNavigationItem:");
-			console.log(node);
+			console.log("GetNavigationItem:", node);
 		}
 
 		return node;
@@ -265,7 +351,7 @@ class Navigation {
 	AddModuleToTopBar(name, title, icon, enabled)
 	{
 		if (enabled) {
-			$("#ModuleNavBar").append("<li class='nav-item'><a id='mnu" + name + "' class='nav-link top-icon href='#' title='" + title + "'><i class='fas fa-" + icon + "'></i><span class='topnav-icontext'>" + title + "</span></a></li>");
+			$("#ModuleNavBar").append("<li class='nav-item'><a id='mnu" + name + "' class='nav-link top-icon' href='#' title='" + title + "'><i class='fas fa-" + icon + "'></i><span class='topnav-icontext'>" + title + "</span></a></li>");
 		}
 	}
 
@@ -287,7 +373,7 @@ class Navigation {
 	AddMenuItem(folderid, parent, item, title, tabtitle, icon, indent)
 	{
 		var url = folderid + "/" + parent.name + "/" + item.caption.replace("_label","");
-		name = url.replace(/\//g, '_');
+		var name = url.replace(/\//g, '_');
 		$("#LeftNavigation").append("<a href='#' class='sidebar-item indent" + indent + "' id='" + name + "' title='" + title + "'><i class='fas fa-" + icon + " icon-invisible'></i> " + title +"</a>");
 		this.AddMenuItemHandler(name, name, tabtitle);
 	}
@@ -299,7 +385,7 @@ class Navigation {
 		if (item.hasOwnProperty('path')) {
 			url = item.path + "/" + item.form;
 		}
-		name = url.replace(/\//g, '_');
+		var name = url.replace(/\//g, '_');
 		if (item.action != '') {
 			name += "_" + item.action;
 		}
@@ -401,9 +487,8 @@ class Navigation {
 			var caption = i18next.t('navigation.' + child.caption);
 
 			if (child.action != undefined && child.form != undefined) {
-				html += "<a href='javascript:nav.OpenForm(\"" +
-					child.path + "/" + child.form +
-					"\", \"" + caption + "\", true, \"" + child.action + "\")'>" +
+				html += "<a href='" + child.path + "/" + child.form + "' " +
+					"op_caption='" + caption + "' op_pushstate='true' op_action='" + child.action + "'>" +
 					"<i class='fas fa-" + child.icon + "'></i>" +
 					"<span>" + caption + "</span></a>";
 			} else {
@@ -411,9 +496,8 @@ class Navigation {
 				if (child.form == undefined) {
 					path = child.path;
 				}
-				html += "<a href='javascript:nav.OpenForm(\"" +
-					path +
-					"\", \"" + caption + "\")'>" +
+				html += "<a href='" + path + "' " +
+					"op_caption = '" + caption + "'>" +
 					"<i class='fas fa-" + child.icon + "'></i>" +
 					"<span>" + caption + "</span></a>";
 			}
@@ -428,6 +512,7 @@ class Navigation {
 
 	loadDashboard(navpage) {
 		var node = this.GetNavigationItem(navpage);
+		let self = this;
 
 		if (node != null && node['htmlexists'] != true) {
 
@@ -457,6 +542,13 @@ class Navigation {
 			html += '</div>';
 
 			$("#containerIFrames").html(html);
+
+			let elements = $("#containerIFrames a[op_caption]");
+			elements.each(function(index) {$(this).on("click", function(e) {
+				e.preventDefault();
+				let element = $(this);
+				self.OpenForm(element.attr('href'), element.attr('op_caption'), element.attr('op_pushstate'), element.attr('op_action'))});
+			});
 		}
 
 		return;
@@ -473,7 +565,7 @@ class Navigation {
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
-					result.htmlpage = translate(result.htmlpage, "navigation");
+					result.htmlpage = i18n.translate(result.htmlpage, "navigation");
 					$("#containerIFrames").html(result.htmlpage);
 				} else {
 					console.log(response.data.d);
@@ -487,9 +579,9 @@ class Navigation {
 
 	loadNavigation() {
 		// TODO: caching for this user??? see window.localStorage below
-		self = this;
+		let self = this;
 		// load sidebar navigation from UINavigation.yml
-		api.post('serverSessionManager.asmx/GetNavigationMenu', null, null)
+		api.post('serverSessionManager.asmx/GetNavigationMenu', {})
 			.then(function(response) {
 				var result = JSON.parse(response.data.d);
 				if (result.resultcode == "success") {
@@ -498,9 +590,10 @@ class Navigation {
 					self.displayNavigationSideBar(result.navigation);
 					window.onpopstate = function(e) {
 						if (e.state != null) {
-							nav.OpenForm(e.state.name, e.state.title, false);
+							self.OpenForm(e.state.name, e.state.title, false);
 						}
 					};
+					// eg. Settings/ChangePassword
 					if (result.assistant != "" && window.location.pathname == "/") {
 						if (window.location.pathname != "/" + result.assistant) {
 							self.OpenForm(result.assistant);
@@ -514,69 +607,85 @@ class Navigation {
 				console.log(error);
 			});
 	}
+
+	LoadAvailableLedgerDropDown() {
+		let self = this;
+
+		// check for FINANCE-1 permission. else: hide the ledger selection
+		let permissions = window.localStorage.getItem('ModulePermissions');
+		if (permissions == null) {
+			permissions = "";
+		}
+		let permissionsFormatted = (" " + permissions.replace(/\n/g, ' ') + " ");
+		if (!permissionsFormatted.includes(" FINANCE-1 ")) {
+
+			// if the user still has access to a ledger (e.g. SponsorADMIN), then store that as default ledger
+			if (permissionsFormatted.includes(" LEDGER")) {
+				let i = permissionsFormatted.indexOf(" LEDGER") + " LEDGER".length;
+				let ledgernumber = permissionsFormatted.substring(i, i + 4);
+				window.localStorage.setItem('current_ledger', parseInt(ledgernumber));
+			}
+
+			$('#LedgerSelection').hide();
+			return;
+		}
+
+		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+			data = JSON.parse(data.data.d);
+			let dump = $('#ledger_select_dropdown').html('');
+			let menu = '';
+			let current_selected_ledger = null;
+			for (var ledger of data.result) {
+				if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') || data.result.length == 1) {
+					current_selected_ledger = ledger;
+					if (data.result.length == 1 && window.localStorage.getItem('current_ledger') == null) {
+						self.change_standard_ledger(current_selected_ledger.a_ledger_number_i);
+					}
+				}
+				menu += '<li>';
+				menu += '<a class="dropdown-item" id="btnLedger' + ledger.a_ledger_number_i + '" href="#">' +
+					ledger.a_ledger_name_c + '</a>';
+				menu += '</li>';
+			}
+			menu += '';
+			dump.append($(menu));
+			for (var ledger of data.result) {
+				$('#btnLedger'+ledger.a_ledger_number_i).on('click', function() {self.change_standard_ledger(this)});
+			}
+			if (current_selected_ledger == null) {
+				$('#current_ledger_field').html('<b style="color:#f88;">'+i18next.t('navigation.ledgerselect_none')+'</b>');
+			} else {
+				$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
+			}
+		});
+	}
+
+	change_standard_ledger(ledger_id) {
+		if (!Number.isInteger(ledger_id)) {
+			let obj = ledger_id;
+			ledger_id = obj.id.substring("btnLedger".length);
+		}
+
+		window.localStorage.setItem('current_ledger', ledger_id);
+		api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
+			data = JSON.parse(data.data.d);
+			for (var ledger of data.result) {
+				if (ledger.a_ledger_number_i == ledger_id) {
+					utils.display_message(i18next.t("navigation.switchledger")+" "+ledger.a_ledger_name_c, "success");
+					$('#current_ledger_field').text(ledger.a_ledger_name_c);
+				}
+			}
+		})
+	}
 }
+
+let nav = new Navigation();
+export default nav;
 
 $('document').ready(function () {
 	if (window.localStorage.getItem('username') == null || window.localStorage.getItem('username') == "") {
 		return; // User is not logged in
 	}
 
-	LoadAvailableLedgerDropDown();
+	nav.LoadAvailableLedgerDropDown();
 });
-
-function LoadAvailableLedgerDropDown() {
-	// check for FINANCE-1 permission. else: hide the ledger selection
-	permissions = window.localStorage.getItem('ModulePermissions');
-	if (permissions == null) {
-		permissions = "";
-	}
-	permissionsFormatted = (" " + permissions.replace(/\n/g, ' ') + " ");
-	if (!permissionsFormatted.includes(" FINANCE-1 ")) {
-
-		// if the user still has access to a ledger (e.g. SponsorADMIN), then store that as default ledger
-		if (permissionsFormatted.includes(" LEDGER")) {
-			let i = permissionsFormatted.indexOf(" LEDGER") + " LEDGER".length;
-			let ledgernumber = permissionsFormatted.substring(i, i + 4); 
-			window.localStorage.setItem('current_ledger', parseInt(ledgernumber));
-		}
-
-		$('#LedgerSelection').hide();
-		return;
-	}
-
-	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
-		data = JSON.parse(data.data.d);
-		let dump = $('#ledger_select_dropdown').html('');
-		current_selected_ledger = null;
-		for (ledger of data.result) {
-			if ( ledger.a_ledger_number_i == window.localStorage.getItem('current_ledger') || data.result.length == 1) {
-				current_selected_ledger = ledger;
-				if (data.result.length == 1 && window.localStorage.getItem('current_ledger') == null) {
-					change_standard_ledger(current_selected_ledger.a_ledger_number_i);
-				}
-			}
-			let z = $('<a class="dropdown-item"></a>');
-			z.text(ledger.a_ledger_name_c);
-			z.attr("onclick", "change_standard_ledger("+ledger.a_ledger_number_i+")");
-			dump.append(z);
-		}
-		if (current_selected_ledger == null) {
-			$('#current_ledger_field').html('<b style="color:#f88;">'+i18next.t('navigation.ledgerselect_none')+'</b>');
-		} else {
-			$('#current_ledger_field').text(current_selected_ledger.a_ledger_name_c);
-		}
-	});
-}
-
-function change_standard_ledger(ledger_id) {
-	window.localStorage.setItem('current_ledger', ledger_id);
-	api.post('serverMFinance.asmx/TGLSetupWebConnector_GetAvailableLedgers', {}).then(function (data) {
-		data = JSON.parse(data.data.d);
-		for (ledger of data.result) {
-			if (ledger.a_ledger_number_i == ledger_id) {
-				display_message(i18next.t("navigation.switchledger")+" "+ledger.a_ledger_name_c, "success");
-				$('#current_ledger_field').text(ledger.a_ledger_name_c);
-			}
-		}
-	})
-}

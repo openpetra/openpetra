@@ -26,7 +26,7 @@
 				<span>{year}:</span>
 			</div>
 			<div class="col-2">
-				<select class="" name="param_year_i" onchange="updatePeriods($(this).val())"></select>
+				<select id="selectYear" class="" name="param_year_i"></select>
 			</div>
 		</div>
 		<div class="row">
@@ -69,7 +69,7 @@
 			</div>
 			<div class="col">
 				<div class="autocomplete">
-					<input type="text" name="param_account_code_start_name" key-name="param_account_code_start" value="0100" oninput="autocomplete_a(this)">
+					<input id="autocomplete_acc_start" type="text" name="param_account_code_start_name" key-name="param_account_code_start" value="0100">
 				</div>
 			</div>
 			<div class="col">
@@ -77,16 +77,16 @@
 			</div>
 			<div class="col">
 				<div class="autocomplete">
-					<input type="text" name="param_account_code_end_name" key-name="param_account_code_end" value="0400" oninput="autocomplete_a(this)">
+					<input id="autocomplete_acc_end" type="text" name="param_account_code_end_name" key-name="param_account_code_end" value="0400">
 				</div>
 			</div>
 		</div>
 
 	</div>
 
-	<button type="button" class="btn btn-primary" onclick="calculate_report()">{forms.report}</button>
-	<button type="button" class="btn btn-light" id='DownloadExcel' style="display:none" onclick="download_excel()">{forms.download_excel}</button>
-	<button type="button" class="btn btn-light" id='DownloadPDF' style="display:none" onclick="download_pdf()">{forms.download_pdf}</button>
+	<button id="btnCalculate" type="button" class="btn btn-primary">{forms.report}</button>
+	<button id="btnDownloadExcel" type="button" class="btn btn-light" style="display:none">{forms.download_excel}</button>
+	<button id="btnDownloadPDF" type="button" class="btn btn-light" style="display:none">{forms.download_pdf}</button>
 </div>
 
 <div class="container" id="report">
@@ -94,10 +94,3 @@
 		<div id="reporttxt"></div>
 	</div>
 </div>
-
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/finance.js" charset="utf-8"></script>
-<script src="/src/lib/reports.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>

@@ -12,10 +12,10 @@
 			<div class="col format_currency">{val_GiftBatchTotal}</div>
 			<div class="col" batch-status>{val_a_batch_status_c}</div>
 			<div class="col" style="margin-top:0.3em;">
-				<button type="button" class="btn btn-primary" onclick="open_gift_transactions(this)">
+				<button id="btnOpenTransactions" type="button" class="btn btn-primary">
 					<i class="fas fa-folder-open"></i>
 				</button>
-				<button type="button" class="btn btn-primary" onclick="edit_batch({val_a_batch_number_i})" title="{forms.edit}">
+				<button id="btnEditBatch" type="button" class="btn btn-primary" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -24,22 +24,22 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row" style="margin-top:0.5em;">
 					<div class="col">
-						<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans({val_a_ledger_number_i},{val_a_batch_number_i})">
+						<button id="btnNewTransaction" type="button" class="btn btn-primary not_show_when_posted">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
-						<button type="button" class="btn btn-primary" onclick="export_batch({val_a_batch_number_i})">
+						<button id="btnExportBatch" type="button" class="btn btn-primary">
 							<span>{forms.export}&nbsp;</span><i class="fas fa-table"></i>
 						</button>
-						<button type="button" class="btn btn-warning only_show_when_posted" onclick="adjust_batch({val_a_batch_number_i})">
+						<button id="btnAdjustBatch" type="button" class="btn btn-warning only_show_when_posted">
 							<span>{GLBatches.batch_adjust}&nbsp;</span><i class="fas fa-toggle-right"></i>
 						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" onclick="post_batch({val_a_batch_number_i})">
+						<button id="btnPostBatch" type="button" class="btn btn-warning not_show_when_posted">
 							<span>{forms.post}&nbsp;</span><i class="fas fa-lock"></i>
 						</button>
-						<button type="button" class="btn btn-warning not_show_when_posted" onclick="cancel_batch(this, {val_a_batch_number_i})">
+						<button id="btnCancelBatch" type="button" class="btn btn-warning not_show_when_posted">
 							<span>{GLBatches.batch_cancel}&nbsp;</span><i class="fas fa-ban"></i>
 						</button>
-						<button type="button" class="btn btn-primary not_show_when_posted" onclick="preview_batch({val_a_batch_number_i})">
+						<button id="btnPreviewBatch" type="button" class="btn btn-primary not_show_when_posted">
 							<span>{GLBatches.batch_test_post}&nbsp;</span><i class="fas fa-question"></i>
 						</button>
 					</div>
@@ -74,7 +74,7 @@
 			<div class="col">{val_DonorName}</div>
 			<div class="col format_currency">{val_GiftTotal}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans({val_a_ledger_number_i}, {val_a_batch_number_i}, {val_a_gift_transaction_number_i})">
+				<button id="btnEditTransaction" type="button" class="btn btn-primary" name="button">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -86,7 +86,7 @@
 			<div class="col">{val_a_motivation_group_code_c} {val_a_motivation_detail_code_c}</div>
 			<div class="col format_curr">{val_a_gift_transaction_amount_n}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_gift_trans_detail({val_a_ledger_number_i},{val_a_batch_number_i}, {val_a_gift_transaction_number_i}, {val_a_detail_number_i})">
+				<button id="btnEditDetail" type="button" class="btn btn-primary" name="button">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -149,7 +149,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="a_account_name_c" key-name="a_bank_account_code_c" value="" oninput="autocomplete_a(this)">
+									<input id="inputAccountCode" class="posted_readonly" type="text" name="a_account_name_c" key-name="a_bank_account_code_c" value="">
 								</div>
 							</div>
 						</div>
@@ -160,7 +160,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="a_cost_center_name_c" key-name="a_bank_cost_centre_c" value="" oninput="autocomplete_cc(this)">
+									<input id="inputCostCentreCode" class="posted_readonly" type="text" name="a_cost_center_name_c" key-name="a_bank_cost_centre_c" value="">
 								</div>
 							</div>
 						</div>
@@ -180,8 +180,8 @@
 
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_batch(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnSave" class="btn btn-primary not_show_when_posted">{forms.save}</button>
+					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -234,7 +234,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" oninput="autocomplete_donor(this)" size="40">
+									<input class="posted_readonly" type="text" name="p_donor_name_c" key-name="p_donor_key_n" value="" size="40">
 								</div>
 							</div>
 						</div>
@@ -244,7 +244,7 @@
 						<div class="row" edit-only>
 							<div class="col" id="Batch{val_a_batch_number_i}Gift{val_a_gift_transaction_number_i}">
 								<h4>Detail</h4>
-								<button type="button" class="btn btn-primary not_show_when_posted" onclick="new_trans_detail(this, {val_a_ledger_number_i},{val_a_batch_number_i},{val_a_gift_transaction_number_i})">
+								<button id="btnNewDetail" type="button" class="btn btn-primary not_show_when_posted">
 									<span>{forms.new}</span>
 									<i class="fas fa-plus"></i>
 								</button>
@@ -266,10 +266,10 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-warning only_show_when_posted" onclick="adjust_trans(this)">{adjustgift}</button>
-					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans(this)">{forms.delete}</button>
-					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnAdjust" edit-only class="btn btn-warning only_show_when_posted">{adjustgift}</button>
+					<button id="btnDelete" edit-only class="btn btn-danger not_show_when_posted">{forms.delete}</button>
+					<button id="btnSave" class="btn btn-primary not_show_when_posted">{forms.save}</button>
+					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -342,7 +342,7 @@
 							<div class="col">
 								<input type="hidden" name="a_motivation_group_code_c" value=""/>
 								<div class="autocomplete">
-									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this, update_motivation_group)">
+									<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="">
 								</div>
 							</div>
 						</div>
@@ -353,8 +353,8 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="p_member_name_c" placeholder="{EnterMemberName}" key-name="p_recipient_key_n" value="" size="40" oninput="autocomplete_member(this)">
-									<button class="btn btn-danger" onclick="clear_member(this)">{clear_member}</button>
+									<input class="" type="text" name="p_member_name_c" placeholder="{EnterMemberName}" key-name="p_recipient_key_n" value="" size="40">
+									<button id="btnClearMember" class="btn btn-danger">{clear_member}</button>
 								</div>
 							</div>
 						</div>
@@ -363,9 +363,9 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger not_show_when_posted" onclick="delete_trans_detail(this)">{forms.delete}</button>
-					<button class="btn btn-primary not_show_when_posted" onclick="save_edit_trans_detail(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnDelete" edit-only class="btn btn-danger not_show_when_posted">{forms.delete}</button>
+					<button id="btnSave" class="btn btn-primary not_show_when_posted">{forms.save}</button>
+					<button id="btnClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -376,7 +376,7 @@
 <table id="toolbar">
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="new_batch()">{forms.new}</button>
+			<button id="btnNewBatch" class="btn btn-primary">{forms.new}</button>
 			<button class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
 	</tr>
@@ -391,7 +391,7 @@
 			<span>{year}:</span>
 		</div>
 		<div class="col">
-			<select name="AYear" onchange="get_available_periods($(this).val(), display_list)"></select>
+			<select id="selectYear" name="AYear" ></select>
 		</div>
 	</div>
 	<div class="row">
@@ -416,9 +416,9 @@
 		</div>
 	</div>
 	</div>
-	<button type="button" class="btn btn-light" onclick="save_preset('GiftBatches')">{forms.save_preset}</button>
+	<button id="btnSavePreset" type="button" class="btn btn-light">{forms.save_preset}</button>
 	<button type="button" class="btn btn-light" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
-	<button type="button" class="btn btn-primary" onclick="display_list('filter');$('#tabfilter').collapse('toggle')">{forms.search}</button>
+	<button id="btnSearch" type="button" class="btn btn-primary">{forms.search}</button>
 	<input type="hidden" name="AMaxRecords" value="25"/>
 </div>
 
@@ -437,11 +437,3 @@
 	</div>
 
 </div>
-
-<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_partner.js" charset="utf-8"></script>
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/modal.js" charset="utf-8"></script>

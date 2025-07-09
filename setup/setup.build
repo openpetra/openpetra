@@ -257,6 +257,7 @@
         <replacestring from="CURRENTRELEASE" to="${ReleaseVersion}"/>
         <replacestring from="develop = 1;" to="develop = 0;"/>
         <replacestring from="debug = 1;" to="debug = 0;"/>
+        <replacestring from="dist/bundle.js" to="dist/bundle.min.js"/>
     </filterchain>
   </copy>
   <copy todir="${dir.setup}/client">
