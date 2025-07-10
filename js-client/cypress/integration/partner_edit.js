@@ -1,11 +1,10 @@
 describe('find and edit partner', function() {
   it('logs in with user demo and modifies partner', function() {
-    cy.server()
     cy.visit('/Partner/Partners/MaintainPartners')
     cy.get('#txtEmail').should("be.visible")
     cy.get('#txtEmail').type('demo')
     cy.get('#txtPassword').type('demo')
-    cy.route('POST','**/Login').as('Login')
+    cy.intercept('POST','**/Login').as('Login')
     cy.get('#btnLogin').click()
     cy.wait('@Login')
     cy.get('#navbarDropdownUser').click()
@@ -14,7 +13,7 @@ describe('find and edit partner', function() {
 
     cy.get('#btnFilter').click()
     cy.get('input[name="AFamilyNameOrOrganisation"]').type('jacob')
-    cy.route('POST','**FindPartners').as('FindPartners')
+    cy.intercept('POST','**FindPartners').as('FindPartners')
     cy.get('#btnSearch').click()
     cy.wait('@FindPartners')
     cy.get('#partner43012945 #btnEditPartner43012945').should("be.visible").click()
@@ -35,7 +34,7 @@ describe('find and edit partner', function() {
         .should('not.be.checked')
         .check()
 
-    cy.route('POST','**SavePartner').as('SavePartner')
+    cy.intercept('POST','**SavePartner').as('SavePartner')
     cy.get('#modal_space #btnSavePartner').click()
     cy.wait('@SavePartner')
     cy.get('#message').should("be.visible").should("contain", 'Successfully saved')
@@ -44,7 +43,7 @@ describe('find and edit partner', function() {
     cy.visit('/Partner/Partners/MaintainPartners')
     cy.get('#btnFilter').click()
     cy.get('input[name="AFamilyNameOrOrganisation"]').click().type('jacob')
-    cy.route('POST','**FindPartners').as('FindPartners')
+    cy.intercept('POST','**FindPartners').as('FindPartners')
     cy.get('#btnSearch').click()
     cy.wait('@FindPartners')
     cy.get('#partner43012945 #btnEditPartner43012945').should("be.visible").click()
@@ -64,7 +63,7 @@ describe('find and edit partner', function() {
         .should('be.checked')
         .uncheck()
 
-    cy.route('POST','**SavePartner').as('SavePartner2')
+    cy.intercept('POST','**SavePartner').as('SavePartner2')
     cy.get('#modal_space #btnSavePartner').click()
     cy.wait('@SavePartner2')
     cy.get('#message').should("be.visible")
