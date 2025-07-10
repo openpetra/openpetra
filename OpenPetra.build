@@ -433,7 +433,7 @@ useful parameters
 
   <exec program="bash"
         workingdir="${dir.root}/js-client"
-        commandline="-c &quot;./node_modules/.bin/cypress run --config video=false&quot;">
+        commandline="-c &quot;./node_modules/.bin/cypress run&quot;">
         <environment>
           <variable name="LANG" value="en_US.utf8"/>
           <variable name="CYPRESS_baseUrl" value="http://localhost:${Http.Port}"/>
