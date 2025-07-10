@@ -69,9 +69,9 @@
   </if>
 
   <!-- set symbolic link for webfonts -->
-  <if test="${not file::exists(dir.bin + '/webfonts/fa-solid-900.woff2')}">
+  <if test="${not file::exists(dir.root + '/js-client/webfonts/fa-solid-900.woff2')}">
     <exec program="bash"
-        workingdir="${dir.root}"
+        workingdir="${dir.root}/js-client"
         commandline="-c &quot;ln -s node_modules/@fortawesome/fontawesome-free/webfonts/&quot;"/>
   </if>
 
