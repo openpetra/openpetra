@@ -68,6 +68,13 @@
           commandline="-c &quot;( CI=1 npm install --quiet )&quot;" />
   </if>
 
+  <!-- set symbolic link for webfonts -->
+  <if test="${not file::exists(dir.bin + '/webfonts/fa-solid-900.woff2')}">
+    <exec program="bash"
+        workingdir="${dir.root}"
+        commandline="-c &quot;ln -s node_modules/@fortawesome/fontawesome-free/webfonts/&quot;"/>
+  </if>
+
   <exec program="bash"
         workingdir="${dir.root}/js-client"
         commandline="-c &quot;npm run build&quot;" />
