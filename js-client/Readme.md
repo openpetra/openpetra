@@ -8,8 +8,8 @@ License
 
 This code is licensed under GPL v3 or later.
 
-Copyright 2017-2018 by TBits.net GmbH
-Copyright 2019-2024 by SolidCharity.com
+* Copyright 2017-2018 by TBits.net GmbH
+* Copyright 2019-2025 by SolidCharity.com
 
 Setup for Development
 =====================
