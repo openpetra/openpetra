@@ -269,6 +269,7 @@
   </copy>
   <copy todir="${dir.setup}/client">
     <fileset basedir="${dir.root}/js-client/">
+        <include name="dist/**" />
         <include name="webfonts/**" />
         <include name="img/**" />
         <include name="etc/**" />
