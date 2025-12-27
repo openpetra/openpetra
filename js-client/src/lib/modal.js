@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2022 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,49 +21,81 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-$(document).on('show.bs.modal', '.modal', function (event) {
-	var zIndex = 1040 + (10 * $('.modal:visible').length);
-	$(this).css('z-index', zIndex);
-	setTimeout(function() {
-		$('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
-	}, 0);
-});
+class Modal {
 
-$(document).on('hidden.bs.modal', function () {
-    $(this).data('bs.modal', null);
-});
+    constructor() {
+        $(document).on('show.bs.modal', '.modal', function (event) {
+            var zIndex = 1040 + (10 * $('.modal:visible').length);
+            $(this).css('z-index', zIndex);
+            setTimeout(function() {
+                $('.modal-backdrop').not('.modal-stack').css('z-index', zIndex - 1).addClass('modal-stack');
+            }, 0);
+        });
 
+        $(document).on('hidden.bs.modal', function () {
+            $(this).data('bs.modal', null);
+        });
 
-function ShowModal(id, html) {
-  // clear previous instance of this modal
-  $('#modal_space #'+id).remove();
-  // set the id for this modal
-  $(html).attr('id', id);
-  // insert the new modal
-  $('#modal_space').append(html);
-  // get the reference to this new modal
-  modal = $('#modal_space #'+id);
-  // make sure that we cannot close this modal by clicking outside
-  modal.modal({backdrop:"static", keyboard: false});
-  // show the modal
-  modal.modal('show');
-  return modal;
-}
+        this.RemoveBackDropOnBrowserBack();
+        this.modal_aquire = true;
+        this.modal_timeout = 1;
+    }
 
-function FindModal(id) {
-  return $('#modal_space #'+id);
-}
+    // returns true of false,
+    // after returning true, it will return false for the next X sec,
+    // use this function for functions that open new modals, to prevent overlapping or load errors
+    allow_modal() {
+        if (!this.modal_aquire) {return false;}
+        this.modal_aquire = false;
+        window.setTimeout(function () { modal.reset_modal_timeout(); }, this.modal_timeout*1000);
+        return true;
+    }
+    reset_modal_timeout() {
+        this.modal_aquire = true
+    }
 
-function FindMyModal(obj) {
-  return $(obj.closest(".modal"))
-}
+    RemoveBackDropOnBrowserBack() {
+            $(window).on('popstate', function (event) {  //pressed back button
+                if(event.state!==null) {
+                    $('.modal-backdrop').remove();
+                }
+            });
+    }
 
-// close the modal closest to the button, which is eg. a Save/Delete/Close button
-// but we can pass the modal element itself as well
-function CloseModal(btn, remove=true) {
-    let m=$(btn).closest('.modal');
-    m.modal('hide');
-    if (remove) {
-        setTimeout(function() {m.remove();}, 500);
+    ShowModal(id, html) {
+        // clear previous instance of this modal
+        $('#modal_space #'+id).remove();
+        // set the id for this modal
+        $(html).attr('id', id);
+        // insert the new modal
+        $('#modal_space').append(html);
+        // get the reference to this new modal
+        let m = $('#modal_space #'+id);
+        // make sure that we cannot close this modal by clicking outside
+        m.modal({backdrop:"static", keyboard: false});
+        // show the modal
+        m.modal('show');
+        return m;
+    }
+
+    FindModal(id) {
+        return $('#modal_space #'+id);
+    }
+
+    FindMyModal(obj) {
+        return $(obj.closest(".modal"))
+    }
+
+    // close the modal closest to the button, which is eg. a Save/Delete/Close button
+    // but we can pass the modal element itself as well
+    CloseModal(btn, remove=true) {
+        let m=$(btn).closest('.modal');
+        m.modal('hide');
+        if (remove) {
+            m.remove();
+        }
     }
 }
+
+let modal = new Modal()
+export default modal

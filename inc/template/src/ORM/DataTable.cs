@@ -66,12 +66,6 @@ public class {#TABLENAME}Table : {#BASECLASSTABLE}
             base(ATablename)
     {
     }
-    
-    /// constructor for serialization
-    public {#TABLENAME}Table(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : 
-            base(info, context)
-    {
-    }
 
     {#DATACOLUMNS}
 

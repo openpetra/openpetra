@@ -142,8 +142,7 @@
 		<div class="modal-dialog" role="document">
 		<div class="modal-content">
 		<div class="modal-header">
-			<h3>{edittitle}</h3>
-			<button id="btnOpenHistory" type="button" class="btn btn-primary">{manage_consent}</button>
+			<h5 class="modal-title">{edittitle}</h5>
 		</div>
 		<div class="modal-body">
 		<div class="container">
@@ -181,6 +180,14 @@
 				</div>
 				<div class="col-3">
 					<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="chkNoSolicitations" name="p_no_solicitations_l"> {nosolicitations2}</label>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-3">&nbsp;</div>
+				<div class="col-3">&nbsp;</div>
+				<div class="col-6">
+					<button id="btnOpenHistory" type="button" class="btn btn-primary float-end">{manage_consent}</button>
 				</div>
 			</div>
 			<hr>
@@ -271,31 +278,31 @@
 
 			<ul class="nav nav-tabs" id="detailTab" role="tablist">
 				<li class="nav-item">
-					<div class="nav-link active" style="cursor:pointer;" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{address}</div>
+					<div class="nav-link active" style="cursor:pointer;" href="#addresses" aria-controls="addresses">{address}</div>
 				</li>
 				<li class="nav-item">
-					<div class="nav-link" style="cursor:pointer;" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#contactdetails" aria-controls="contactdetails">{contactdetails}</div>
 				</li>
 				<li class="nav-item" id="nav-item-memberships">
-					<div class="nav-link" style="cursor:pointer;" href="#memberships" aria-controls="memberships" onclick="show_tab(this)">{memberships}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#memberships" aria-controls="memberships">{memberships}</div>
 				</li>
 				<li class="nav-item">
-					<div class="nav-link" style="cursor:pointer;" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#subscriptions" aria-controls="subscriptions">{subscriptions}</div>
 				</li>
 				<li class="nav-item">
-					<div class="nav-link" style="cursor:pointer;" href="#types" aria-controls="types" onclick="show_tab(this)">{types}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#types" aria-controls="types">{types}</div>
 				</li>
 				<li class="nav-item">
-					<div class="nav-link" style="cursor:pointer;" href="#financial" aria-controls="financial" onclick="show_tab(this)">{financedetails}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#financial" aria-controls="financial">{financedetails}</div>
 				</li>
 				<li class="nav-item">
-					<div class="nav-link" style="cursor:pointer;" href="#bankaccounts" aria-controls="bankaccounts" onclick="show_tab(this)">{bankaccounts}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#bankaccounts" aria-controls="bankaccounts">{bankaccounts}</div>
 				</li>
 				<li class="nav-item">
-					<div class="nav-link" style="cursor:pointer;" href="#contributions" aria-controls="contributions" onclick="show_tab(this)">{contributions}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#contributions" aria-controls="contributions">{contributions}</div>
 				</li>
 				<li class="nav-item">
-					<div class="nav-link" style="cursor:pointer;" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</div>
+					<div class="nav-link" style="cursor:pointer;" href="#comment" aria-controls="comment">{comment}</div>
 				</li>
 			</ul>
 
@@ -682,7 +689,7 @@
 			</div>
 		</div>
 		<div class="modal-footer">
-			<button class="btn btn-primary" onclick="CloseModal(this)">{forms.close}</button>
+			<button id="btnCloseTplHistory" class="btn btn-primary">{forms.close}</button>
 		</div>
 		</div>
 		</div>
@@ -746,7 +753,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn btn-light" onclick="CloseModal(this)" mode="consent_edit">{forms.close}</button>
+					<button id="btnCloseConsentEdit" class="btn btn-light" mode="consent_edit">{forms.close}</button>
 					<!-- tocheck -->
 					<button id="btnSubmitConsentEdit" class="btn btn-primary" mode="consent_edit">{forms.save}</button>
 					<button id="btnSubmitChangesConsent" class="btn btn-primary" mode="partner_edit">{forms.save}</button>
@@ -796,13 +803,13 @@
 	<tr>
 		<td>
 			<div class="btn-group">
-				<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+				<button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					{forms.new}
 				</button>
-				<div class="dropdown-menu">
-					<a id="btnNewFamily" class="dropdown-item">{newfamily}</a>
-					<a id="btnNewOrganisation" class="dropdown-item">{neworganisation}</a>
-				</div>
+				<ul class="dropdown-menu">
+					<li><a id="btnNewFamily" class="dropdown-item">{newfamily}</a></li>
+					<li><a id="btnNewOrganisation" class="dropdown-item">{neworganisation}</a></li>
+				</ul>
 			</div>
 			<button id="btnFilter" class="btn btn-primary" onclick="$('#tabfilter').collapse('toggle')">{forms.filter}</button>
 		</td>
@@ -916,7 +923,7 @@
 
 	</div>
 
-	<button type="button" class="btn btn-light" onclick="save_preset('MaintainPartners')">{forms.save_preset}</button>
+	<button id="btnSavePreset" type="button" class="btn btn-light">{forms.save_preset}</button>
 	<button type="button" class="btn btn-light" onclick="$('#tabfilter').collapse('toggle')">{forms.cancel}</button>
 	<button id="btnSearch" type="button" class="btn btn-primary">{forms.search}</button>
 </div>
@@ -933,7 +940,3 @@
 	</div>
 
 </div>
-
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/modal.js" charset="utf-8"></script>

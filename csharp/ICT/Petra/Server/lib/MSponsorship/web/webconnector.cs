@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2023 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,7 @@ using System.Data.Odbc;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Data;
@@ -56,6 +57,8 @@ using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Server.MReporting;
 
 using HtmlAgilityPack;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Ict.Petra.Server.MSponsorship.WebConnectors
 {
@@ -228,12 +231,22 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                     }
 
                     child["SponsorName"] += donor.PartnerShortName;
+                    child["SponsorNameReverse"] +=
+                        Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donor.PartnerShortName,
+                                eShortNameFormat.eReverseShortname);
                     firstName = false;
 
+                    string SponsorStreet, SponsorPostCode, SponsorCity;
                     string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                     GetDonorContactDetails(donor.PartnerKey,
+                        out SponsorStreet, out SponsorPostCode, out SponsorCity,
                         out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
 
+                    child["SponsorStreet"] = SponsorStreet;
+                    child["SponsorPostCode"] = SponsorPostCode;
+                    child["SponsorCity"] = SponsorCity;
+                    child["SponsorEmail"] = SponsorEmailAddress;
+                    child["SponsorPhone"] = SponsorPhoneNumber;
                     child["SponsorContactDetails"] += donor.PartnerShortName + ";" + SponsorAddress + ";";
                     if (SponsorEmailAddress != String.Empty)
                     {
@@ -284,6 +297,48 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 byte[] data = System.IO.File.ReadAllBytes(PDFFile);
                 string result = Convert.ToBase64String(data);
                 System.IO.File.Delete(PDFFile);
+                return result;
+            }
+
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// find children using filters, and then export a list as Excel file
+        /// </summary>
+        [RequireModulePermission("OR(SPONSORVIEW,SPONSORADMIN)")]
+        public static string ExportChildrenAndSponsorAddresses(
+            string AChildName,
+            string ADonorName,
+            bool AChildWithoutDonor,
+            string APartnerStatus,
+            string ASponsorshipStatus,
+            string ASponsorAdmin,
+            string ASortBy,
+            string AReportLanguage)
+        {
+            SponsorshipFindTDSSearchResultTable table = FindChildren(AChildName, ADonorName, AChildWithoutDonor, APartnerStatus, ASponsorshipStatus, ASponsorAdmin, ASortBy);
+
+            HtmlDocument HTMLDocument = HTMLTemplateProcessor.Table2Html(table, "Sponsorship/SponsoredChildrenListWithSponsorAddress.html", AReportLanguage);
+
+            // transform the HTML output to xlsx file
+            XSSFWorkbook workbook = HTMLTemplateProcessor.HTMLToCalc(HTMLDocument);
+
+            if (workbook != null)
+            {
+                string ExcelFilename = TFileHelper.GetTempFileName(
+                    "printchildrenlist",
+                    ".xlsx");
+
+                using (FileStream fs = new FileStream(ExcelFilename, FileMode.Create))
+                {
+                    workbook.Write(fs);
+                    fs.Close();
+                }
+
+                byte[] data = System.IO.File.ReadAllBytes(ExcelFilename);
+                string result = Convert.ToBase64String(data);
+                System.IO.File.Delete(ExcelFilename);
                 return result;
             }
 
@@ -471,6 +526,7 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         }
 
         private static void GetDonorContactDetails(Int64 ADonorKey,
+            out string DonorStreet, out string DonorPostCode, out string DonorCity,
             out string DonorAddress, out string DonorEmailAddress, out string DonorPhoneNumber)
         {
             List<string> Subscriptions;
@@ -483,11 +539,14 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (DonorTDS.PLocation.Rows.Count == 0)
             {
-                DonorAddress = String.Empty;
+                DonorAddress = DonorStreet = DonorPostCode = DonorCity = String.Empty;
             }
             else
             {
-                DonorAddress = DonorTDS.PLocation[0].StreetName + ", " + DonorTDS.PLocation[0].PostalCode + " " + DonorTDS.PLocation[0].City;
+                DonorStreet = DonorTDS.PLocation[0].StreetName;
+                DonorPostCode = DonorTDS.PLocation[0].PostalCode;
+                DonorCity = DonorTDS.PLocation[0].City;
+                DonorAddress = DonorStreet + ", " + DonorPostCode + " " + DonorCity;
             }
             DonorEmailAddress = DefaultEmailAddress;
             DonorPhoneNumber = DefaultPhoneLandline;
@@ -560,8 +619,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                                     gdr.DonorKey = recurrGiftRow.DonorKey;
                                     PPartnerRow donorRow = (PPartnerRow)GiftDS.DonorPartners.Rows.Find(recurrGiftRow.DonorKey);
 
+                                    string SponsorStreet, SponsorPostCode, SponsorCity;
                                     string SponsorAddress, SponsorEmailAddress, SponsorPhoneNumber;
                                     GetDonorContactDetails(recurrGiftRow.DonorKey,
+                                        out SponsorStreet, out SponsorPostCode, out SponsorCity,
                                         out SponsorAddress, out SponsorEmailAddress, out SponsorPhoneNumber);
                                     gdr.DonorName = donorRow.PartnerShortName;
                                     gdr.SponsorName = donorRow.PartnerShortName;
@@ -775,14 +836,9 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
 
             if (APhotoFilename.Length > 0)
             {
-                string tempFileName = TFileHelper.GetTempFileName(
-                    "photo",
-                    Path.GetExtension(APhotoFilename));
-                File.WriteAllBytes(tempFileName, APhoto);
-
-                using (var srcImage = Image.FromFile(tempFileName))
+                using (var srcImage = Image.FromStream(new MemoryStream(APhoto)))
                 {
-                    var newHeight = 256;
+                    var newHeight = 512;
                     var newWidth = (int)(srcImage.Width * ((float)newHeight / (float)srcImage.Height));
 
                     using (var newImage = new Bitmap(newWidth, newHeight))
@@ -794,16 +850,32 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                             graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                             graphics.DrawImage(srcImage, new Rectangle(0, 0, newWidth, newHeight));
 
+                            // https://stackoverflow.com/questions/6222053/problem-reading-jpeg-metadata-orientation/38459903#38459903
+                            foreach (var prop in srcImage.PropertyItems) {
+                                if ((prop.Id == 0x0112 || prop.Id == 5029 || prop.Id == 274)) {
+                                    var value = (int)prop.Value[0];
+                                    if (value == 6) {
+                                        newImage.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                                        break;
+                                    } else if (value == 8) {
+                                        newImage.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                                        break;
+                                    } else if (value == 3) {
+                                        newImage.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                                        break;
+                                    }
+                                }
+                            }
+
                             using (var ms = new MemoryStream())
                             {
-                                newImage.Save(ms, newImage.RawFormat);
+                                newImage.Save(ms, ImageFormat.Jpeg);
                                 CurrentEdit.PFamily[0].Photo = Convert.ToBase64String(ms.ToArray());
                             }
 
                             try
                             {
                                 SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
-                                File.Delete(tempFileName);
                                 return true;
                             }
                             catch (Exception e)
@@ -814,8 +886,6 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                         }
                     }
                 }
-
-                File.Delete(tempFileName);
             }
 
             return false;
@@ -824,15 +894,18 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// maintain comments about the child
         [RequireModulePermission("SPONSORADMIN")]
         public static bool MaintainChildComments(
+            Int32 ALedgerNumber,
             string AComment,
             string ACommentType,
             Int32 AIndex,
             Int64 APartnerKey,
+            out PPartnerCommentTable APartnerComment,
             out TVerificationResultCollection AVerificationResult)
         {
 
             SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
+            APartnerComment = new PPartnerCommentTable();
 
             if (APartnerKey == -1)
             {
@@ -875,6 +948,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             try
             {
                 SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(APartnerKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                APartnerComment = result.PPartnerComment;
+
                 return true;
             }
             catch (Exception e)
@@ -888,16 +966,19 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
         /// maintain reminders about the child
         [RequireModulePermission("SPONSORADMIN")]
         public static bool MaintainChildReminders(
+            Int32 ALedgerNumber,
             String AComment,
             Int32 AReminderId,
             Int64 APartnerKey,
             DateTime AEventDate,
             DateTime AFirstReminderDate,
+            out PPartnerReminderTable APartnerReminder,
             out TVerificationResultCollection AVerificationResult)
         {
 
             SponsorshipTDS CurrentEdit;
             AVerificationResult = new TVerificationResultCollection();
+            APartnerReminder = new PPartnerReminderTable();
 
             if (APartnerKey == -1)
             {
@@ -945,6 +1026,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             try
             {
                 SponsorshipTDSAccess.SubmitChanges(CurrentEdit);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(APartnerKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                APartnerReminder = result.PPartnerReminder;
+
                 return true;
             }
             catch (Exception e)
@@ -969,9 +1055,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             decimal AGiftAmount,
             DateTime AStartDonations,
             DateTime? AEndDonations,
+            out ARecurringGiftDetailTable ARecurringGiftDetail,
             out TVerificationResultCollection AVerificationResult) 
         {
             AVerificationResult = new TVerificationResultCollection();
+            ARecurringGiftDetail = new ARecurringGiftDetailTable();
 
             if (ADonorKey <= 0)
             {
@@ -1081,6 +1169,10 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             try
             {
                 SponsorshipTDSAccess.SubmitChanges(MainDS);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(ARecipientKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                ARecurringGiftDetail = result.ARecurringGiftDetail;
                 return true;
             }
             catch (Exception e)
@@ -1099,8 +1191,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
             Int32 ABatchNumber,
             Int32 AGiftTransactionNumber,
             Int32 ADetailNumber,
+            Int64 ARecipientKey,
+            out ARecurringGiftDetailTable ARecurringGiftDetail,
             out TVerificationResultCollection AVerificationResult) 
         {
+            ARecurringGiftDetail = new ARecurringGiftDetailTable();
             AVerificationResult = new TVerificationResultCollection();
 
             TDBTransaction Transaction = new TDBTransaction();
@@ -1168,6 +1263,11 @@ namespace Ict.Petra.Server.MSponsorship.WebConnectors
                 }
 
                 SponsorshipTDSAccess.SubmitChanges(MainDS, DB);
+
+                string TempSponsorshipStatus;
+                SponsorshipTDS result = GetChildDetails(ARecipientKey, ALedgerNumber, false, out TempSponsorshipStatus);
+                ARecurringGiftDetail = result.ARecurringGiftDetail;
+
                 return true;
             }
             catch (Exception e)

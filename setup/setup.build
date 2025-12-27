@@ -68,6 +68,13 @@
           commandline="-c &quot;( CI=1 npm install --quiet )&quot;" />
   </if>
 
+  <!-- set symbolic link for webfonts -->
+  <if test="${not file::exists(dir.root + '/js-client/webfonts/fa-solid-900.woff2')}">
+    <exec program="bash"
+        workingdir="${dir.root}/js-client"
+        commandline="-c &quot;ln -s node_modules/@fortawesome/fontawesome-free/webfonts/&quot;"/>
+  </if>
+
   <exec program="bash"
         workingdir="${dir.root}/js-client"
         commandline="-c &quot;npm run build&quot;" />
@@ -257,10 +264,12 @@
         <replacestring from="CURRENTRELEASE" to="${ReleaseVersion}"/>
         <replacestring from="develop = 1;" to="develop = 0;"/>
         <replacestring from="debug = 1;" to="debug = 0;"/>
+        <replacestring from="dist/bundle.js" to="dist/bundle.min.js"/>
     </filterchain>
   </copy>
   <copy todir="${dir.setup}/client">
     <fileset basedir="${dir.root}/js-client/">
+        <include name="dist/**" />
         <include name="webfonts/**" />
         <include name="img/**" />
         <include name="etc/**" />

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,7 +27,6 @@ using System.Data.Odbc;
 using System.Xml;
 using System.IO;
 using System.Collections.Generic;
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -504,7 +503,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// maintain publications
         /// </summary>
         [RequireModulePermission("PTNRADMIN")]
-        public static bool MaintainPublications(string action, string APublicationCode, string APublicationDescription, out TVerificationResultCollection AVerificationResult)
+        public static bool MaintainPublications(string action, string APublicationCode, string APublicationDescription, bool AValidPublication, out TVerificationResultCollection AVerificationResult)
         {
             PartnerSetupTDS MainDS = new PartnerSetupTDS();
             AVerificationResult = new TVerificationResultCollection();
@@ -515,6 +514,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                 row.PublicationCode = APublicationCode.ToUpper();
                 row.PublicationDescription = APublicationDescription;
                 row.FrequencyCode = "Annual";
+                row.ValidPublication = true;
                 MainDS.PPublication.Rows.Add(row);
                 try
                 {
@@ -534,6 +534,7 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
                     if (row.PublicationCode == APublicationCode)
                     {
                         row.PublicationDescription = APublicationDescription;
+                        row.ValidPublication = AValidPublication;
                     }
                 }
 

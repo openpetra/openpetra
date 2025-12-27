@@ -5,7 +5,7 @@
 //         Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -23,101 +23,113 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-develop = 1;
-// will be replaced by the build script for the release
-currentrelease = "CURRENTRELEASE";
+import i18next from 'i18next';
+import HttpApi from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
 
-if (develop) {
-  refresh = "?" + Date.now();
-} else {
-  refresh = "?" + currentrelease;
-}
+class I18n {
+	constructor() {
+        let develop = 1;
 
-i18next
-  .use(i18nextXHRBackend)
-  .use(i18nextBrowserLanguageDetector)
-  .init({
-    fallbackLng: 'en',
-    debug: false,
-    ns: ['common'],
-    defaultNS: 'common',
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json' + refresh,
+        // will be replaced by the build script for the release
+        let currentrelease = "CURRENTRELEASE";
+        let refresh = "?" + currentrelease;
+        if (develop) {
+            refresh = "?" + Date.now();
+        }
+
+        i18next
+        .use(HttpApi)
+        .use(LanguageDetector)
+        .init({
+          fallbackLng: 'en',
+          debug: false,
+          ns: ['common'],
+          defaultNS: 'common',
+          backend: {
+            loadPath: '/locales/{{lng}}/{{ns}}.json' + refresh,
+          }
+        }, function(err, t) {
+          // init set content
+          this.updateContent();
+        });
     }
-  }, function(err, t) {
-    // init set content
-    updateContent();
-  });
 
-function translateElement(obj, form) {
-   if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
-   placeholder=$(obj).attr('placeholder');
-   if (placeholder !== undefined && placeholder[0] == '{') {
-     placeholder = placeholder.substring(1, placeholder.length-1);
-     $(obj).attr('placeholder', i18next.t(form + '.' + placeholder) );
-   }
-   html = $(obj).html();
-   if (html !== undefined && html[0] == '{') {
-     html = html.substring(1, html.length-1);
-     $(obj).html(i18next.t(form + '.' + html));
-   }
-   // a href must be replaced, eg. for the link to the manual
-   html = $(obj).attr('href');
-   if (html !== undefined && html[0] == '{') {
-     html = html.substring(1, html.length-1);
-     $(obj).attr('href', i18next.t(form + '.' + html));
-   }
-   html = $(obj).attr('title');
-   if (html !== undefined && html[0] == '{') {
-     html = html.substring(1, html.length-1);
-     $(obj).attr('title', i18next.t(form + '.' + html));
-   }
-}
-
-// this function will translate the index.html
-function updateContent() {
-  // specify the elements that should be translated
-  $('#login input, #login button, #login h4, #login p, #login div a, #login span').each(function () { translateElement($(this), 'login'); });
-  $('#reqNewPwd input, #reqNewPwd button, #setNewPwd input, #setNewPwd button, #signUp input, #signUp button').each(function () { translateElement($(this), 'login'); });
-  $('#topnavigation a').each(function () { translateElement($(this), 'navigation'); });
-  $('#sidebar span, #sidebar a').each(function () { translateElement($(this), 'navigation'); });
-  $('.nav-link span').each(function () { translateElement($(this), 'navigation'); });
-  $('.dropdown-item span').each(function () { translateElement($(this), 'navigation'); });
-}
-
-function translate(html, form) {
-  if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
-  pos = -1;
-  while ((pos = html.indexOf('{', pos+1)) > -1) {
-    pos2 = html.indexOf('}', pos);
-    key = html.substring(pos+1, pos2);
-    if (key.indexOf('val_') == 0 || key.indexOf('chk_') == 0) {
-      continue;
+    translateElement(obj, form) {
+    if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
+    let placeholder=$(obj).attr('placeholder');
+    if (placeholder !== undefined && placeholder[0] == '{') {
+        placeholder = placeholder.substring(1, placeholder.length-1);
+        $(obj).attr('placeholder', i18next.t(form + '.' + placeholder) );
     }
-    if (key.indexOf('.') > -1) {
-      html = replaceAll(html, '{'+key+'}', i18next.t(key));
-    } else {
-      html = replaceAll(html, '{'+key+'}', i18next.t(form + "." + key));
+    let html = $(obj).html();
+    if (html !== undefined && html[0] == '{') {
+        html = html.substring(1, html.length-1);
+        $(obj).html(i18next.t(form + '.' + html));
     }
-  }
+    // a href must be replaced, eg. for the link to the manual
+    html = $(obj).attr('href');
+    if (html !== undefined && html[0] == '{') {
+        html = html.substring(1, html.length-1);
+        $(obj).attr('href', i18next.t(form + '.' + html));
+    }
+    html = $(obj).attr('title');
+    if (html !== undefined && html[0] == '{') {
+        html = html.substring(1, html.length-1);
+        $(obj).attr('title', i18next.t(form + '.' + html));
+    }
+    }
 
-  return html; 
-}
+    // this function will translate the index.html
+    updateContent() {
+    self = this;
+    // specify the elements that should be translated
+    $('#login input, #login button, #login h4, #login p, #login div a, #login span').each(function () { self.translateElement($(this), 'login'); });
+    $('#reqNewPwd input, #reqNewPwd button, #setNewPwd input, #setNewPwd button, #signUp input, #signUp button').each(function () { self.translateElement($(this), 'login'); });
+    $('#topnavigation a').each(function () { self.translateElement($(this), 'navigation'); });
+    $('#sidebar span, #sidebar a').each(function () { self.translateElement($(this), 'navigation'); });
+    $('.nav-link span').each(function () { self.translateElement($(this), 'navigation'); });
+    $('.dropdown-item span').each(function () { self.translateElement($(this), 'navigation'); });
+    }
 
-function changeLng(lng) {
-  i18next.changeLanguage(lng);
-}
+    translate(html, form) {
+        if (form == "MaintainPartnerSelfService") form = "MaintainPartners";
+        let pos = -1;
+        while ((pos = html.indexOf('{', pos+1)) > -1) {
+            let pos2 = html.indexOf('}', pos);
+            let key = html.substring(pos+1, pos2);
+            if (key.indexOf('val_') == 0 || key.indexOf('chk_') == 0) {
+            continue;
+            }
+            if (key.indexOf('.') > -1) {
+            html = html.replaceAll('{'+key+'}', i18next.t(key));
+            } else {
+            html = html.replaceAll('{'+key+'}', i18next.t(form + "." + key));
+            }
+        }
 
-function currentLng() {
-  return i18next.language;
-}
+        return html;
+    }
+
+    changeLng(lng) {
+      i18next.changeLanguage(lng);
+    }
+
+    currentLng() {
+      return i18next.language;
+    }
+
+} // class i18n
+
+var i18n = new I18n();
+export default i18n;
 
 i18next.on('languageChanged', () => {
-  updateContent();
+  i18n.updateContent();
   // see https://emojipedia.org/flags/
   var flag = "🇬🇧";
   switch (currentLng()) {
-    case "de": 
+    case "de":
       flag = "🇩🇪";
       break;
     case "nb-NO":

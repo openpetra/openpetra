@@ -1,5 +1,5 @@
 RootNodeInternal:
-    testname:{active=True}
+    testname: {active: True}
         grandchild1:
-        grandchild2:{active=False}
-    testname2:{active=True}
+        grandchild2: {active: False}
+    testname2: {active: True}

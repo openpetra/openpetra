@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,7 +30,6 @@ using System.Data;
 using System.Data.Odbc;
 using System.Xml;
 using System.IO;
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.DB;

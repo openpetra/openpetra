@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -109,44 +109,6 @@ namespace Ict.Common.Verification.Exceptions
         {
             FVerificationResults = AVerificationResults;
         }
-
-        #region Remoting and serialization
-
-        /// <summary>
-        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
-        /// </summary>
-        /// <remarks>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks>
-        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
-        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public EVerificationResultsException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
-        {
-            FVerificationResults = (TVerificationResultCollection)AInfo.GetValue("VerificationResults", typeof(TVerificationResultCollection));
-        }
-
-        /// <summary>
-        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
-        /// </summary>
-        /// <remarks>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks>
-        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
-        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
-        {
-            if (AInfo == null)
-            {
-                throw new ArgumentNullException("AInfo");
-            }
-
-            AInfo.AddValue("VerificationResults", FVerificationResults);
-
-            // We must call through to the base class to let it save its own state!
-            base.GetObjectData(AInfo, AContext);
-        }
-
-        #endregion
     }
 
     #endregion

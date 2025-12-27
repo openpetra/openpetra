@@ -1,10 +1,10 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -21,22 +21,24 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 using System;
-using GNU.Gettext; //Required namespace for i18n
+using System.Data;
+using Ict.Common.DB;
+using Ict.Common;
+using Ict.Common.Data;
 
-namespace Ict.Testing.I18N_GNU.Gettext
+namespace Ict.Petra.Server.MSysMan.DBUpgrades
 {
-    class Example
+    /// <summary>
+    /// Upgrade the database
+    /// </summary>
+    public static partial class TDBUpgrade
     {
-        //This variable will allow us to set which strings are translatable
-        //"my_class" is a catalog identifier, used in the next section
-        private static GettextResourceManager _catalog = new GettextResourceManager("my_class");
-
-        public static void Main(string[] args)
+        /// Upgrade to version 2025-12
+        public static bool UpgradeDatabase202302_202512(TDataBase ADataBase)
         {
-            //This string is modified adding the method GetString() from the catalog variable
-            System.Console.WriteLine(_catalog.GetString("Hello world!"));
+            // there are no changes to the database structure
+            return true;
         }
     }
 }

@@ -19,7 +19,7 @@
       foreach (string path in Directory.GetDirectories(NuGetPath))
       {
         // if another path is added here, also add in GenerateNamespaceMap.cs
-        string[] netVersionPaths = new string[] {"/lib/net472", "/lib/net462", "/lib/net461", "/lib/net46", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net5.0", "/lib/net6.0", "/lib/net20" };
+        string[] netVersionPaths = new string[] {"/lib/net472", "/lib/net462", "/lib/net461", "/lib/net46", "/lib/net45", "/lib/net40", "/lib/Net40", "/lib/net5.0", "/lib/net6.0", "/lib/net20", "/lib/netstandard2.0" };
         foreach (string netVersionPath in netVersionPaths)
         {
           if (Directory.Exists(path + netVersionPath))
@@ -149,7 +149,9 @@
   <include name="MailKit.dll"/>
   <include name="MimeKit.dll"/>
   <include name="System.Runtime.dll" /> <!-- Needed for MailKit.dll and MimeKit.dll -->
+  <include name="Microsoft.Extensions.Logging.Abstractions.dll" /> <!-- Needed for MySqlConnector -->
   <include name="HtmlAgilityPack.dll"/>
+  <include name="BouncyCastle.Cryptography.dll"/> <!-- needed for MailKit -->
 </patternset>
 
 <patternset id="3rdPartyWinPattern">

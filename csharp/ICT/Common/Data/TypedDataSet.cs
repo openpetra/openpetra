@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2018 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -756,22 +756,6 @@ namespace Ict.Common.Data
                 {
                     TableCount++;
                 }
-            }
-        }
-
-        /// <summary>
-        /// helper class to be able to use the standard serialization constructor
-        /// </summary>
-        public class TOtherDataSet : DataSet
-        {
-            /// <summary>
-            /// serialization constructor
-            /// </summary>
-            /// <param name="info">required for serialization</param>
-            /// <param name="context">required for serialization</param>
-            public TOtherDataSet(System.Runtime.Serialization.SerializationInfo info,
-                System.Runtime.Serialization.StreamingContext context) : base(info, context)
-            {
             }
         }
     }

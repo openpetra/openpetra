@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,6 @@ using System.Collections;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;

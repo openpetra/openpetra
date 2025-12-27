@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2019 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -367,41 +367,6 @@ namespace Ict.Petra.Shared.Security
         public ELoginMessageAlreadySetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-
-        #region Remoting and serialization
-
-        /// <summary>
-        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
-        /// </summary>
-        /// <remarks>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks>
-        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
-        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public ELoginMessageAlreadySetException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
-        {
-        }
-
-        /// <summary>
-        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
-        /// </summary>
-        /// <remarks>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks>
-        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
-        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
-        {
-            if (AInfo == null)
-            {
-                throw new ArgumentNullException("AInfo");
-            }
-
-            // We must call through to the base class to let it save its own state!
-            base.GetObjectData(AInfo, AContext);
-        }
-
-        #endregion
     }
 
     #endregion
@@ -436,41 +401,6 @@ namespace Ict.Petra.Shared.Security
         public EProcessIDAlreadySetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-
-        #region Remoting and serialization
-
-        /// <summary>
-        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
-        /// </summary>
-        /// <remarks>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks>
-        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
-        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public EProcessIDAlreadySetException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
-        {
-        }
-
-        /// <summary>
-        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
-        /// </summary>
-        /// <remarks>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks>
-        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
-        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
-        {
-            if (AInfo == null)
-            {
-                throw new ArgumentNullException("AInfo");
-            }
-
-            // We must call through to the base class to let it save its own state!
-            base.GetObjectData(AInfo, AContext);
-        }
-
-        #endregion
     }
 
     #endregion

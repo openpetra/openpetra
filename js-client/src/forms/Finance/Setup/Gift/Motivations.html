@@ -8,10 +8,10 @@
 			<div class="col">{val_a_motivation_group_code_c}</div>
 			<div class="col">{val_a_motivation_group_description_c}</div>
 			<div class="col-2" style="margin-top:0.3em;">
-				<button type="button" class="btn btn-primary" onclick="open_motivations(this, '{val_a_motivation_group_code_c}')">
+				<button id="btnView{val_a_motivation_group_code_c}" type="button" class="btn btn-primary">
 					<i class="fas fa-folder-open"></i>
 				</button>
-				<button id="btnEdit" type="button" class="btn btn-primary" onclick="edit_group('{val_a_motivation_group_code_c}')" title="{forms.edit}">
+				<button id="btnEdit{val_a_motivation_group_code_c}" type="button" class="btn btn-primary" title="{forms.edit}">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -20,7 +20,7 @@
 			<div class="collapse col" style="margin-left:1em;background:rgba(0,0,0,0.15);">
 				<div class="row">
 					<div class="col">
-						<button type="button" class="btn btn-primary" style="margin-top:0.5em;" onclick="new_motivation('{val_a_motivation_group_code_c}')">
+						<button id="btnNewDetail{val_a_motivation_group_code_c}" type="button" class="btn btn-primary" style="margin-top:0.5em;">
 							<span>{forms.new}&nbsp;</span><i class="fas fa-plus"></i>
 						</button>
 					</div>
@@ -35,7 +35,7 @@
 							<div class="col">{motivation_center_c}</div>
 							<div class="col">{motivation_desc}</div>
 							<div class="col-1">
-								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
+								<button id="btnGroupCollapse{val_a_motivation_group_code_c}" type="button" class="btn btn-light">
 									<i class="fas fa-times"></i>
 								</button>
 							</div>
@@ -57,7 +57,7 @@
 			<div class="col" title="{val_costcentre_name}">{val_a_cost_centre_code_c}</div>
 			<div class="col">{val_a_motivation_detail_desc_c}</div>
 			<div class="col-1">
-				<button type="button" class="btn btn-primary" name="button" onclick="edit_motivation('{val_a_motivation_group_code_c}', '{val_a_motivation_detail_code_c}')">
+				<button id="btnEditDetail{val_a_motivation_group_code_c}{val_a_motivation_detail_code_c}" type="button" class="btn btn-primary">
 					<i class="fas fa-wrench"></i>
 				</button>
 			</div>
@@ -99,9 +99,9 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_group(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_group(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnGroupDelete" edit-only class="btn btn-danger">{forms.delete}</button>
+					<button id="btnGroupSave" class="btn btn-primary">{forms.save}</button>
+					<button id="btnGroupClose" class="btn btn-light">{forms.close}</button>
 			</div>
 			</div>
 		</div>
@@ -153,7 +153,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="" oninput="autocomplete_a(this)">
+									<input id="txtAccount" class="" type="text" name="a_account_name_c" key-name="a_account_code_c" value="">
 								</div>
 							</div>
 						</div>
@@ -164,7 +164,7 @@
 							</div>
 							<div class="col">
 								<div class="autocomplete">
-									<input class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="" oninput="autocomplete_cc(this)">
+									<input id="txtCostCentre" class="" type="text" name="a_cost_center_name_c" key-name="a_cost_centre_code_c" value="">
 								</div>
 							</div>
 						</div>
@@ -213,7 +213,7 @@
 								<span>{active}</span>
 							</div>
 							<div class="col">
-								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="a_motivation_status_l" name="a_motivation_status_l">{is_active}</label>
+								<label class="form-check-label"><input class="form-check-input" type="checkbox" value="1" id="a_motivation_status_l" name="a_motivation_status_l">{forms.is_active}</label>
 							</div>
 						</div>
 
@@ -221,9 +221,9 @@
 
 				</div>
 				<div class="modal-footer">
-					<button edit-only class="btn btn-danger" onclick="delete_motivation(this)">{forms.delete}</button>
-					<button class="btn btn-primary" onclick="save_edit_detail(this)">{forms.save}</button>
-					<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+					<button id="btnDetailDelete" edit-only class="btn btn-danger">{forms.delete}</button>
+					<button id="btnDetailSave" class="btn btn-primary">{forms.save}</button>
+					<button id="btnDetailClose" class="btn btn-light">{forms.close}</button>
 				</div>
 			</div>
 		</div>
@@ -237,15 +237,15 @@
 		<td>
 			<input type="hidden" name="a_motivation_group_code_c" value=""/>
 			<div class="autocomplete">
-				<input class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="" oninput="autocomplete_motivation_detail(this)">
+				<input id="txtDefaultDetail" class="posted_readonly" type="text" name="a_motivation_detail_code_c" key-name="a_motivation_detail_code_c" value="">
 			</div>
 		</td>
-		<td><button class="btn btn-primary" onclick="save_default_detail(this)">{forms.save}</button>
+		<td><button id="btnSaveDefaultDetail" class="btn btn-primary">{forms.save}</button>
 		</td>
 	</tr>
 	<tr>
 		<td>
-			<button id="new" class="btn btn-primary" onclick="new_group()">{forms.new}</button>
+			<button id="btnNewGroup" class="btn btn-primary">{forms.new}</button>
 		</td>
 	</tr>
 </table>
@@ -264,10 +264,3 @@
 	</div>
 
 </div>
-
-<script src="/src/lib/autocomplete.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_posting_acc_cc.js" charset="utf-8"></script>
-<script src="/src/lib/autocomplete_motivation.js" charset="utf-8"></script>
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/modal.js" charset="utf-8"></script>

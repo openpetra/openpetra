@@ -7852,7 +7852,7 @@
                 initial="no"/>
     <tablefield name="a_last_ich_number_i"
                 type="integer"
-                descr="identifes the Last used ICH process number"
+                descr="identifies the Last used ICH process number"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="ICH Process Number"
                 columnlabel="ICH Process"
@@ -10022,7 +10022,7 @@
                 initial="0"/>
     <tablefield name="a_ich_number_i"
                 type="integer"
-                descr="identifes the ICH process number"
+                descr="identifies the ICH process number"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="ICH Process Number"
                 columnlabel="ICH Process"
@@ -10830,7 +10830,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="-&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"
@@ -10973,7 +10973,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="-&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"
@@ -11119,7 +11119,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="-&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"
@@ -11353,7 +11353,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"
@@ -11567,7 +11567,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"
@@ -12081,7 +12081,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"
@@ -12425,7 +12425,7 @@
     </tablefield>
     <tablefield name="a_ich_number_i"
                 type="integer"
-                descr="identifes the ICH process number"
+                descr="identifies the ICH process number"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="ICH Process Number"
                 columnlabel="ICH Process"
@@ -12739,7 +12739,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch the journal belongs to."
+                descr="identifies which batch the journal belongs to."
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 help="The number of the batch containing this journal."
@@ -12921,7 +12921,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch the revaluation journal belongs to."
+                descr="identifies which batch the revaluation journal belongs to."
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 help="The number of the batch containing this journal."
@@ -12975,7 +12975,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 help="The number of the batch containing this transaction."
@@ -13146,7 +13146,7 @@
                 initial="0"/>
     <tablefield name="a_ich_number_i"
                 type="integer"
-                descr="identifes the ICH process number"
+                descr="identifies the ICH process number"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="ICH Process Number"
                 columnlabel="ICH Process"
@@ -13214,7 +13214,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"
@@ -22366,7 +22366,7 @@
                 initial="0"/>
     <tablefield name="a_batch_number_i"
                 type="integer"
-                descr="identifes which batch a transaction belongs to"
+                descr="identifies which batch a transaction belongs to"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Batch Number"
                 notnull="yes"

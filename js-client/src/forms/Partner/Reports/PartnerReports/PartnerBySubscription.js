@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,46 +21,57 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-var last_opened_entry_data = {};
+import i18next from 'i18next'
+import tpl from '../../../../lib/tpl.js'
+import reports from '../../../../lib/reports.js'
+import api from '../../../../lib/ajax.js'
 
-function get_publications() {
-	let x = {};
-	api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPublications', x).then(function (data) {
-		data = JSON.parse(data.data.d);
-		publications = data.result.PPublication;
-		for (publication of publications) {
-			let y = $('<option value="'+publication.p_publication_code_c+'">'+publication.p_publication_code_c+'</option>');
-			$('#PublicationCode').append(y);
-		}
-	})
+class PartnerBySubscription {
+	constructor() {
+	}
+
+	Ready() {
+		let self = this;
+		self.loadInConsents();
+		self.get_publications();
+		$('#btnCalculate').on('click', function () {self.calculate_report()});
+		$('#btnDownloadExcel').on('click', function () {reports.download_excel()});
+		$('#btnDownloadPDF').on('click', function () {reports.download_pdf()});
+	}
+
+	get_publications() {
+		let x = {};
+		api.post('serverMPartner.asmx/TPartnerSetupWebConnector_LoadPublications', x).then(function (data) {
+			data = JSON.parse(data.data.d);
+			let publications = data.result.PPublication;
+			for (var publication of publications) {
+				let y = $('<option value="'+publication.p_publication_code_c+'">'+publication.p_publication_code_c+'</option>');
+				$('#PublicationCode').append(y);
+			}
+		})
+	}
+
+	calculate_report() {
+		let obj = $('#reportfilter');
+		// extract information from a jquery object
+		let params = tpl.extract_data(obj);
+
+		reports.calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySubscription.json", params);
+	}
+
+	loadInConsents() {
+		api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetConsentChannelAndPurpose', {}).then(function (data) {
+			var parsed = JSON.parse(data.data.d);
+			var Consents = $(`#reportfilter [consents]`);
+			for (var purpose of parsed.result.PConsentPurpose) {
+				let name = i18next.t('MaintainPartners.'+purpose.p_name_c, purpose.p_name_c);
+				var ConsentTemp = $(`[phantom] .consent-option`).clone();
+				ConsentTemp.find(".name").text(name);
+				ConsentTemp.find("[name=param_consent]").attr("value", purpose.p_purpose_code_c);
+				Consents.append(ConsentTemp);
+			}
+		})
+	}
 }
 
-$(function() {
-	get_publications();
-});
-
-function calculate_report() {
-	let obj = $('#reportfilter');
-	// extract information from a jquery object
-	let params = extract_data(obj);
-
-	calculate_report_common("forms/Partner/Reports/PartnerReports/PartnerBySubscription.json", params);
-}
-
-function loadInConsents() {
-	api.post('serverMPartner.asmx/TDataHistoryWebConnector_GetConsentChannelAndPurpose', {}).then(function (data) {
-		var parsed = JSON.parse(data.data.d);
-		var Consents = $(`#reportfilter [consents]`);
-		for (var purpose of parsed.result.PConsentPurpose) {
-			let name = i18next.t('MaintainPartners.'+purpose.p_name_c, purpose.p_name_c);
-			var ConsentTemp = $(`[phantom] .consent-option`).clone();
-			ConsentTemp.find(".name").text(name);
-			ConsentTemp.find("[name=param_consent]").attr("value", purpose.p_purpose_code_c);
-			Consents.append(ConsentTemp);
-		}
-	})
-}
-
-$("document").ready(function () {
-	loadInConsents();
-})
+export default new PartnerBySubscription();

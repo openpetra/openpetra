@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2022 by OM International
+// Copyright 2004-2025 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -659,8 +659,16 @@ namespace Ict.Common
                     {
                         if (list[position] == '\\')
                         {
-                            escape = true;
-                            position++;
+                            if (list[position + 1] == 'x')
+                            {
+                                value.Append('\\');
+                                position++;
+                            }
+                            else
+                            {
+                                escape = true;
+                                position++;
+                            }
                         }
                     }
 
@@ -786,8 +794,16 @@ namespace Ict.Common
                     {
                         if (list[position] == '\\')
                         {
-                            escape = true;
-                            position++;
+                            if (list[position + 1] == 'x')
+                            {
+                                value.Append('\\');
+                                position++;
+                            }
+                            else
+                            {
+                                escape = true;
+                                position++;
+                            }
                         }
                     }
 

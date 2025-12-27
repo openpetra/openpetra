@@ -161,22 +161,22 @@
 
 			<ul class="nav nav-tabs" id="detailTab" role="tablist">
 				<li class="nav-item">
-					<a class="nav-link active" href="#addresses" aria-controls="addresses" onclick="show_tab(this)">{address}</a>
+					<div class="nav-link active" style="cursor:pointer;" href="#addresses" aria-controls="addresses">{address}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#contactdetails" aria-controls="contactdetails" onclick="show_tab(this)">{contactdetails}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#contactdetails" aria-controls="contactdetails">{contactdetails}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#subscriptions" aria-controls="subscriptions" onclick="show_tab(this)">{subscriptions}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#subscriptions" aria-controls="subscriptions">{subscriptions}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#types" aria-controls="types" onclick="show_tab(this)">{types}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#types" aria-controls="types">{types}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#financial" aria-controls="financial" onclick="show_tab(this)">{financedetails}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#financial" aria-controls="financial">{financedetails}</div>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#comment" aria-controls="comment" onclick="show_tab(this)">{comment}</a>
+					<div class="nav-link" style="cursor:pointer;" href="#comment" aria-controls="comment">{comment}</div>
 				</li>
 			</ul>
 
@@ -314,8 +314,8 @@
 		</div>
 		</div>
 		<div class="modal-footer">
-			<button id="btnSave" class="btn btn-primary" onclick="save_entry(this)">{forms.save}</button>
-			<button class="btn btn-light" onclick="CloseModal(this)">{forms.close}</button>
+			<button id="btnSavePartner" class="btn btn-primary">{forms.save}</button>
+			<button id="btnClosePartner" class="btn btn-light">{forms.close}</button>
 		</div>
 		</div>
 		</div>
@@ -324,7 +324,3 @@
 </div>
 
 <div id="modal_space"></div>
-
-<script src="/src/lib/utils.js" charset="utf-8"></script>
-<script src="/src/lib/tpl.js" charset="utf-8"></script>
-<script src="/src/lib/modal.js" charset="utf-8"></script>

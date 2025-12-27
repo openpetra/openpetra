@@ -3,7 +3,7 @@
 // @Authors:
 //  Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2023 by SolidCharity.com
+// Copyright 2019-2025 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,273 +21,310 @@
 // along with OpenPetra. If not, see <http://www.gnu.org/licenses/>.
 //
 
-$(function() {
-	var year = (new Date()).getYear() + 1900 - 1;
-	$("#StartDate").val(year + "-01-01");
-	$("#EndDate").val(year + "-12-31");
-	LoadDefaultTemplateFiles();
-});
+import i18next from 'i18next'
+import i18n from '../../../../lib/i18n.js';
+import tpl from '../../../../lib/tpl.js'
+import utils from '../../../../lib/utils.js'
+import api from '../../../../lib/ajax.js'
+import AutocompletePartner from '../../../../lib/autocomplete_partner.js'
 
-function ReadFile(control, fn) {
-	if (control[0].files.length == 0) {
-		fn("", "");
-		return;
+class PrintAnnualReceipts {
+	constructor() {
+		this.htmltemplate = null;
+		this.logoimage = null;
+		this.signatureimage = null;
+		this.receiptaction = null;
+		this.DefaultNames = {};
+		this.htmldata = "";
+		this.logodata = "";
+		this.logoname = "";
+		this.signaturedata = "";
+		this.signaturename = "";
 	}
 
-	var reader = new FileReader();
-
-	reader.onload = (function(theFile) {
-			base64EncodedFileContent=theFile.target.result;
-			// somehow, theFile.name on Firefox is undefined
-			filename = theFile.name;
-			if (filename == undefined) {
-				filename = control[0].value.split("\\").pop();
-			}
-			if (filename == undefined) {
-				filename="undefined.txt";
-			}
-			fn(filename, base64EncodedFileContent);
-		});
-
-	reader.readAsDataURL(control[0].files[0]);
-}
-
-var htmltemplate = null;
-var logoimage = null;
-var signatureimage = null;
-var receiptaction = null;
-var DefaultNames = {};
-
-var htmldata = "";
-function SetHtmlTemplate(filename, filedata) {
-	htmldata = filedata;
-
-	if (htmldata.length == 0 && DefaultNames["DefaultFileNameHTML"] == "") {
-		display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
-		hidePleaseWait();
-		return;
+	Ready() {
+		let self = this;
+		var year = (new Date()).getYear() + 1900 - 1;
+		$("#StartDate").val(year + "-01-01");
+		$("#EndDate").val(year + "-12-31");
+		self.LoadDefaultTemplateFiles();
+		$('#btnAnnualReceiptsAll').on('click', function() {self.GenerateAnnualReceipts('all')});
+		$('#btnAnnualReceiptsPrint').on('click', function() {self.GenerateAnnualReceipts('print')});
+		$('#btnAnnualReceiptsEmail').on('click', function() {self.GenerateAnnualReceipts('email')});
+		$('#autocomplete_donor').on('input', function() { AutocompletePartner.autocomplete_donor(this)});
+		$('#btnClearDonor').on('click', function() {$('input[name=p_donor_name_c]').val('');$('input[name=p_donor_name_c]').attr('key-value',0)});
+		$('#btnStoreHTMLTemplate').on('click', function() {self.StoreHtmlTemplateAsDefault()});
+		$('#btnClearHTMLTemplate').on('click', function() {self.ClearHtmlTemplateAsDefault()});
+		$('#btnStoreLogo').on('click', function() {self.StoreLogoTemplateAsDefault()});
+		$('#btnClearLogo').on('click', function() {self.ClearLogoTemplateAsDefault()});
+		$('#btnStoreSignature').on('click', function() {self.StoreSignatureTemplateAsDefault()});
+		$('#btnClearSignature').on('click', function() {self.ClearSignatureTemplateAsDefault()});
 	}
 
-	ReadFile(logoimage, SetLogo);
-}
-
-var logodata = "";
-var logoname = "";
-function SetLogo(filename, filedata) {
-	logodata = filedata;
-	logoname = filename;
-
-	ReadFile(signatureimage, SetSignature);
-}
-
-var signaturedata = "";
-var signaturename = "";
-function SetSignature(filename, filedata) {
-	signaturedata = filedata;
-	signaturename = filename;
-
-	GenerateAnnualReceiptsRemote();
-}
-
-function GenerateAnnualReceipts(action) {
-	receiptaction = action;
-	htmltemplate = $('#HTMLTemplate');
-	logoimage = $('#LogoImage');
-	signatureimage = $('#SignatureImage');
-
-	// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
-	if (window.File && window.FileReader && window.FileList && window.Blob) {
-		//alert("Great success! All the File APIs are supported.");
-	} else {
-	  alert('The File APIs are not fully supported in this browser.');
-	}
-
-	showPleaseWait();
-
-	ReadFile(htmltemplate, SetHtmlTemplate);
-}
-
-function SetTemplateDefault(filename, filedata, purpose) {
-
-	if (filename == "delete") {
-		p = {'AFileContent': "",
-			'AFileName': "",
-			'APurpose': purpose
-			};
-	} else {
-		if (filedata.length == 0) {
-			display_message(i18next.t('PrintAnnualReceipts.emptytemplatefile'), "fail");
+	ReadFile(control, fn) {
+		let self = this;
+		if (control[0].files.length == 0) {
+			fn(self, "", "");
 			return;
 		}
-		p = {'AFileContent': filedata,
-			'AFileName': filename,
-			'APurpose': purpose
-			};
+
+		var reader = new FileReader();
+
+		reader.onload = (function(theFile) {
+				let base64EncodedFileContent=theFile.target.result;
+				// somehow, theFile.name on Firefox is undefined
+				let filename = theFile.name;
+				if (filename == undefined) {
+					filename = control[0].value.split("\\").pop();
+				}
+				if (filename == undefined) {
+					filename="undefined.txt";
+				}
+				fn(self, filename, base64EncodedFileContent);
+			});
+
+		reader.readAsDataURL(control[0].files[0]);
 	}
 
-	api.post('serverMFinance.asmx/TReceiptingWebConnector_StoreDefaultFile', p)
-	.then(function (result) {
-		var parsed = JSON.parse(result.data.d);
-		if (parsed.result == true) {
-			display_message(i18next.t('forms.saved'), "success");
+	SetHtmlTemplate(self, filename, filedata) {
+		self.htmldata = filedata;
+
+		if (self.htmldata.length == 0 && self.DefaultNames["DefaultFileNameHTML"] == "") {
+			utils.display_message(i18next.t('PrintAnnualReceipts.emptytemplate'), "fail");
+			self.hidePleaseWait();
+			return;
+		}
+
+		self.ReadFile(self.logoimage, self.SetLogo);
+	}
+
+	SetLogo(self, filename, filedata) {
+		self.logodata = filedata;
+		self.logoname = filename;
+
+		self.ReadFile(self.signatureimage, self.SetSignature);
+	}
+
+	SetSignature(self, filename, filedata) {
+		self.signaturedata = filedata;
+		self.signaturename = filename;
+
+		self.GenerateAnnualReceiptsRemote();
+	}
+
+	GenerateAnnualReceipts(action) {
+		let self = this;
+		self.receiptaction = action;
+		self.htmltemplate = $('#HTMLTemplate');
+		self.logoimage = $('#LogoImage');
+		self.signatureimage = $('#SignatureImage');
+
+		// see http://www.html5rocks.com/en/tutorials/file/dndfiles/
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			//alert("Great success! All the File APIs are supported.");
 		} else {
-			display_message(i18next.t('forms.notsaved'), "fail");
+			alert('The File APIs are not fully supported in this browser.');
 		}
-	});
-}
 
-function SetHtmlTemplateDefault(filename, filedata) {
-	SetTemplateDefault(filename, filedata, "HTML");
-	DefaultNames["DefaultFileNameHTML"] = filename;
-	insertData("#parameters", DefaultNames);
-}
+		self.showPleaseWait();
 
-function SetLogoTemplateDefault(filename, filedata) {
-	SetTemplateDefault(filename, filedata, "LOGO");
-	DefaultNames["DefaultFileNameLogo"] = filename;
-	insertData("#parameters", DefaultNames);
-}
-
-function SetSignatureTemplateDefault(filename, filedata) {
-	SetTemplateDefault(filename, filedata, "SIGN");
-	DefaultNames["DefaultFileNameSignature"] = filename;
-	insertData("#parameters", DefaultNames);
-}
-
-function StoreHtmlTemplateAsDefault() {
-	htmltemplate = $('#HTMLTemplate');
-
-	ReadFile(htmltemplate, SetHtmlTemplateDefault);
-}
-
-function StoreLogoTemplateAsDefault() {
-	logoimage = $('#LogoImage');
-
-	ReadFile(logoimage, SetLogoTemplateDefault);
-}
-
-function StoreSignatureTemplateAsDefault() {
-	signatureimage = $('#SignatureImage');
-
-	ReadFile(signatureimage, SetSignatureTemplateDefault);
-}
-
-function ClearHtmlTemplateAsDefault() {
-	SetTemplateDefault("delete", "", "HTML");
-	DefaultNames["DefaultFileNameHTML"] = '';
-	insertData("#parameters", DefaultNames);
-}
-
-function ClearLogoTemplateAsDefault() {
-	SetTemplateDefault("delete", "", "LOGO");
-	DefaultNames["DefaultFileNameLogo"] = '';
-	insertData("#parameters", DefaultNames);
-}
-
-function ClearSignatureTemplateAsDefault() {
-	SetTemplateDefault("delete", "", "SIGN");
-	DefaultNames["DefaultFileNameSignature"] = '';
-	insertData("#parameters", DefaultNames);
-}
-
-function LoadDefaultTemplateFiles() {
-	p = {};
-
-	api.post('serverMFinance.asmx/TReceiptingWebConnector_LoadReceiptDefaults', p)
-	.then(function (result) {
-		var parsed = JSON.parse(result.data.d);
-		if (parsed.result == true) {
-			DefaultNames["DefaultFileNameHTML"] = parsed.AFileNameHTML;
-			DefaultNames["DefaultFileNameLogo"] = parsed.AFileNameLogo;
-			DefaultNames["DefaultFileNameSignature"] = parsed.AFileNameSignature;
-			DefaultNames["AEmailSubject"] = parsed.AEmailSubject;
-			DefaultNames["AEmailBody"] = parsed.AEmailBody;
-			DefaultNames["AEmailFrom"] = parsed.AEmailFrom;
-			DefaultNames["AEmailFromName"] = parsed.AEmailFromName;
-			DefaultNames["AEmailFilename"] = parsed.AEmailFilename;
-			insertData("#parameters", DefaultNames);
-		}
-	});
-}
-
-function GenerateAnnualReceiptsRemote() {
-	// extract information from a jquery object
-	let payload = extract_data($('#parameters'));
-	if (payload['p_donor_key_n'] == '') {
-		payload['p_donor_key_n'] = 0;
+		self.ReadFile(self.htmltemplate, self.SetHtmlTemplate);
 	}
 
-	if (receiptaction == "email") {
-		// TODO confirm that emails will actually be sent
-	}
+	SetTemplateDefault(filename, filedata, purpose) {
 
-	p = {'AHTMLTemplate': htmldata,
-		'ALogoImage': logodata,
-		'ALogoFilename': logoname,
-		'ASignatureImage': signaturedata,
-		'ASignatureFilename': signaturename,
-		'AEmailSubject': payload['AEmailSubject'],
-		'AEmailBody': payload['AEmailBody'],
-		'AEmailFrom': payload['AEmailFrom'],
-		'AEmailFromName': payload['AEmailFromName'],
-		'AEmailFilename': payload['AEmailFilename'],
-		'ALedgerNumber': window.localStorage.getItem('current_ledger'),
-		'AFrequency': 'Annual',
-		'AStartDate': payload['AStartDate'],
-		'AEndDate': payload['AEndDate'],
-		'ALanguage': currentLng(),
-		'ADeceasedFirst': true,
-		'AExtract': '',
-		'ADonorKey': payload['p_donor_key_n'],
-		'AAction': receiptaction,
-		'AOnlyTest': payload['AOnlyTest']};
-
-	api.post('serverMFinance.asmx/TReceiptingWebConnector_CreateAnnualGiftReceipts', p)
-	.then(function (result) {
-		var parsed = JSON.parse(result.data.d);
-		if (parsed.result == true)
-		{
-			var byteString = atob(parsed.APDFReceipt);
-
-			// Convert that text into a byte array.
-			var ab = new ArrayBuffer(byteString.length);
-			var ia = new Uint8Array(ab);
-			for (var i = 0; i < byteString.length; i++) {
-				ia[i] = byteString.charCodeAt(i);
+		let p = {}
+		if (filename == "delete") {
+			p = {'AFileContent': "",
+				'AFileName': "",
+				'APurpose': purpose
+				};
+		} else {
+			if (filedata.length == 0) {
+				utils.display_message(i18next.t('PrintAnnualReceipts.emptytemplatefile'), "fail");
+				return;
 			}
-
-			var blob = new Blob([ia], {type : "application/pdf"});
-			var url = URL.createObjectURL(blob);
-			var a = document.createElement("a");
-			a.style = "display: none";
-			a.href = url;
-
-			var year = payload['AEndDate'].substring(0, 4);
-			a.download = i18next.t('PrintAnnualReceipts.annual_receipt_file') + year + '.pdf';
-
-			document.body.appendChild(a);
-
-			a.click();
-			URL.revokeObjectURL(url);
-			a.remove();
+			p = {'AFileContent': filedata,
+				'AFileName': filename,
+				'APurpose': purpose
+				};
 		}
-		else
-		{
-			display_error(parsed.AVerification);
-		}
-		hidePleaseWait();
-	})
-	.catch(error => {
-		console.log(error);
-		hidePleaseWait();
-		display_message(i18next.t('PrintAnnualReceipts.uploaderror'), "fail");
-	});
-};
 
-function showPleaseWait() {
-	$('#myModal').modal();
+		api.post('serverMFinance.asmx/TReceiptingWebConnector_StoreDefaultFile', p)
+		.then(function (result) {
+			var parsed = JSON.parse(result.data.d);
+			if (parsed.result == true) {
+				utils.display_message(i18next.t('forms.saved'), "success");
+			} else {
+				utils.display_message(i18next.t('forms.notsaved'), "fail");
+			}
+		});
+	}
+
+	SetHtmlTemplateDefault(self, filename, filedata) {
+		self.SetTemplateDefault(filename, filedata, "HTML");
+		self.DefaultNames["DefaultFileNameHTML"] = filename;
+		tpl.insertData("#parameters", self.DefaultNames);
+	}
+
+	SetLogoTemplateDefault(self, filename, filedata) {
+		self.SetTemplateDefault(filename, filedata, "LOGO");
+		self.DefaultNames["DefaultFileNameLogo"] = filename;
+		tpl.insertData("#parameters", self.DefaultNames);
+	}
+
+	SetSignatureTemplateDefault(self, filename, filedata) {
+		self.SetTemplateDefault(filename, filedata, "SIGN");
+		self.DefaultNames["DefaultFileNameSignature"] = filename;
+		tpl.insertData("#parameters", self.DefaultNames);
+	}
+
+	StoreHtmlTemplateAsDefault() {
+		let self = this;
+		self.htmltemplate = $('#HTMLTemplate');
+
+		self.ReadFile(self.htmltemplate, self.SetHtmlTemplateDefault);
+	}
+
+	StoreLogoTemplateAsDefault() {
+		let self = this;
+		self.logoimage = $('#LogoImage');
+
+		self.ReadFile(self.logoimage, self.SetLogoTemplateDefault);
+	}
+
+	StoreSignatureTemplateAsDefault() {
+		let self = this;
+		self.signatureimage = $('#SignatureImage');
+
+		self.ReadFile(self.signatureimage, self.SetSignatureTemplateDefault);
+	}
+
+	ClearHtmlTemplateAsDefault() {
+		let self = this;
+		self.SetTemplateDefault("delete", "", "HTML");
+		self.DefaultNames["DefaultFileNameHTML"] = '';
+		tpl.insertData("#parameters", self.DefaultNames);
+	}
+
+	ClearLogoTemplateAsDefault() {
+		let self = this;
+		self.SetTemplateDefault("delete", "", "LOGO");
+		self.DefaultNames["DefaultFileNameLogo"] = '';
+		tpl.insertData("#parameters", self.DefaultNames);
+	}
+
+	ClearSignatureTemplateAsDefault() {
+		let self = this;
+		self.SetTemplateDefault("delete", "", "SIGN");
+		self.DefaultNames["DefaultFileNameSignature"] = '';
+		tpl.insertData("#parameters", self.DefaultNames);
+	}
+
+	LoadDefaultTemplateFiles() {
+		let self = this;
+		let p = {};
+
+		api.post('serverMFinance.asmx/TReceiptingWebConnector_LoadReceiptDefaults', p)
+		.then(function (result) {
+			let data = result.data.d.replaceAll("\n", "<br/>");
+			var parsed = JSON.parse(data);
+			if (parsed.result == true) {
+				self.DefaultNames["DefaultFileNameHTML"] = parsed.AFileNameHTML;
+				self.DefaultNames["DefaultFileNameLogo"] = parsed.AFileNameLogo;
+				self.DefaultNames["DefaultFileNameSignature"] = parsed.AFileNameSignature;
+				self.DefaultNames["AEmailSubject"] = parsed.AEmailSubject;
+				self.DefaultNames["AEmailBody"] = parsed.AEmailBody.replaceAll("<br/>", "\n");
+				self.DefaultNames["AEmailFrom"] = parsed.AEmailFrom;
+				self.DefaultNames["AEmailFromName"] = parsed.AEmailFromName;
+				self.DefaultNames["AEmailFilename"] = parsed.AEmailFilename;
+				tpl.insertData("#parameters", self.DefaultNames);
+			}
+		});
+	}
+
+	GenerateAnnualReceiptsRemote() {
+		let self = this;
+		// extract information from a jquery object
+		let payload = tpl.extract_data($('#parameters'));
+		if (payload['p_donor_key_n'] == '') {
+			payload['p_donor_key_n'] = 0;
+		}
+
+		if (self.receiptaction == "email") {
+			// TODO confirm that emails will actually be sent
+		}
+
+		let p = {'AHTMLTemplate': self.htmldata,
+			'ALogoImage': self.logodata,
+			'ALogoFilename': self.logoname,
+			'ASignatureImage': self.signaturedata,
+			'ASignatureFilename': self.signaturename,
+			'AEmailSubject': payload['AEmailSubject'],
+			'AEmailBody': payload['AEmailBody'],
+			'AEmailFrom': payload['AEmailFrom'],
+			'AEmailFromName': payload['AEmailFromName'],
+			'AEmailFilename': payload['AEmailFilename'],
+			'ALedgerNumber': window.localStorage.getItem('current_ledger'),
+			'AFrequency': 'Annual',
+			'AStartDate': payload['AStartDate'],
+			'AEndDate': payload['AEndDate'],
+			'ALanguage': i18n.currentLng(),
+			'ADeceasedFirst': true,
+			'AExtract': '',
+			'ADonorKey': payload['p_donor_key_n'],
+			'AAction': self.receiptaction,
+			'AOnlyTest': payload['AOnlyTest']};
+
+		api.post('serverMFinance.asmx/TReceiptingWebConnector_CreateAnnualGiftReceipts', p)
+		.then(function (result) {
+			var parsed = JSON.parse(result.data.d);
+			if (parsed.result == true)
+			{
+				var byteString = atob(parsed.APDFReceipt);
+
+				// Convert that text into a byte array.
+				var ab = new ArrayBuffer(byteString.length);
+				var ia = new Uint8Array(ab);
+				for (var i = 0; i < byteString.length; i++) {
+					ia[i] = byteString.charCodeAt(i);
+				}
+
+				var blob = new Blob([ia], {type : "application/pdf"});
+				var url = URL.createObjectURL(blob);
+				var a = document.createElement("a");
+				a.style = "display: none";
+				a.href = url;
+
+				var year = payload['AEndDate'].substring(0, 4);
+				a.download = i18next.t('PrintAnnualReceipts.annual_receipt_file') + year + '.pdf';
+
+				document.body.appendChild(a);
+
+				a.click();
+				URL.revokeObjectURL(url);
+				a.remove();
+			}
+			else
+			{
+				utils.display_error(parsed.AVerification);
+			}
+			self.hidePleaseWait();
+		})
+		.catch(error => {
+			console.log(error);
+			self.hidePleaseWait();
+			utils.display_message(i18next.t('PrintAnnualReceipts.uploaderror'), "fail");
+		});
+	}
+
+	showPleaseWait() {
+		$('#myModal').modal();
+	}
+	hidePleaseWait() {
+		// somehow the operation can finish too soon, so delay it by a little
+		setTimeout(function() { $('#myModal').modal('hide'); }, 500);
+	}
 }
-function hidePleaseWait() {
-	// somehow the operation can finish too soon, so delay it by a little
-	setTimeout(function() { $('#myModal').modal('hide'); }, 500);
-}
+
+export default new PrintAnnualReceipts();

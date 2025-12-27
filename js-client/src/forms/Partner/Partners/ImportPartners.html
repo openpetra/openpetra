@@ -1,6 +1,6 @@
-<input type="file" id="fileUploadUserCSV" name="file" size="10" onchange="UploadUserCSV($(this))" style="visibility:hidden" accept=".csv,.txt"/>
-<input type="file" id="fileUploadUserODS" name="file" size="10" onchange="UploadUserODS($(this))" style="visibility:hidden" accept=".ods"/>
-<input type="file" id="fileUploadUserXLSX" name="file" size="10" onchange="UploadUserXLSX($(this))" style="visibility:hidden"  accept=".xlsx"/>
+<input type="file" id="fileUploadUserCSV" name="file" size="10" style="visibility:hidden" accept=".csv,.txt"/>
+<input type="file" id="fileUploadUserODS" name="file" size="10" style="visibility:hidden" accept=".ods"/>
+<input type="file" id="fileUploadUserXLSX" name="file" size="10" style="visibility:hidden"  accept=".xlsx"/>
 
 <h1>{navigation.ImportPartners_label}</h1>
 <div class="container" id="info">
@@ -10,13 +10,13 @@
 		</a>
 	</div>
 	<div class="row">
-		<button type="button" class="btn btn-primary" id="btnImportDataODS" onclick="$('#fileUploadUserODS').click()">{importUserODS}</button>
+		<button type="button" class="btn btn-primary" id="btnImportDataODS">{importUserODS}</button>
 	</div>
 	<div class="row">
-		<button type="button" class="btn btn-primary" id="btnImportDataXLSX" onclick="$('#fileUploadUserXLSX').click()">{importUserXLSX}</button>
+		<button type="button" class="btn btn-primary" id="btnImportDataXLSX">{importUserXLSX}</button>
 	</div>
 	<div class="row">
-		<button type="button" class="btn btn-secondary" id="btnImportData" onclick="$('#fileUploadUserCSV').click()">{importUser}</button>
+		<button type="button" class="btn btn-secondary" id="btnImportData">{importUser}</button>
 	</div>
 
 	<div class="row">
@@ -24,7 +24,7 @@
 	</div>
 
 	<div class="row">
-		<button type="button" class="btn btn-danger" id="btnDeleteAllContacts" onclick="DeleteAllContacts()">{DeleteAllContacts}</button>
+		<button type="button" class="btn btn-danger" id="btnDeleteAllContacts">{DeleteAllContacts}</button>
 	</div>
 </div>
 

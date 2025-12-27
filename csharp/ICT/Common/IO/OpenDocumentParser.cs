@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2021 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Common;
 using Ict.Common.IO;
-using GNU.Gettext;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace Ict.Common.IO

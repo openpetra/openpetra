@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2020 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,7 +42,6 @@ using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Session;
-using GNU.Gettext;
 
 namespace Ict.Common.Remoting.Server
 {

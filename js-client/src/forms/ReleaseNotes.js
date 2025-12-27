@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2020 by SolidCharity.com
+// Copyright 2019-2024 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -21,24 +21,34 @@
 // along with OpenPetra.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-$('document').ready(function () {
+import axios from 'axios';
+import i18next from 'i18next';
 
-  refresh = "?" + Date.now();
+class ReleaseNotes {
 
-  var releasenotes = axios.create({
-    baseURL: '/releasenotes/'
-  });
+    Ready() {
 
-  let x = {};
-  releasenotes.get(i18next.t('ReleaseNotes.releasenotes_url') + refresh,x)
-    .then(function(data) {
-      $('#contentReleaseNotes').html(data.data);
-    })
-    .catch(function (error) {
-      // default to english release notes
-      releasenotes.get('releasenotes.html' + refresh,x)
-        .then(function(data) {
-          $('#contentReleaseNotes').html(data.data);
+        let refresh = "?" + Date.now();
+
+        var releasenotes = axios.create({
+            baseURL: '/releasenotes/'
         });
-    })
-});
+
+        let x = {};
+        releasenotes.get(i18next.t('ReleaseNotes.releasenotes_url') + refresh,x)
+            .then(function(data) {
+            $('#contentReleaseNotes').html(data.data);
+            })
+            .catch(function (error) {
+            // default to english release notes
+            releasenotes.get('releasenotes.html' + refresh,x)
+                .then(function(data) {
+                $('#contentReleaseNotes').html(data.data);
+                });
+            })
+    }
+}
+
+var releasenotes = new ReleaseNotes();
+
+export default releasenotes;

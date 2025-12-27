@@ -1,8 +1,8 @@
 # see http://www.appveyor.com/docs/appveyor-yml
-image: Ubuntu2004
+image: Ubuntu2204
 version: 1.0.{build}
 platform: x86
-stack: mysql, node 14
+stack: mysql, node 20
 clone_depth: 1
 init: []
 environment:

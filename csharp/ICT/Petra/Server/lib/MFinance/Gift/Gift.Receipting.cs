@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2023 by OM International
+// Copyright 2004-2024 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,6 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
@@ -336,8 +335,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     {
                                         TVerificationResultCollection EmailVerification = null;
 
-                                        // TODO: get the valid Email Address of the donor
-                                        string ReceipientEmail = "todo@example.org";
+                                        // get the valid Email Address of the donor
+                                        string ReceipientEmail = TMailing.GetBestEmailAddress(donorKey);
+
+                                        if (ReceipientEmail == string.Empty)
+                                        {
+                                            throw new Exception("cannot find E-Mail address for Donor " + donorKey.ToString());
+                                        }
 
                                         string EmailDonorName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donorName,
                                             eShortNameFormat.eReverseWithoutTitle);
@@ -497,6 +501,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 // do not send to the donor
                 AEmailRecipient = AEmailFrom.Replace("@", "+testdonor@");
+                // BCC to test address
                 AEmailFrom = AEmailFrom.Replace("@", "+test@");
             }
 
