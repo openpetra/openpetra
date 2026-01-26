@@ -4,7 +4,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2004-2023 by OM International
+// Copyright 2004-2026 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1276,6 +1276,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             string AMatchAction,
             Int64 ADonorKey, string AMotivationGroupCode, string AMotivationDetailCode,
             string AAccountCode, string ACostCentreCode,
+            string AReference, string ANarrative,
             Int64 ARecipientKey,
             Decimal AGiftTransactionAmount,
             out TVerificationResultCollection AVerificationResult)
@@ -1339,6 +1340,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 row.MotivationDetailCode = AMotivationDetailCode;
                 row.AccountCode = AAccountCode;
                 row.CostCentreCode = ACostCentreCode;
+                row.Reference = AReference;
+                row.Narrative = ANarrative;
                 row.GiftTransactionAmount = AGiftTransactionAmount;
                 MainDS.AEpMatch.Rows.Add(row);
             }
@@ -1357,6 +1360,8 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                             row.MotivationDetailCode = AMotivationDetailCode;
                             row.AccountCode = AAccountCode;
                             row.CostCentreCode = ACostCentreCode;
+                            row.Reference = AReference;
+                            row.Narrative = ANarrative;
                             row.GiftTransactionAmount = AGiftTransactionAmount;
                         }
                     }
@@ -1719,7 +1724,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
 
             Transaction.Rollback();
 
-            GLBatchTDS GLDS = TGLPosting.CreateABatch(ALedgerNumber, db, true);
+            GLBatchTDS GLDS = TGLPosting.CreateABatch(ALedgerNumber, db, false);
 
             ABatchRow glbatchRow = GLDS.ABatch[0];
             glbatchRow.BatchPeriod = BatchPeriod;
@@ -1826,10 +1831,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             glbatchRow.BatchCreditTotal = CreditTotal;
             glbatchRow.BatchControlTotal = HashTotal;
 
-            TVerificationResultCollection VerificationResult;
-
+            AVerificationResult = new TVerificationResultCollection();
             TSubmitChangesResult result = TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDS,
-                out VerificationResult, db);
+                out AVerificationResult, db);
 
             if (result == TSubmitChangesResult.scrOK)
             {
@@ -1839,6 +1843,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             }
 
             TLogging.Log("Problems storing GL Batch");
+            TLogging.Log(AVerificationResult.BuildVerificationResultString());
             db.CloseDBConnection();
             return false;
         }

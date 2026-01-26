@@ -674,6 +674,7 @@
         "order_id": "Order number",
         "accountname": "Account Owner with IBAN",
         "description": "Description",
+        "reference": "Reference",
         "transaction_amount": "Transaction amount",
         "transaction_date": "Date",
         "action": "Action",

@@ -679,6 +679,7 @@
         "order_id": "Auftragsnummer",
         "accountname": "Kontoinhaber mit IBAN",
         "description": "Beschreibung",
+        "reference": "Referenz",
         "transaction_amount": "Betrag",
         "transaction_date": "Datum",
         "action": "Aktion",
