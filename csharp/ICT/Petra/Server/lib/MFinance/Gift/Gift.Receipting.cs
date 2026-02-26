@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         if (ReceipientEmail == string.Empty)
                                         {
                                             TLogging.Log("cannot find E-Mail address for Donor " + donorKey.ToString());
-                                            AVerification.Add(new TVerificationResult(
+                                            LocalVerification.Add(new TVerificationResult(
                                                     Catalog.GetString("Sending Email"),
                                                     String.Format(Catalog.GetString("cannot find E-Mail address for Donor {0}"), donorKey.ToString()),
                                                     "Server problems",
