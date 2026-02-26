@@ -510,7 +510,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 // do not send to the donor
                 AEmailRecipient = AEmailFrom.Replace("@", "+testdonor@");
                 // BCC to test address
-                AEmailFrom = AEmailFrom.Replace("@", "+test@");
+                AEmailFrom = AEmailFrom.Replace("@", "-test@");
             }
 
             TSmtpSender EmailSender = new TSmtpSender();
@@ -537,6 +537,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     return false;
                 }
 
+                TLogging.Log("send to " + AEmailRecipientName + " <" + AEmailRecipient + ">, BCC to " + AEmailFrom);
                 if (EmailSender.SendEmail(
                         AEmailRecipientName + " <" + AEmailRecipient + ">",
                         AEmailSubject,
