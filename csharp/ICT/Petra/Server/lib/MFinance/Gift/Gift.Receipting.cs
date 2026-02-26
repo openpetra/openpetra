@@ -340,28 +340,36 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                         if (ReceipientEmail == string.Empty)
                                         {
-                                            throw new Exception("cannot find E-Mail address for Donor " + donorKey.ToString());
-                                        }
-
-                                        string EmailDonorName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donorName,
-                                            eShortNameFormat.eReverseWithoutTitle);
-
-                                        // send email with pdf to donor
-                                        if (!SendEmail(ReceipientEmail, EmailDonorName,
-                                            AEmailSubject, AEmailBody.Replace("{{donorName}}", EmailDonorName),
-                                            AEmailFrom, AEmailFromName,
-                                            AEmailFrom,
-                                            AEmailFilename,
-                                            PDFFile,
-                                            AOnlyTest,
-                                            out EmailVerification))
-                                        {
-                                            TLogging.Log("Cannot send receipt email to " + EmailDonorName + " " + donorKey.ToString());
-                                            LocalVerification.AddCollection(EmailVerification);
+                                            TLogging.Log("cannot find E-Mail address for Donor " + donorKey.ToString());
+                                            AVerification.Add(new TVerificationResult(
+                                                    Catalog.GetString("Sending Email"),
+                                                    String.Format(Catalog.GetString("cannot find E-Mail address for Donor {0}"), donorKey.ToString()),
+                                                    "Server problems",
+                                                    TResultSeverity.Resv_Critical,
+                                                    new System.Guid()));
                                         }
                                         else
                                         {
-                                            ReceiptSuccess = true;
+                                            string EmailDonorName = Ict.Petra.Server.MPartner.Common.Calculations.FormatShortName(donorName,
+                                                eShortNameFormat.eReverseWithoutTitle);
+
+                                            // send email with pdf to donor
+                                            if (!SendEmail(ReceipientEmail, EmailDonorName,
+                                                AEmailSubject, AEmailBody.Replace("{{donorName}}", EmailDonorName),
+                                                AEmailFrom, AEmailFromName,
+                                                AEmailFrom,
+                                                AEmailFilename,
+                                                PDFFile,
+                                                AOnlyTest,
+                                                out EmailVerification))
+                                            {
+                                                TLogging.Log("Cannot send receipt email to " + EmailDonorName + " " + donorKey.ToString());
+                                                LocalVerification.AddCollection(EmailVerification);
+                                            }
+                                            else
+                                            {
+                                                ReceiptSuccess = true;
+                                            }
                                         }
 
                                         File.Delete(PDFFile);
