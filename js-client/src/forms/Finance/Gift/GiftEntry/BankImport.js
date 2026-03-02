@@ -5,7 +5,7 @@
 //	   Christopher Jäkel
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2025 by SolidCharity.com
+// Copyright 2019-2026 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -126,8 +126,10 @@ class BankImport {
 
 	updateTransaction(StatementKey, OrderId) {
 		let self = this;
-		// somehow the original window stays gray when we return from this modal.
-		$('.modal-backdrop').remove();
+		// close detail modal
+		modal.CloseModal(self.modal_detail);
+		// close transaction modal
+		modal.CloseModal(self.modal_trans);
 		self.edit_gift_trans(StatementKey, OrderId);
 	}
 
@@ -168,7 +170,7 @@ class BankImport {
 			tpl_edit_raw.find('[action]').val('create');
 
 			tpl.update_requireClass(tpl_edit_raw, sclass);
-			let m = tpl_edit_raw.modal('show');
+			let m = modal.ShowModalObj(tpl_edit_raw);
 
 			m.find('#autocomplete_motivationdetail').on('input', function () {AutocompleteMotivation.autocomplete_motivation_detail(this, self.update_motivation_group)});
 			m.find('#autocomplete_glaccountcode').on('input', function () {AutocompleteAccCc.autocomplete_a(this)});
@@ -177,6 +179,7 @@ class BankImport {
 			m.find('#btnClearMember').on('click', function() { self.clear_member(this)});
 			m.find('#btnSave').on('click', function () {self.save_edit_trans_detail(this)});
 			m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
+			self.modal_detail = m;
 		})
 	}
 
@@ -223,7 +226,7 @@ class BankImport {
 			$('#modal_space').html(tpl_edit_raw);
 
 			tpl.update_requireClass(tpl_edit_raw, parsed.ATransactions[0].MatchAction);
-			let m = tpl_edit_raw.modal('show');
+			let m = modal.ShowModalObj(tpl_edit_raw);
 			m.find('[action]').val('update');
 			m.find('#fieldsetMatchAction').on('change', function() { tpl.update_requireClass(tpl_edit_raw, $(this).find('[type=radio]:checked').val());});
 			m.find('#inputDonor').on('input', function() { AutocompletePartner.autocomplete_donor(this)});
@@ -231,6 +234,7 @@ class BankImport {
 			m.find('#btnSave').on('click', function() { self.save_edit_trans(this)});
 			m.find('#btnClose').on('click', function() { modal.CloseModal(this)});
 			m.find('#btnNewDetail').on('click', function() { self.new_trans_detail(transaction['a_order_i'])});
+			self.modal_trans = m;
 		})
 	}
 
@@ -260,7 +264,7 @@ class BankImport {
 			$('#modal_space').append(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('update');
 			tpl.update_requireClass(tpl_edit_raw, sclass);
-			let m = tpl_edit_raw.modal('show');
+			let m = modal.ShowModalObj(tpl_edit_raw);
 
 			if (detail['a_membership_l']) {
 				tpl_edit_raw.find('.MEMBERFEE').show();
@@ -274,6 +278,7 @@ class BankImport {
 			m.find('#btnSave').on('click', function () {self.save_edit_trans_detail(this)});
 			m.find('#btnDelete').on('click', function () {self.delete_trans_detail(this)});
 			m.find('#btnClose').on('click', function () {modal.CloseModal(this)});
+			self.modal_detail = m;
 		})
 	}
 

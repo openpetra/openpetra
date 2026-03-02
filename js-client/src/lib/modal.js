@@ -3,7 +3,7 @@
 // @Authors:
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
-// Copyright 2019-2024 by SolidCharity.com
+// Copyright 2019-2026 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -39,6 +39,7 @@ class Modal {
         this.RemoveBackDropOnBrowserBack();
         this.modal_aquire = true;
         this.modal_timeout = 1;
+        this.modal_count = 0;
     }
 
     // returns true of false,
@@ -63,6 +64,7 @@ class Modal {
     }
 
     ShowModal(id, html) {
+        this.modal_count += 1;
         // clear previous instance of this modal
         $('#modal_space #'+id).remove();
         // set the id for this modal
@@ -76,6 +78,17 @@ class Modal {
         // show the modal
         m.modal('show');
         return m;
+    }
+
+    ShowModalObj(obj) {
+        this.modal_count += 1;
+        // insert the new modal
+        $('#modal_space').append(obj);
+        let m = obj;
+        // make sure that we cannot close this modal by clicking outside
+        m.modal({backdrop:"static", keyboard: false});
+        // show the modal
+        return m.modal('show');
     }
 
     FindModal(id) {
@@ -93,6 +106,12 @@ class Modal {
         m.modal('hide');
         if (remove) {
             m.remove();
+        }
+        this.modal_count -= 1;
+        if (this.modal_count <= 0) {
+            document.body.style.overflow = 'auto';
+            document.documentElement.style.overflow = 'auto';
+            $('.modal-backdrop').remove();
         }
     }
 }
