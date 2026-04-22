@@ -12,7 +12,7 @@
     "cypress": "^13.8.0",
     "i18next": "^10.6.0",
     "i18next-browser-languagedetector": "^2.2.4",
-    "i18next-http-backend": "^2.5.1",
+    "i18next-http-backend": "^3.0.5",
     "jquery": "^3.7",
     "uglify-js": "^3.16.0"
   },
