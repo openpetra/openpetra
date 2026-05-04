@@ -9,7 +9,7 @@
 			<div class="col format_date">{val_a_date_effective_d}</div>
 			<div class="col format_currency">{val_a_transaction_amount_n}</div>
 			<div class="col-6">{val_a_description_c}</div>
-			<div class="col-1">
+			<div class="col-1 screen">
 				<button id="btnEdit" type="button" class="btn btn-primary">
 					<i class="fas fa-wrench"></i>
 				</button>
@@ -23,7 +23,7 @@
 							<div class="col">{trans_number}</div>
 							<div class="col">{trans_date}</div>
 							<div class="col">{trans_donor}</div>
-							<div class="col-1">
+							<div class="col-1" screen>
 								<button type="button" class="btn btn-light" onclick="$('.tpl_row .collapse').collapse('hide');">
 									<i class="fas fa-close"></i>
 								</button>
@@ -323,7 +323,7 @@
 
 </div>
 
-<table id="toolbar">
+<table id="toolbar" class="screen">
 	<tr>
 		<td>
 			<button id="settings" class="btn btn-light" onclick="$('#tabsettings').collapse('toggle')">{PresetsCSV}</button>
@@ -354,7 +354,7 @@
 
 <div id="modal_space"></div>
 
-<div class="container collapse" id="tabsettings">
+<div class="container collapse screen" id="tabsettings">
 	<div class="container group-container">
 	<div class="row">
 		<div class="col">
@@ -450,7 +450,7 @@
 </div>
 
 <div class="row">
-<div class="container collapse show" id="tabfilter">
+<div class="container collapse show screen" id="tabfilter">
 	<div class="container group-container">
     <div class="row">
       <div class="col-4">
@@ -492,7 +492,7 @@
         <button id="btnDisplay" type="button" class="btn btn-primary" style="margin:2px;">{display}</button>
       </div>
     </div>
-</div>
+	</div>
     <button id="btnTransformToGL" type="button" class="btn btn-primary" style="float:right; margin:2px;">{transform_to_gl}</button>
     <button id="btnTransformToGift" type="button" class="btn btn-primary" style="float:right; margin:2px;">{transform_to_gift}</button>
     <!-- TODO disable this button if no permissions for reading sponsorships -->

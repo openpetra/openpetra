@@ -218,3 +218,20 @@ a.anchor {
     top: -65px;
     visibility: hidden;
 }
+
+@media screen {
+  .print {
+    display: none;
+  }
+}
+@media print {
+  .screen {
+    display: none !important;
+  }
+
+  #main {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+  }
+}
