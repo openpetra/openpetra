@@ -9,7 +9,7 @@
     "@popperjs/core": "^2.11.8",
     "axios": "^1.6.8",
     "bootstrap": "^5.3",
-    "cypress": "^13.8.0",
+    "cypress": "^15.15.0",
     "i18next": "^10.6.0",
     "i18next-browser-languagedetector": "^2.2.4",
     "i18next-http-backend": "^2.5.1",
