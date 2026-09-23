@@ -701,6 +701,7 @@
         "ask_delete_stmts": "Do you really want to delete the selected statements?",
         "not_av": "not available for selected option",
         "edittitle_trans_detail": "Edit transaction detail",
+        "total_amount": "Total Amount",
         "total_debit": "Total Debit",
         "total_credit": "Total Credit"
     },

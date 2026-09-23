@@ -215,13 +215,16 @@ class BankImport {
 			}
 			let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), transaction);
 
+			let totalamount = 0;
 			for (var detail of parsed.ADetails) {
 				let item = detail;
 				let tpl_trans_detail = tpl.format_tpl( $('[phantom] .tpl_trans_detail_row').clone(), detail );
+				totalamount += item['a_gift_transaction_amount_n'];
 				tpl_trans_detail.find('#btnEditGiftTransDetail').on('click',
 					function(){self.edit_gift_trans_detail(item['a_statement_key_i'], item['a_order_i'], item['a_detail_i'])});
 				tpl_edit_raw.find('.detail_col').append(tpl_trans_detail);
 			}
+			tpl_edit_raw.find('#TransactionsTotal').html(totalamount);
 
 			$('#modal_space').html(tpl_edit_raw);
 

@@ -706,6 +706,7 @@
         "ask_delete_stmts": "Sollen wirklich die gewählten Kontoauszüge gelöscht werden?",
         "not_av": "Nicht verfügbar für die derzeit gewählte Option",
         "edittitle_trans_detail": "Details bearbeiten",
+        "total_amount": "Gesamtbetrag",
         "total_debit": "Summe Soll",
         "total_credit": "Summe Haben"
     },
