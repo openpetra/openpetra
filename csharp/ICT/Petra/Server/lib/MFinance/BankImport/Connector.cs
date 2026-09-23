@@ -1761,9 +1761,9 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 v.RowFilter = AEpMatchTable.GetActionDBName() + " = '" + MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL + "' and " +
                               AEpMatchTable.GetMatchTextDBName() + " = '" + transactionRow.MatchText + "'";
 
-                if (v.Count > 0)
+                for (int rowcount = 0; rowcount < v.Count; rowcount++)
                 {
-                    AEpMatchRow match = (AEpMatchRow)v[0].Row;
+                    AEpMatchRow match = (AEpMatchRow)v[rowcount].Row;
                     trans = GLDS.ATransaction.NewRowTyped();
                     trans.LedgerNumber = glbatchRow.LedgerNumber;
                     trans.BatchNumber = glbatchRow.BatchNumber;
@@ -1775,17 +1775,18 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     trans.Narrative = match.Narrative;
                     trans.TransactionDate = transactionRow.DateEffective;
 
-                    if (transactionRow.TransactionAmount < 0)
+                    Decimal amount = match.GiftTransactionAmount;
+                    if (amount < 0)
                     {
-                        trans.AmountInBaseCurrency = -1 * transactionRow.TransactionAmount;
-                        trans.TransactionAmount = -1 * transactionRow.TransactionAmount;
+                        trans.AmountInBaseCurrency = -1 * amount;
+                        trans.TransactionAmount = -1 * amount;
                         trans.DebitCreditIndicator = true;
                         DebitTotal += trans.AmountInBaseCurrency;
                     }
                     else
                     {
-                        trans.AmountInBaseCurrency = transactionRow.TransactionAmount;
-                        trans.TransactionAmount = transactionRow.TransactionAmount;
+                        trans.AmountInBaseCurrency = amount;
+                        trans.TransactionAmount = amount;
                         trans.DebitCreditIndicator = false;
                         CreditTotal += trans.AmountInBaseCurrency;
                     }
