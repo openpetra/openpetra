@@ -667,6 +667,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 }
 
                 ACostCentreAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
+                AAccountAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
 
                 AMotivationDetailAccess.LoadViaALedger(ResultDataset, ALedgerNumber, Transaction);
 
@@ -952,6 +953,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                 ResultDataset.AGiftDetail.Clear();
                 ResultDataset.AMotivationDetail.Clear();
                 ResultDataset.ACostCentre.Clear();
+                ResultDataset.AAccount.Clear();
             }
 
             ResultDataset.AcceptChanges();
@@ -1037,7 +1039,7 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
             out BankImportTDSAEpTransactionTable ATransactions,
             out BankImportTDSTransactionDetailTable ADetails)
         {
-            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber, false, false);
 
             ATransactions = new BankImportTDSAEpTransactionTable();
 
@@ -1071,6 +1073,19 @@ namespace Ict.Petra.Server.MFinance.BankImport.WebConnectors
                     newRow.LedgerNumber = ALedgerNumber;
                     newRow.StatementKey = AStatementKey;
                     newRow.Order = AOrderNumber;
+
+                    ACostCentreRow ccRow = (ACostCentreRow)MainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, row.CostCentreCode });
+                    if (ccRow != null)
+                    {
+                        newRow.CostCentreName = ccRow.CostCentreName;
+                    }
+
+                    AAccountRow accRow = (AAccountRow)MainDS.AAccount.Rows.Find(new object[] { ALedgerNumber, row.AccountCode });
+                    if (accRow != null)
+                    {
+                        newRow.AccountName = accRow.AccountCodeShortDesc;
+                    }
+
                     ADetails.Rows.Add(newRow);
                 }
             }

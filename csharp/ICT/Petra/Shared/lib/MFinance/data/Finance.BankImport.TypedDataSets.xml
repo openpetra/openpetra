@@ -37,8 +37,11 @@
             <Field sqltable="a_motivation_detail" sqlfield="a_membership_l"/>
             <Field sqltable="a_motivation_detail" sqlfield="a_sponsorship_l"/>
             <Field sqltable="a_motivation_detail" sqlfield="a_worker_support_l"/>
+            <CustomField name="AccountName" type="string"/>
+            <CustomField name="CostCentreName" type="string"/>
         </Table>
         <Table sqltable="a_cost_centre"/>
+        <Table sqltable="a_account"/>
         <Table sqltable="a_motivation_detail"/>
     </DataSet>
 
