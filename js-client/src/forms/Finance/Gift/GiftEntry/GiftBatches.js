@@ -4,7 +4,7 @@
 //       Timotheus Pokorra <timotheus.pokorra@solidcharity.com>
 //
 // Copyright 2017-2018 by TBits.net
-// Copyright 2019-2025 by SolidCharity.com
+// Copyright 2019-2026 by SolidCharity.com
 //
 // This file is part of OpenPetra.
 //
@@ -133,8 +133,10 @@ class GiftBatches {
 
 	updateGift(BatchNumber, GiftTransactionNumber) {
 		let self = this;
-		// somehow the original window stays gray when we return from this modal.
-		$('.modal-backdrop').remove();
+		// close detail modal
+		modal.CloseModal(self.modal_detail);
+		// close transaction modal
+		modal.CloseModal(self.modal_trans);
 		self.edit_gift_trans(window.localStorage.getItem('current_ledger'), BatchNumber, GiftTransactionNumber);
 	}
 
@@ -286,17 +288,18 @@ class GiftBatches {
 		var strToday = today.toISOString();
 		x['a_date_entered_d'] = strToday.replace('T00:00:00.000Z', '');
 
-		let p = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
-		$('#modal_space').html(p);
-		p.find('[edit-only]').hide();
-		p.find('[action]').val('create');
-		p.modal('show');
-		p.find('input[name=p_donor_name_c]').on('input', function () {AutocompletePartner.autocomplete_donor(this)});
-		p.find('#btnNewDetail').on('click', function() { self.new_trans_detail(this, ledger_number, batch_number, transaction_number) });
-		p.find('#btnAdjust').on('click', function() { self.adjust_trans(this) });
-		p.find('#btnDelete').on('click', function() { self.delete_trans(this) });
-		p.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
-		p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+		let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans').clone(), x);
+		$('#modal_space').html(tpl_edit_raw);
+		tpl_edit_raw.find('[edit-only]').hide();
+		tpl_edit_raw.find('[action]').val('create');
+		let m = modal.ShowModalObj(tpl_edit_raw);
+		m.find('input[name=p_donor_name_c]').on('input', function () {AutocompletePartner.autocomplete_donor(this)});
+		m.find('#btnNewDetail').on('click', function() { self.new_trans_detail(this, ledger_number, batch_number, transaction_number) });
+		m.find('#btnAdjust').on('click', function() { self.adjust_trans(this) });
+		m.find('#btnDelete').on('click', function() { self.delete_trans(this) });
+		m.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
+		m.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+		self.modal_trans = m;
 	}
 
 	new_trans_detail(btn, ledger_number, batch_number, trans_id) {
@@ -321,24 +324,25 @@ class GiftBatches {
 				a_motivation_detail_code_c: parsed.ADefaultMotivationDetail
 			};
 
-			let p = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
+			let tpl_edit_raw = tpl.format_tpl( $('[phantom] .tpl_edit_trans_detail').clone(), x);
 
 			if (!parsed.AIsForMembership) {
-				p.find('.MEMBERFEE').hide();
+				tpl_edit_raw.find('.MEMBERFEE').hide();
 			}
 
-			$('#modal_space').append(p);
-			p.find('[edit-only]').hide();
-			p.find('[action]').val('create');
-			p.modal('show');
-			p.find('input[name=a_motivation_detail_code_c]').on('input', function() {
+			$('#modal_space').append(tpl_edit_raw);
+			tpl_edit_raw.find('[edit-only]').hide();
+			tpl_edit_raw.find('[action]').val('create');
+			let m = modal.ShowModalObj(tpl_edit_raw);
+			m.find('input[name=a_motivation_detail_code_c]').on('input', function() {
 				AutocompleteMotivation.autocomplete_motivation_detail(this, function(obj, val) {self.update_motivation_group(obj, val)})});
-			p.find('input[name=p_member_name_c]').on('input', function() {
+			m.find('input[name=p_member_name_c]').on('input', function() {
 				AutocompletePartner.autocomplete_member(this)});
-			p.find('#btnClearMember').on('click', function() { self.clear_member(this) });
-			p.find('#btnDelete').on('click', function() { self.delete_trans_detail(this) });
-			p.find('#btnSave').on('click', function() { self.save_edit_trans_detail(this) });
-			p.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+			m.find('#btnClearMember').on('click', function() { self.clear_member(this) });
+			m.find('#btnDelete').on('click', function() { self.delete_trans_detail(this) });
+			m.find('#btnSave').on('click', function() { self.save_edit_trans_detail(this) });
+			m.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+			self.modal_detail = m;
 		});
 	}
 
@@ -447,13 +451,14 @@ class GiftBatches {
 
 			$('#modal_space').html(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
-			tpl_edit_raw.modal('show');
-			tpl_edit_raw.find('input[name=p_donor_name_c]').on('input', function () {AutocompletePartner.autocomplete_donor(this)});
-			tpl_edit_raw.find('#btnNewDetail').on('click', function() { self.new_trans_detail(this, ledger_id, batch_id, trans_id) });
-			tpl_edit_raw.find('#btnAdjust').on('click', function() { self.adjust_trans(this) });
-			tpl_edit_raw.find('#btnDelete').on('click', function() { self.delete_trans(this) });
-			tpl_edit_raw.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
-			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+			let m = modal.ShowModalObj(tpl_edit_raw);
+			m.find('input[name=p_donor_name_c]').on('input', function () {AutocompletePartner.autocomplete_donor(this)});
+			m.find('#btnNewDetail').on('click', function() { self.new_trans_detail(this, ledger_id, batch_id, trans_id) });
+			m.find('#btnAdjust').on('click', function() { self.adjust_trans(this) });
+			m.find('#btnDelete').on('click', function() { self.delete_trans(this) });
+			m.find('#btnSave').on('click', function() { self.save_edit_trans(this) });
+			m.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+			self.modal_trans = m;
 		})
 	}
 
@@ -501,15 +506,16 @@ class GiftBatches {
 
 			$('#modal_space').append(tpl_edit_raw);
 			tpl_edit_raw.find('[action]').val('edit');
-			tpl_edit_raw.modal('show');
-			tpl_edit_raw.find('input[name=a_motivation_detail_code_c]').on('input', function() {
+			let m = modal.ShowModalObj(tpl_edit_raw);
+			m.find('input[name=a_motivation_detail_code_c]').on('input', function() {
 				AutocompleteMotivation.autocomplete_motivation_detail(this, function(obj, val) {self.update_motivation_group(obj, val)})});
-			tpl_edit_raw.find('input[name=p_member_name_c]').on('input', function() {
+			m.find('input[name=p_member_name_c]').on('input', function() {
 				AutocompletePartner.autocomplete_member(this)});
-			tpl_edit_raw.find('#btnClearMember').on('click', function() { self.clear_member(this) });
-			tpl_edit_raw.find('#btnDelete').on('click', function() { self.delete_trans_detail(this) });
-			tpl_edit_raw.find('#btnSave').on('click', function() { self.save_edit_trans_detail(this) });
-			tpl_edit_raw.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+			m.find('#btnClearMember').on('click', function() { self.clear_member(this) });
+			m.find('#btnDelete').on('click', function() { self.delete_trans_detail(this) });
+			m.find('#btnSave').on('click', function() { self.save_edit_trans_detail(this) });
+			m.find('#btnClose').on('click', function() { modal.CloseModal(this) });
+			self.modal_detail = m;
 		})
 	}
 
