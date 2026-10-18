@@ -39,6 +39,8 @@ namespace Ict.Petra.Server.MSysMan.Security
         public const string LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL = "LOGIN_SUCCESSFUL";
         /// <summary>User login of a user that has got SYSAMIN privileges was successful.</summary>
         public const string LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_SYSADMIN = "LOGIN_SUCCESSFUL_SYSADMIN";
+        /// <summary>Console Login from Admin was successful.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_CONSOLE = "LOGIN_SUCCESSFUL_CONSOLE";
         /// <summary>A login attempt was made for a User ID but the password provided was wrong.</summary>
         public const string LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_PWD_WRONG = "LOGIN_ATTEMPT_PWD_WRONG";
         /// <summary>A login attempt was made for a User ID but the password provided was wrong

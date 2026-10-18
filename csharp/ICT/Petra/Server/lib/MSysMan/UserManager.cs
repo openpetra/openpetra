@@ -214,11 +214,13 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // pass ATransaction
             UserInfo.SetUserInfo(PetraPrincipal);
 
+            bool ConsoleLogin = (AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken");
+
             if (AUserID == "SELFSERVICE")
             {
                 APassword = String.Empty;
             }
-            else if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+            else if (ConsoleLogin)
             {
                 // Login via server admin console authenticated by file token
                 APassword = String.Empty;
@@ -280,7 +282,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // an attack vector called 'timing attack')
             if (UserDR.AccountLocked || UserDR.Retired)
             {
-                if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+                if (ConsoleLogin)
                 {
                     // this is ok. we need to be able to activate the sysadmin account on SetInitialSysadminEmail
                 }
@@ -325,7 +327,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 ASystemEnabled = false;
 
                 // TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
-                if (PetraPrincipal.IsInGroup("SYSADMIN"))
+                if (PetraPrincipal.IsInGroup("SYSMAN"))
                 {
                     PetraPrincipal.LoginMessage =
                         String.Format(StrSystemDisabled1,
@@ -354,7 +356,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             string LicenseCheckUrl = TAppSettingsManager.GetValue("LicenseCheck.Url", String.Empty, false);
             string LicenseUser = TAppSettingsManager.GetValue("Server.DBName");
 
-            if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
+            if (ConsoleLogin)
             {
                 // don't check for the license, since this is called when upgrading the server as well.
                 LicenseCheckUrl = String.Empty;
@@ -406,10 +408,17 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             // TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
 
-            if (PetraPrincipal.IsInGroup("SYSADMIN"))
+            if (ConsoleLogin)
+            {
+                TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_CONSOLE,
+                    Catalog.GetString("SYSADMIN login via Console. ") +
+                    String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                    out AProcessID, ATransaction);
+            }
+            else if (PetraPrincipal.IsInGroup("SYSMAN"))
             {
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_SYSADMIN,
-                    Catalog.GetString("User login - SYSADMIN privileges. ") +
+                    Catalog.GetString("User login - SYSMAN privileges. ") +
                     String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                     out AProcessID, ATransaction);
             }
