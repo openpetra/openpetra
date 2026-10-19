@@ -327,7 +327,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 ASystemEnabled = false;
 
                 // TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
-                if (PetraPrincipal.IsInGroup("SYSMAN"))
+                if (PetraPrincipal.IsInModule("SYSMAN"))
                 {
                     PetraPrincipal.LoginMessage =
                         String.Format(StrSystemDisabled1,
@@ -415,7 +415,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                     out AProcessID, ATransaction);
             }
-            else if (PetraPrincipal.IsInGroup("SYSMAN"))
+            else if (PetraPrincipal.IsInModule("SYSMAN"))
             {
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_SYSADMIN,
                     Catalog.GetString("User login - SYSMAN privileges. ") +
